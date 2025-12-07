@@ -1,0 +1,19 @@
+services:
+  spring:
+    image: seoarc/food-keeper-server:latest
+    container_name: food-keeper-api-server
+    restart: on-failure:3
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      TZ: Asia/Seoul
+    ports:
+      - "8080:8080"
+    networks:
+      - food-keeper
+    volumes:
+      - ./:/app/local
+      - ./logs:/var/log/spring
+
+networks:
+  food-keeper:
+    driver: bridge
