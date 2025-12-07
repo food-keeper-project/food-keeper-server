@@ -1,7 +1,6 @@
 name: Food Keeper Dev Deploy
 
 on:
-  workflow_dispatch:
   pull_request:
     branches:
       - develop
