@@ -1,0 +1,25 @@
+name: Bug
+description: 버그 발생
+title: "[Bug]: "
+labels: ["feature"]
+type: bug
+body:
+  - type: textarea
+    attributes:
+      label: 📄 설명
+      description: 버그에 대한 설명을 작성해주세요.
+      placeholder: 자세히 적을수록 좋습니다.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: ✅ 기대 동작
+      description: 기대했던 동작을 작성해주세요.
+      placeholder: 자세히 적을수록 좋습니다.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 🖼️ 첨부 자료
+      description: 문제를 보여주는 사진이나 로그 정보 등이 있다면 작성해주세요
+      placeholder: ex) 코드, 로그, 모니터링 결과 등
