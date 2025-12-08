@@ -63,5 +63,4 @@ jobs:
             docker images -q ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKERHUB_REPOSITORY }}:latest | grep -q . && docker rmi ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKERHUB_REPOSITORY }}:latest || true
             docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKERHUB_REPOSITORY }}:latest
             docker compose -f docker-compose.dev.yml pull
-            docker compose -f docker-compose.dev.yml down --remove-orphans
             docker compose -f docker-compose.dev.yml up -d
