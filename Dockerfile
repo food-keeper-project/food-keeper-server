@@ -5,11 +5,13 @@ COPY . .
 
 RUN chmod +x ./gradlew
 RUN ./gradlew clean build -x test
-RUN apk add --no-cache curl
 
 FROM azul/zulu-openjdk-alpine:21-latest
 WORKDIR /app
 
 COPY --from=builder /app/build/libs/*.jar app.jar
+
+RUN apk add --no-cache curl
+
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
