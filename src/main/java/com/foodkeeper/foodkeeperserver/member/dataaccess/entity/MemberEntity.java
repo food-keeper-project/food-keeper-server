@@ -19,6 +19,9 @@ public class MemberEntity extends BaseEntity {
     @Column(nullable = false, length = 20)
     private String nickname;
 
+    @Column(nullable = false)
+    private String imageUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "CHAR", length = 2)
     private Gender gender;
@@ -34,6 +37,7 @@ public class MemberEntity extends BaseEntity {
         MemberEntity memberEntity = new MemberEntity();
         memberEntity.email = member.email();
         memberEntity.nickname = member.nickname();
+        memberEntity.imageUrl = member.imageUrl();
         memberEntity.gender = member.gender();
         memberEntity.signUpType = member.signUpType();
         memberEntity.signUpIp = member.signUpIp();
@@ -45,6 +49,7 @@ public class MemberEntity extends BaseEntity {
                 .id(id)
                 .email(email)
                 .nickname(nickname)
+                .imageUrl(imageUrl)
                 .gender(gender)
                 .signUpType(signUpType)
                 .signUpIp(signUpIp)

@@ -9,6 +9,7 @@ public record Member(
         String id,
         String email,
         String nickname,
+        String imageUrl,
         Gender gender,
         SignUpType signUpType,
         String signUpIp,
