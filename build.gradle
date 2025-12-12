@@ -18,6 +18,7 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    mockitoAgent
 }
 
 repositories {
@@ -35,7 +36,7 @@ dependencies {
     // DB
     runtimeOnly 'com.h2database:h2'
     implementation 'org.springframework.boot:spring-boot-h2console'
-    runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'com.mysql:mysql-connector-j'
 
     // infra
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
@@ -44,13 +45,21 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    // api docs
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14'
+
     // test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.mockito:mockito-core'
+    mockitoAgent('org.mockito:mockito-core') {
+        transitive = false
+    }
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+    jvmArgs += "-javaagent:${configurations.mockitoAgent.asPath}"
 }
