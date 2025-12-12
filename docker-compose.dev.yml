@@ -17,6 +17,7 @@ services:
       - certbot
     networks:
       - food-keeper
+
   certbot:
     image: certbot/certbot
     container_name: certbot
@@ -25,6 +26,7 @@ services:
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
   spring:
     image: seoarc/food-keeper-server:latest
     container_name: food-keeper-api-server
@@ -39,6 +41,28 @@ services:
     volumes:
       - ./:/app/local
       - ./logs:/var/log/spring
+
+  mysql:
+    image: mysql:8.0.44-debian
+    container_name: mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db/mysql/data:/var/lib/mysql
+      - ./db/mysql/init:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: Asia/Seoul
+    command: [
+       "--character-set-server=utf8mb4",
+       "--collation-server=utf8mb4_unicode_ci"
+    ]
+    networks:
+      - food-keeper
 
 networks:
   food-keeper:
