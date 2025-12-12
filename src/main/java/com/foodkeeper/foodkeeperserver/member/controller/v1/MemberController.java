@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
     private final MemberService memberService;
 
-    @GetMapping("/{memberId}")
-    public ApiResponse<ProfileResponse> getProfile(@PathVariable String memberId) {
-        Member member = memberService.findMember(memberId);
+    @GetMapping("/{memberKey}")
+    public ApiResponse<ProfileResponse> getProfile(@PathVariable String memberKey) {
+        Member member = memberService.findMember(memberKey);
         return ApiResponse.success(new ProfileResponse(member.nickname(), member.imageUrl()));
     }
 }

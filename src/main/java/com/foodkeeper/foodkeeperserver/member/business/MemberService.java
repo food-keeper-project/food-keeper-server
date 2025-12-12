@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class MemberService {
     private final MemberFinder memberFinder;
 
-    public Member findMember(String memberId) {
-        return memberFinder.find(memberId);
+    public Member findMember(String memberKey) {
+        return memberFinder.find(memberKey);
     }
 }

@@ -6,7 +6,8 @@ import lombok.Builder;
 
 @Builder
 public record Member(
-        String id,
+        Long id,
+        String memberKey,
         String email,
         String nickname,
         String imageUrl,

@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 public class MemberFinder {
     private final MemberRepository memberRepository;
 
-    public Member find(String memberId) {
-        return memberRepository.findById(memberId).orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_DATA))
+    public Member find(String memberKey) {
+        return memberRepository.findByMemberKey(memberKey).orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_DATA))
                 .toDomain();
     }
 }

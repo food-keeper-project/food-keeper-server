@@ -10,8 +10,12 @@ import jakarta.persistence.*;
 public class MemberEntity extends BaseEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
-    private String id;
+    private Long id;
+
+    @Column(nullable = false)
+    private String memberKey;
 
     @Column(nullable = false, length = 50)
     private String email;
@@ -35,6 +39,7 @@ public class MemberEntity extends BaseEntity {
 
     public static MemberEntity from(Member member) {
         MemberEntity memberEntity = new MemberEntity();
+        memberEntity.memberKey = member.memberKey();
         memberEntity.email = member.email();
         memberEntity.nickname = member.nickname();
         memberEntity.imageUrl = member.imageUrl();
@@ -47,6 +52,7 @@ public class MemberEntity extends BaseEntity {
     public Member toDomain() {
         return Member.builder()
                 .id(id)
+                .memberKey(memberKey)
                 .email(email)
                 .nickname(nickname)
                 .imageUrl(imageUrl)
