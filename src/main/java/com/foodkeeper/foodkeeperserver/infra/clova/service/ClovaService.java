@@ -1,0 +1,27 @@
+package com.foodkeeper.foodkeeperserver.infra.clova.service;
+
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
+import tools.jackson.databind.ObjectMapper;
+
+@Service
+@RequiredArgsConstructor
+public class ClovaService {
+
+    private final RestClient restClient;
+    private final ObjectMapper objectMapper;
+
+    @Value("${clova.url}")
+    private String url;
+
+    @Value("${clova.api-key}")
+    private String apiKey;
+
+    @Value("${clova.gateway-key")
+    private String gatewayKey;
+
+
+}
