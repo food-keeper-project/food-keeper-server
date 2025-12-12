@@ -1,4 +1,4 @@
-package com.foodkeeper.foodkeeperserver.config;
+package com.foodkeeper.foodkeeperserver.config.infra;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
