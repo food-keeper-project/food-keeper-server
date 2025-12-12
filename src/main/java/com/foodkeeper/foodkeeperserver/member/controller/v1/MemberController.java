@@ -5,6 +5,7 @@ import com.foodkeeper.foodkeeperserver.member.controller.v1.response.ProfileResp
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
 import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,8 +18,8 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/{memberKey}")
-    public ApiResponse<ProfileResponse> getProfile(@PathVariable String memberKey) {
+    public ResponseEntity<ApiResponse<ProfileResponse>> getProfile(@PathVariable String memberKey) {
         Member member = memberService.findMember(memberKey);
-        return ApiResponse.success(new ProfileResponse(member.nickname(), member.imageUrl()));
+        return ResponseEntity.ok(ApiResponse.success(new ProfileResponse(member.nickname(), member.imageUrl())));
     }
 }
