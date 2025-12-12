@@ -30,9 +30,6 @@ public class Food extends BaseTime {
     @Column(name = "image_url",nullable = false)
     private String imageUrl;
 
-    @Column(name = "memo",nullable = false)
-    private String memo;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "storage_method", length = 20, nullable = false)
     private StorageMethod storageMethod;
@@ -42,6 +39,9 @@ public class Food extends BaseTime {
 
     @Column(name = "expiry_alert_days_before")
     private int expiryAlertDaysBefore; // 디폴트 D-2
+
+    @Column(name = "memo",nullable = false)
+    private String memo;
 
     @Column(name = "selected_category_count", nullable = false)
     private int selectedCategoryCount = 0;
