@@ -1,5 +1,8 @@
 package com.foodkeeper.foodkeeperserver.support.exception;
 
+import lombok.Getter;
+
+@Getter
 public class AppException extends RuntimeException {
     private final ErrorType errorType;
     private final Object data;

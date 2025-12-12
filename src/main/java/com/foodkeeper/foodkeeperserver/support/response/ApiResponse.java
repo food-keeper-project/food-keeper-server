@@ -17,6 +17,10 @@ public record ApiResponse<T>(
         return new ApiResponse<>(ResultType.SUCCESS, data, null);
     }
 
+    public static <S> ApiResponse<S> error(ErrorType error) {
+        return new ApiResponse<>(ResultType.ERROR, null, ErrorMessage.of(error, null));
+    }
+
     public static <S> ApiResponse<S> error(ErrorType error, Object errorData) {
         return new ApiResponse<>(ResultType.ERROR, null, ErrorMessage.of(error, errorData));
     }
