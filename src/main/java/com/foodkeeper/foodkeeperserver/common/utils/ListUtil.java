@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class ListUtil {
-    public static <T> List<T> getOrElseThrowList(List<T> list){
+    public static <T> List<T> getOrElseThrowList(List<T> list) {
         if (list == null || list.isEmpty()) {
             throw new AppException(ErrorType.NOT_FOUND_DATA);
         }

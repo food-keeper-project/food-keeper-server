@@ -21,7 +21,7 @@ public class FoodController {
     @Operation(summary = "식재료 추가", description = "식재료 추가 API")
     @PostMapping
     public ResponseEntity<ApiResponse<?>> createFood(@RequestPart FoodRegisterRequest request,
-                                                     @RequestPart MultipartFile image){
+                                                     @RequestPart(required = false) MultipartFile image){
         String memberId = "memberId"; // todo 로그인 방식 구현 후 리팩토링
         Long foodId = foodService.registerFood(request,image,memberId);
         return ResponseEntity.ok(ApiResponse.success(foodId));

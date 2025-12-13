@@ -30,8 +30,7 @@ public class FoodService {
 
         validateCategoryCount(request.categoryIds());
 
-        String imageUrl = imageUploader.toUrls(file);
-        imageUploader.fileUpload(file,imageUrl);
+        String imageUrl = uploadImage(file);
 
         Food food = FoodRegisterRequest.toEntity(request, imageUrl, memberId);
         Food savedFood = foodCreator.save(food);
@@ -42,6 +41,16 @@ public class FoodService {
         foodCategories.forEach(category -> selectedFoodCategoryCreator.save(savedFood.getId(), category.getId()));
 
         return savedFood.getId();
+    }
+
+    private String uploadImage(MultipartFile file){
+        String imageUrl = "";
+
+        if(file != null && file.isEmpty()){
+            imageUrl = imageUploader.toUrls(file);
+            imageUploader.fileUpload(file,imageUrl);
+        }
+        return imageUrl;
     }
 
     private void validateCategoryCount(List<Long> categoryIds){

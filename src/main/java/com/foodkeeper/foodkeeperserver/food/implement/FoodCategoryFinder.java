@@ -20,13 +20,8 @@ public class FoodCategoryFinder {
 
     // 카테고리 먼저 조회
     @Transactional(readOnly = true)
-    public List<FoodCategory> findAll(List<Long> categoryIds){
+    public List<FoodCategory> findAll(List<Long> categoryIds) {
         return ListUtil.getOrElseThrowList(foodCategoryRepository.findAllById(categoryIds));
     }
 
-    @Transactional(readOnly = true)
-    public FoodCategory find(Long categoryId) {
-        return foodCategoryRepository.findById(categoryId)
-                .orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_DATA));
-    }
 }

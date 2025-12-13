@@ -16,7 +16,6 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "food")
 public class Food extends BaseEntity {
 
     @Id
@@ -43,9 +42,6 @@ public class Food extends BaseEntity {
     @Column(name = "memo",nullable = false)
     private String memo;
 
-    @Column(name = "selected_category_count", nullable = false)
-    private int selectedCategoryCount;
-
     @Column(name = "member_id", nullable = false)
     private String memberId;
 
@@ -53,12 +49,11 @@ public class Food extends BaseEntity {
     private Food(String name, String imageUrl, StorageMethod storageMethod, LocalDate expiryDate,
                 Integer expiryAlertDaysBefore, String memo, int selectedCategoryCount, String memberId) {
         this.name = name;
-        this.imageUrl = imageUrl;
+        this.imageUrl = (imageUrl != null) ? imageUrl : "";
         this.storageMethod = storageMethod;
         this.expiryDate = expiryDate;
         this.expiryAlertDaysBefore = (expiryAlertDaysBefore == null) ? 2 : expiryAlertDaysBefore;
         this.memo = (memo != null) ? memo : "";
-        this.selectedCategoryCount = selectedCategoryCount;
         this.memberId = memberId;
     }
 }
