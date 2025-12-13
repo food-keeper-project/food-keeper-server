@@ -1,16 +1,11 @@
 package com.foodkeeper.foodkeeperserver.food.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "selected_food_category")
 public class SelectedFoodCategory {
 
@@ -24,5 +19,18 @@ public class SelectedFoodCategory {
 
     @Column(name = "food_category_id",nullable = false)
     private Long foodCategoryId;
+
+    @Builder
+    private SelectedFoodCategory(Long foodId, Long foodCategoryId){
+        this.foodId = foodId;
+        this.foodCategoryId = foodCategoryId;
+    }
+
+    public static SelectedFoodCategory create(Long foodId, Long foodCategoryId) {
+        return SelectedFoodCategory.builder()
+                .foodId(foodId)
+                .foodCategoryId(foodCategoryId)
+                .build();
+    }
 
 }

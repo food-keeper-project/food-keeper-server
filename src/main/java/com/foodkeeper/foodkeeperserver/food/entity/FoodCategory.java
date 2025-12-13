@@ -2,16 +2,11 @@ package com.foodkeeper.foodkeeperserver.food.entity;
 
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "food_category")
 public class FoodCategory extends BaseEntity {
 
@@ -25,4 +20,17 @@ public class FoodCategory extends BaseEntity {
 
     @Column(name = "member_id", nullable = false)
     private String memberId;
+
+    @Builder
+    private FoodCategory(String name, String memberId){
+        this.name = name;
+        this.memberId = memberId;
+    }
+
+    public static FoodCategory create(String name, String memberId){
+        return FoodCategory.builder()
+                .name(name)
+                .memberId(memberId)
+                .build();
+    }
 }

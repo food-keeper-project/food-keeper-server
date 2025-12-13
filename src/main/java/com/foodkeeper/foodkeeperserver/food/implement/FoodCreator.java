@@ -11,7 +11,7 @@ public class FoodCreator {
 
     private final FoodRepository foodRepository;
 
-    public void save(Food food){
-        foodRepository.save(food);
+    public Food save(Food food){
+        return foodRepository.save(food);
     }
 }

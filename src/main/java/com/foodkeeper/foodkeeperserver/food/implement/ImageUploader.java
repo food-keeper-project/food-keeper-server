@@ -1,4 +1,4 @@
-package com.foodkeeper.foodkeeperserver.common.utils;
+package com.foodkeeper.foodkeeperserver.food.implement;
 
 import org.springframework.web.multipart.MultipartFile;
 

@@ -12,11 +12,8 @@ public class SelectedFoodCategoryCreator {
 
     private final SelectedFoodCategoryRepository selectedFoodCategoryRepository;
 
-    public void save(Long foodId, Long foodCategoryId) {
-        SelectedFoodCategory selectedFoodCategory = SelectedFoodCategory.builder()
-                .foodId(foodId)
-                .foodCategoryId(foodCategoryId)
-                .build();
-        selectedFoodCategoryRepository.save(selectedFoodCategory);
+    public Long save(Long foodId, Long foodCategoryId) {
+        SelectedFoodCategory selectedFoodCategory = SelectedFoodCategory.create(foodId, foodCategoryId);
+        return selectedFoodCategoryRepository.save(selectedFoodCategory).getId();
     }
 }
