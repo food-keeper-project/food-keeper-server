@@ -1,6 +1,6 @@
 package com.foodkeeper.foodkeeperserver.food.business;
 
-import com.foodkeeper.foodkeeperserver.food.implement.ImageUploader;
+import com.foodkeeper.foodkeeperserver.food.implement.ImageManager;
 import com.foodkeeper.foodkeeperserver.food.dto.request.FoodRegisterRequest;
 import com.foodkeeper.foodkeeperserver.food.entity.Food;
 import com.foodkeeper.foodkeeperserver.food.entity.FoodCategory;
@@ -36,7 +36,7 @@ public class FoodServiceTest {
     private FoodService foodService;
 
     @Mock
-    private ImageUploader imageUploader;
+    private ImageManager imageManager;
 
     @Mock
     private FoodCreator foodCreator;
@@ -60,7 +60,7 @@ public class FoodServiceTest {
         FoodRegisterRequest request = FoodFixture.createFoodRegisterRequest(categoryIds);
         List<FoodCategory> mockCategories = CategoryFixture.createCategory(categoryIds);
 
-        given(imageUploader.toUrls(any())).willReturn("20251212/uuid.jpg");
+        given(imageManager.toUrls(any())).willReturn("20251212/uuid.jpg");
         given(foodCategoryFinder.findAll(anyList())).willReturn(mockCategories);
         given(foodCreator.save(any(Food.class))).willReturn(mockFood);
 

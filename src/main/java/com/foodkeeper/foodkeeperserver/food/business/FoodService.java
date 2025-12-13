@@ -1,6 +1,6 @@
 package com.foodkeeper.foodkeeperserver.food.business;
 
-import com.foodkeeper.foodkeeperserver.food.implement.ImageUploader;
+import com.foodkeeper.foodkeeperserver.food.implement.ImageManager;
 import com.foodkeeper.foodkeeperserver.food.dto.request.FoodRegisterRequest;
 import com.foodkeeper.foodkeeperserver.food.entity.Food;
 import com.foodkeeper.foodkeeperserver.food.entity.FoodCategory;
@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FoodService {
 
-    private final ImageUploader imageUploader;
+    private final ImageManager imageManager;
     private final FoodCreator foodCreator;
     private final FoodCategoryFinder foodCategoryFinder;
     private final SelectedFoodCategoryCreator selectedFoodCategoryCreator;
@@ -28,37 +28,20 @@ public class FoodService {
     @Transactional
     public Long registerFood(FoodRegisterRequest request, MultipartFile file, String memberId) {
 
-        validateCategoryCount(request.categoryIds());
 
-        String imageUrl = uploadImage(file);
+        String imageUrl = imageManager.fileUpload(file);
+        try {
+            Food food = FoodRegisterRequest.toEntity(request, imageUrl, memberId);
+            Food savedFood = foodCreator.save(food);
 
-        Food food = FoodRegisterRequest.toEntity(request, imageUrl, memberId);
-        Food savedFood = foodCreator.save(food);
-
-        //todo 카테고리 선택 방식에 따라 인자값 수정
-        List<FoodCategory> foodCategories = foodCategoryFinder.findAll(request.categoryIds());
-
-        foodCategories.forEach(category -> selectedFoodCategoryCreator.save(savedFood.getId(), category.getId()));
-
-        return savedFood.getId();
-    }
-
-    private String uploadImage(MultipartFile file){
-        String imageUrl = "";
-
-        if(file != null && file.isEmpty()){
-            imageUrl = imageUploader.toUrls(file);
-            imageUploader.fileUpload(file,imageUrl);
-        }
-        return imageUrl;
-    }
-
-    private void validateCategoryCount(List<Long> categoryIds){
-        if (categoryIds == null || categoryIds.isEmpty()) {
-            throw new AppException(ErrorType.CATEGORY_SELECT_ERROR);
-        }
-        if (categoryIds.size() > 3) {
-            throw new AppException(ErrorType.CATEGORY_SELECT_ERROR);
+            //todo 카테고리 선택 방식에 따라 인자값 수정
+            List<FoodCategory> foodCategories = foodCategoryFinder.findAll(request.categoryIds());
+            foodCategories.forEach(category -> selectedFoodCategoryCreator.save(savedFood.getId(), category.getId()));
+            return savedFood.getId();
+        } catch (RuntimeException e) {
+            imageManager.deleteFile(imageUrl);
+            throw new AppException(ErrorType.DEFAULT_ERROR, e);
         }
     }
+
 }

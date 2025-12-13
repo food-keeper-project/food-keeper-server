@@ -2,10 +2,9 @@ package com.foodkeeper.foodkeeperserver.food.implement;
 
 import org.springframework.web.multipart.MultipartFile;
 
-public interface ImageUploader {
-    String toUrls(MultipartFile file);
+public interface ImageManager {
 
-    void fileUpload(MultipartFile file,String url);
+    String fileUpload(MultipartFile file);
 
     String getFullUrl(String fileName);
 

@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class S3ImageUploader implements ImageUploader {
+public class S3ImageManager implements ImageManager {
 
     private final AmazonS3 amazonS3;
 
@@ -25,24 +25,19 @@ public class S3ImageUploader implements ImageUploader {
     private String bucket;
 
     @Override
-    public String toUrls(MultipartFile file) {
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter dateTimeFormatter =
-                DateTimeFormatter.ofPattern("yyyyMMdd");
-        String createdDate = now.format(dateTimeFormatter);
-        String uuid = UUID.randomUUID().toString();
-        String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
-        return createdDate + "/" + uuid + ext;
-    }
+    public String fileUpload(MultipartFile file) {
+        if(file == null || file.isEmpty()){
+            return "";
+        }
+        String url = toUrls(file);
 
-    @Override
-    public void fileUpload(MultipartFile file, String fileName) {
         try {
             InputStream inputStream = file.getInputStream();
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.getSize());
             metadata.setContentType(file.getContentType());
-            amazonS3.putObject(bucket, fileName, inputStream, metadata);
+            amazonS3.putObject(bucket, url, inputStream, metadata);
+            return url;
         } catch (IOException e) {
             throw new AppException(ErrorType.S3_UPLOAD_ERROR);
         }
@@ -60,5 +55,15 @@ public class S3ImageUploader implements ImageUploader {
         } catch (Exception e) {
             throw new AppException(ErrorType.S3_UPLOAD_ERROR);
         }
+    }
+
+    private String toUrls(MultipartFile file) {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter dateTimeFormatter =
+                DateTimeFormatter.ofPattern("yyyyMMdd");
+        String createdDate = now.format(dateTimeFormatter);
+        String uuid = UUID.randomUUID().toString();
+        String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+        return createdDate + "/" + uuid + ext;
     }
 }

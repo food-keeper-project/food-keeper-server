@@ -36,24 +36,29 @@ public class Food extends BaseEntity {
     @Column(name = "expiry_date", nullable = false)
     private LocalDate expiryDate;
 
-    @Column(name = "expiry_alert_days_before")
-    private int expiryAlertDaysBefore;
-
     @Column(name = "memo",nullable = false)
     private String memo;
+
+    @Column(name = "selected_category_count", nullable = false)
+    private int selectedCategoryCount;
 
     @Column(name = "member_id", nullable = false)
     private String memberId;
 
     @Builder
-    private Food(String name, String imageUrl, StorageMethod storageMethod, LocalDate expiryDate,
-                Integer expiryAlertDaysBefore, String memo, int selectedCategoryCount, String memberId) {
+    private Food(String name,
+                 String imageUrl,
+                 StorageMethod storageMethod,
+                 LocalDate expiryDate,
+                 String memo,
+                 int selectedCategoryCount,
+                 String memberId) {
         this.name = name;
         this.imageUrl = (imageUrl != null) ? imageUrl : "";
         this.storageMethod = storageMethod;
         this.expiryDate = expiryDate;
-        this.expiryAlertDaysBefore = (expiryAlertDaysBefore == null) ? 2 : expiryAlertDaysBefore;
         this.memo = (memo != null) ? memo : "";
+        this.selectedCategoryCount = selectedCategoryCount;
         this.memberId = memberId;
     }
 }
