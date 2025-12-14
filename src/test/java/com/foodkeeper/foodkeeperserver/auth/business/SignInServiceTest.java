@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.auth.business;
 
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.MemberRoleRepository;
 import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
 import com.foodkeeper.foodkeeperserver.auth.implement.KakaoAuthenticator;
 import com.foodkeeper.foodkeeperserver.auth.implement.SignInLogAppender;
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Optional;
@@ -37,9 +39,10 @@ class SignInServiceTest {
 
     @Mock MemberRepository memberRepository;
     @Mock OauthRepository oauthRepository;
+    @Mock MemberRoleRepository memberRoleRepository;
     @Mock KakaoAuthenticator kakaoAuthenticator;
     @Mock SignInLogRepository signInLogRepository;
-    Key secretKey;
+    SecretKey secretKey;
     SignInService signInService;
 
     @BeforeEach
@@ -48,7 +51,7 @@ class SignInServiceTest {
         JwtGenerator jwtGenerator = new JwtGenerator(secretKey);
         SignInLogAppender signInLogAppender = new SignInLogAppender(signInLogRepository);
         MemberFinder memberFinder = new MemberFinder(memberRepository, oauthRepository);
-        MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, oauthRepository);
+        MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, oauthRepository, memberRoleRepository);
         signInService = new SignInService(kakaoAuthenticator, jwtGenerator,
                 signInLogAppender, memberFinder, memberRegistrar);
     }

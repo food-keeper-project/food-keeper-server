@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.member.implement;
 
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.MemberRoleRepository;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
@@ -23,11 +24,12 @@ class MemberRegistrarTest {
 
     @Mock MemberRepository memberRepository;
     @Mock OauthRepository oauthRepository;
+    @Mock MemberRoleRepository memberRoleRepository;
     MemberRegistrar memberRegistrar;
 
     @BeforeEach
     void setUp() {
-        memberRegistrar = new MemberRegistrar(memberRepository, oauthRepository);
+        memberRegistrar = new MemberRegistrar(memberRepository, oauthRepository, memberRoleRepository);
     }
 
     @Test
