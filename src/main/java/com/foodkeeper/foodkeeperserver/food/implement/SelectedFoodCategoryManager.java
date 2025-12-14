@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class SelectedFoodCategoryCreator {
+public class SelectedFoodCategoryManager {
 
     private final SelectedFoodCategoryRepository selectedFoodCategoryRepository;
 

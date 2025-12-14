@@ -1,6 +1,6 @@
 package com.foodkeeper.foodkeeperserver.clova.controller.response;
 
-import com.foodkeeper.foodkeeperserver.clova.domain.Role;
+import com.foodkeeper.foodkeeperserver.clova.domain.AiType;
 
-public record Message(Role role, String content) {
+public record Message(AiType aiType, String content) {
 }

@@ -1,18 +1,16 @@
-package com.foodkeeper.foodkeeperserver.food.business.request;
+package com.foodkeeper.foodkeeperserver.food.domain.request;
 
-import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodRegisterRequest;
-import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
 
 import java.time.LocalDate;
 import java.util.List;
 
-public record FoodRegisterDto(String name,
-                              List<Long> categoryIds,
-                              StorageMethod storageMethod,
-                              LocalDate expiryDate,
-                              String memo) {
+public record FoodRegister(String name,
+                           List<Long> categoryIds,
+                           StorageMethod storageMethod,
+                           LocalDate expiryDate,
+                           String memo) {
 
     public Food toDomain(String imageUrl, String memberId) {
         return Food.builder()

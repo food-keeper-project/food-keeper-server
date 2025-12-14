@@ -1,6 +1,5 @@
 package com.foodkeeper.foodkeeperserver.food.domain;
 
-import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
 import lombok.Builder;
 
 @Builder

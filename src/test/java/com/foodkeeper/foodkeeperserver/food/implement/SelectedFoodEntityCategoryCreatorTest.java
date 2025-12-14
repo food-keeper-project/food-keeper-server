@@ -22,7 +22,7 @@ import static org.mockito.Mockito.verify;
 public class SelectedFoodEntityCategoryCreatorTest {
 
     @InjectMocks
-    private SelectedFoodCategoryCreator selectedFoodCategoryCreator;
+    private SelectedFoodCategoryManager selectedFoodCategoryManager;
 
     @Mock
     private SelectedFoodCategoryRepository selectedFoodCategoryRepository;
@@ -36,7 +36,7 @@ public class SelectedFoodEntityCategoryCreatorTest {
 
         given(selectedFoodCategoryRepository.save(any(SelectedFoodCategoryEntity.class))).willReturn(selectedFoodCategoryEntity);
         //when
-        selectedFoodCategoryCreator.save(selectedCategory);
+        selectedFoodCategoryManager.save(selectedCategory);
         //then
         ArgumentCaptor<SelectedFoodCategoryEntity> captor = ArgumentCaptor.forClass(SelectedFoodCategoryEntity.class);
         verify(selectedFoodCategoryRepository).save(captor.capture());

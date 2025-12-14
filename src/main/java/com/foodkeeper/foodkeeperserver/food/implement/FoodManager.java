@@ -8,12 +8,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class FoodRegister {
+public class FoodManager {
 
     private final FoodRepository foodRepository;
 
-    public Food register(Food food){
+    public Food register(Food food) {
         FoodEntity foodEntity = foodRepository.save(FoodEntity.from(food));
         return foodEntity.toDomain();
     }
+
+
 }

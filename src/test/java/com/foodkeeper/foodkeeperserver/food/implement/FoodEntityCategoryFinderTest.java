@@ -20,7 +20,7 @@ import static org.mockito.BDDMockito.given;
 public class FoodEntityCategoryFinderTest {
 
     @InjectMocks
-    private FoodCategoryFinder foodCategoryFinder;
+    private FoodCategoryManager foodCategoryManager;
 
     @Mock
     private FoodCategoryRepository foodCategoryRepository;
@@ -34,7 +34,7 @@ public class FoodEntityCategoryFinderTest {
 
         given(foodCategoryRepository.findAllById(categoryIds)).willReturn(foodCategoryEntities);
         //when
-        List<FoodCategory> foodCategoryList = foodCategoryFinder.findAll(categoryIds);
+        List<FoodCategory> foodCategoryList = foodCategoryManager.findAll(categoryIds);
         //then
         List<FoodCategory> expectedDomains = foodCategoryEntities.stream()
                 .map(FoodCategoryEntity::toDomain)
