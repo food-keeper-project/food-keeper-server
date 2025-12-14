@@ -24,3 +24,6 @@ spring:
 logging:
   level:
     com.foodkeeper: debug
+
+jwt:
+  secret-key: testtesttesttesttesttesttesttest
