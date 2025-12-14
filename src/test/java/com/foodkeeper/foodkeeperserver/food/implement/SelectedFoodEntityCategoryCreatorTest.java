@@ -41,7 +41,6 @@ public class SelectedFoodEntityCategoryCreatorTest {
         ArgumentCaptor<SelectedFoodCategoryEntity> captor = ArgumentCaptor.forClass(SelectedFoodCategoryEntity.class);
         verify(selectedFoodCategoryRepository).save(captor.capture());
 
-        // 2. 낚아챈 데이터가 내가 요청한 값과 일치하는지 확인합니다.
         SelectedFoodCategoryEntity capturedEntity = captor.getValue();
 
         assertThat(capturedEntity.getFoodId()).isEqualTo(1L);
