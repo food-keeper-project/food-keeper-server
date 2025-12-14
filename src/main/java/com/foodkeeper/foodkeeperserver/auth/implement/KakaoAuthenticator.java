@@ -1,7 +1,7 @@
-package com.foodkeeper.foodkeeperserver.member.implement;
+package com.foodkeeper.foodkeeperserver.auth.implement;
 
-import com.foodkeeper.foodkeeperserver.member.domain.KakaoUser;
-import com.foodkeeper.foodkeeperserver.member.domain.OAuthMember;
+import com.foodkeeper.foodkeeperserver.auth.domain.KakaoUser;
+import com.foodkeeper.foodkeeperserver.auth.domain.OAuthMember;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;

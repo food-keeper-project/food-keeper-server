@@ -2,7 +2,7 @@ package com.foodkeeper.foodkeeperserver.member.business;
 
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
-import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.OauthRepository;
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
 import org.junit.jupiter.api.BeforeEach;

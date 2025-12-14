@@ -1,9 +1,12 @@
-package com.foodkeeper.foodkeeperserver.member.business;
+package com.foodkeeper.foodkeeperserver.auth.business;
 
-import com.foodkeeper.foodkeeperserver.member.domain.Jwt;
-import com.foodkeeper.foodkeeperserver.member.domain.MemberRegister;
+import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
+import com.foodkeeper.foodkeeperserver.auth.domain.MemberRegister;
+import com.foodkeeper.foodkeeperserver.auth.domain.OAuthMember;
+import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
+import com.foodkeeper.foodkeeperserver.auth.implement.OAuthAuthenticator;
+import com.foodkeeper.foodkeeperserver.auth.implement.SignInLogAppender;
 import com.foodkeeper.foodkeeperserver.member.domain.NewMember;
-import com.foodkeeper.foodkeeperserver.member.domain.OAuthMember;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.SignUpType;
 import com.foodkeeper.foodkeeperserver.member.implement.*;
 import lombok.RequiredArgsConstructor;
@@ -13,13 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class SignInService {
-    private final MemberFinder memberFinder;
-    private final MemberRegistrar memberRegistrar;
     private final OAuthAuthenticator oauthAuthenticator;
     private final JwtGenerator jwtGenerator;
     private final SignInLogAppender signInLogAppender;
+    private final MemberFinder memberFinder;
+    private final MemberRegistrar memberRegistrar;
 
-    @Transactional
     public Jwt signInByOAuth(MemberRegister register) {
         OAuthMember oAuthMember = oauthAuthenticator.authenticate(register.accessToken());
 

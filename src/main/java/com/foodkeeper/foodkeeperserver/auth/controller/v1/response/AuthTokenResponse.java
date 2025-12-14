@@ -1,4 +1,4 @@
-package com.foodkeeper.foodkeeperserver.member.controller.v1.response;
+package com.foodkeeper.foodkeeperserver.auth.controller.v1.response;
 
 public record AuthTokenResponse(String accessToken, String refreshToken) {
 }

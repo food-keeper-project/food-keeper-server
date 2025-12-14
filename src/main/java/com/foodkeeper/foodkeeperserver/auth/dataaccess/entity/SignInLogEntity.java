@@ -1,4 +1,4 @@
-package com.foodkeeper.foodkeeperserver.member.dataaccess.entity;
+package com.foodkeeper.foodkeeperserver.auth.dataaccess.entity;
 
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.BaseEntity;
 import jakarta.persistence.*;

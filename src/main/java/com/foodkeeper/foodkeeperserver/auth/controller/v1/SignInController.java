@@ -1,10 +1,10 @@
-package com.foodkeeper.foodkeeperserver.member.controller.v1;
+package com.foodkeeper.foodkeeperserver.auth.controller.v1;
 
-import com.foodkeeper.foodkeeperserver.member.business.SignInService;
-import com.foodkeeper.foodkeeperserver.member.controller.v1.request.SignInRequest;
-import com.foodkeeper.foodkeeperserver.member.controller.v1.response.AuthTokenResponse;
-import com.foodkeeper.foodkeeperserver.member.domain.Jwt;
-import com.foodkeeper.foodkeeperserver.member.domain.MemberRegister;
+import com.foodkeeper.foodkeeperserver.auth.business.SignInService;
+import com.foodkeeper.foodkeeperserver.auth.controller.v1.request.SignInRequest;
+import com.foodkeeper.foodkeeperserver.auth.controller.v1.response.AuthTokenResponse;
+import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
+import com.foodkeeper.foodkeeperserver.auth.domain.MemberRegister;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;

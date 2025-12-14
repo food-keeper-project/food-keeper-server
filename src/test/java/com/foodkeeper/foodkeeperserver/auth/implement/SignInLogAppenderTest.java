@@ -1,7 +1,7 @@
-package com.foodkeeper.foodkeeperserver.member.implement;
+package com.foodkeeper.foodkeeperserver.auth.implement;
 
-import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.SignInLogEntity;
-import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.SignInLogRepository;
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.SignInLogEntity;
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.SignInLogRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

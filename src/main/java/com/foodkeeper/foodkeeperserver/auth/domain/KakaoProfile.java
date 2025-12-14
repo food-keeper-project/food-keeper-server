@@ -1,4 +1,4 @@
-package com.foodkeeper.foodkeeperserver.member.domain;
+package com.foodkeeper.foodkeeperserver.auth.domain;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

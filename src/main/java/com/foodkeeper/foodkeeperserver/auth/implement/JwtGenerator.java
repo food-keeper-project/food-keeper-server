@@ -1,6 +1,6 @@
-package com.foodkeeper.foodkeeperserver.member.implement;
+package com.foodkeeper.foodkeeperserver.auth.implement;
 
-import com.foodkeeper.foodkeeperserver.member.domain.Jwt;
+import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import io.jsonwebtoken.JwtBuilder;

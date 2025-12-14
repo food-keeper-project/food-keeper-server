@@ -1,14 +1,17 @@
-package com.foodkeeper.foodkeeperserver.member.business;
+package com.foodkeeper.foodkeeperserver.auth.business;
 
+import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
+import com.foodkeeper.foodkeeperserver.auth.implement.KakaoAuthenticator;
+import com.foodkeeper.foodkeeperserver.auth.implement.SignInLogAppender;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
-import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.OauthEntity;
-import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.SignInLogEntity;
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.OauthEntity;
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.SignInLogEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
-import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.OauthRepository;
-import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.SignInLogRepository;
-import com.foodkeeper.foodkeeperserver.member.domain.Jwt;
-import com.foodkeeper.foodkeeperserver.member.domain.MemberRegister;
-import com.foodkeeper.foodkeeperserver.member.domain.OAuthMember;
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.SignInLogRepository;
+import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
+import com.foodkeeper.foodkeeperserver.auth.domain.MemberRegister;
+import com.foodkeeper.foodkeeperserver.auth.domain.OAuthMember;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.member.implement.*;
 import io.jsonwebtoken.security.Keys;
@@ -41,13 +44,13 @@ class SignInServiceTest {
 
     @BeforeEach
     void setUp() {
-        MemberFinder memberFinder = new MemberFinder(memberRepository, oauthRepository);
-        MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, oauthRepository);
         secretKey = Keys.hmacShaKeyFor("this_is_a_test_secret_key_abcdefghijtlmnopqr".getBytes(StandardCharsets.UTF_8));
         JwtGenerator jwtGenerator = new JwtGenerator(secretKey);
         SignInLogAppender signInLogAppender = new SignInLogAppender(signInLogRepository);
-        signInService = new SignInService(memberFinder, memberRegistrar, kakaoAuthenticator, jwtGenerator,
-                signInLogAppender);
+        MemberFinder memberFinder = new MemberFinder(memberRepository, oauthRepository);
+        MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, oauthRepository);
+        signInService = new SignInService(kakaoAuthenticator, jwtGenerator,
+                signInLogAppender, memberFinder, memberRegistrar);
     }
 
     @Test

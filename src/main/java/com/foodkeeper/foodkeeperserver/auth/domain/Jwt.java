@@ -1,4 +1,4 @@
-package com.foodkeeper.foodkeeperserver.member.domain;
+package com.foodkeeper.foodkeeperserver.auth.domain;
 
 public record Jwt(String accessToken, String refreshToken) {
 }

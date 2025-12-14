@@ -1,4 +1,4 @@
-package com.foodkeeper.foodkeeperserver.member.domain;
+package com.foodkeeper.foodkeeperserver.auth.domain;
 
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import lombok.Builder;

@@ -1,6 +1,6 @@
-package com.foodkeeper.foodkeeperserver.member.dataaccess.repository;
+package com.foodkeeper.foodkeeperserver.auth.dataaccess.repository;
 
-import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.OauthEntity;
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.OauthEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
