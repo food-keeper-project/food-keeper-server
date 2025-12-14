@@ -12,7 +12,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class FoodCategoryFinder {
+public class FoodCategoryManager {
 
     private final FoodCategoryRepository foodCategoryRepository;
 

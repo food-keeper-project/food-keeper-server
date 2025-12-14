@@ -6,6 +6,7 @@ import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +25,7 @@ public class S3ImageManager implements ImageManager {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+    @Async
     @Override
     public String fileUpload(MultipartFile file) {
         if(file == null || file.isEmpty()){

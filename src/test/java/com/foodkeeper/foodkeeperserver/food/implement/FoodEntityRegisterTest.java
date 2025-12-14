@@ -20,7 +20,7 @@ import static org.mockito.BDDMockito.given;
 public class FoodEntityRegisterTest {
 
     @InjectMocks
-    private FoodRegister foodRegister;
+    private FoodManager foodManager;
 
     @Mock
     private FoodRepository foodRepository;
@@ -34,7 +34,7 @@ public class FoodEntityRegisterTest {
 
         given(foodRepository.save(any(FoodEntity.class))).willReturn(foodEntity);
         //when
-        Food savedFood = foodRegister.register(food);
+        Food savedFood = foodManager.register(food);
         //then
         assertThat(savedFood.name()).isEqualTo(foodEntity.getName());
     }
