@@ -3,6 +3,8 @@ package com.foodkeeper.foodkeeperserver.member.implement;
 import com.foodkeeper.foodkeeperserver.member.domain.KakaoUser;
 import com.foodkeeper.foodkeeperserver.member.domain.OAuthMember;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
+import com.foodkeeper.foodkeeperserver.support.exception.AppException;
+import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -22,6 +24,10 @@ public class KakaoAuthenticator implements OAuthAuthenticator {
                 .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
                 .retrieve()
                 .body(KakaoUser.class);
+
+        if (kakaoUser == null) {
+            throw new AppException(ErrorType.INVALID_OAUTH_USER);
+        }
 
         return OAuthMember.builder()
                 .account(kakaoUser.id().toString())

@@ -2,11 +2,19 @@ package com.foodkeeper.foodkeeperserver.member.dataaccess.entity;
 
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.BaseEntity;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
+import com.foodkeeper.foodkeeperserver.member.domain.NewMember;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.Gender;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.SignUpType;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
+@Getter
 @Entity
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
+@Table(name = "member")
 public class MemberEntity extends BaseEntity {
 
     @Id
@@ -35,17 +43,17 @@ public class MemberEntity extends BaseEntity {
     private SignUpType signUpType;
 
     @Column(nullable = false, length = 20)
-    private String signUpIp;
+    private String signUpIpAddress;
 
-    public static MemberEntity from(Member member) {
+    public static MemberEntity from(NewMember member) {
         MemberEntity memberEntity = new MemberEntity();
-        memberEntity.memberKey = member.memberKey();
+        memberEntity.memberKey = UUID.randomUUID().toString();
         memberEntity.email = member.email();
         memberEntity.nickname = member.nickname();
         memberEntity.imageUrl = member.imageUrl();
-        memberEntity.gender = member.gender();
+        memberEntity.gender = Gender.N;
         memberEntity.signUpType = member.signUpType();
-        memberEntity.signUpIp = member.signUpIp();
+        memberEntity.signUpIpAddress = member.signUpIpAddress();
         return memberEntity;
     }
 
@@ -58,7 +66,7 @@ public class MemberEntity extends BaseEntity {
                 .imageUrl(imageUrl)
                 .gender(gender)
                 .signUpType(signUpType)
-                .signUpIp(signUpIp)
+                .signUpIp(signUpIpAddress)
                 .isDeleted(isDeleted())
                 .build();
     }
