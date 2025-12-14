@@ -7,10 +7,19 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorType {
     DEFAULT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E500, "알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요.", LogLevel.ERROR),
-    NOT_FOUND_DATA(HttpStatus.BAD_REQUEST, ErrorCode.E401, "해당 데이터를 찾을 수 없습니다.", LogLevel.ERROR),
+    REQUIRED_AUTH(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "리소스에 접근하기 위한 인증이 필요합니다.", LogLevel.ERROR),
+    FAILED_AUTH(HttpStatus.BAD_REQUEST, ErrorCode.E400, "인증에 실패했습니다.", LogLevel.ERROR),
+    NOT_FOUND_DATA(HttpStatus.BAD_REQUEST, ErrorCode.E400, "해당 데이터를 찾을 수 없습니다.", LogLevel.ERROR),
 
-    INVALID_MEMBER_KEY(HttpStatus.BAD_REQUEST, ErrorCode.E3000, "멤버 key가 유효하지 않습니다.", LogLevel.ERROR),
-    INVALID_OAUTH_USER(HttpStatus.BAD_REQUEST, ErrorCode.E3001, "존재하지 않는 OAuth 유저입니다.", LogLevel.ERROR);
+    INVALID_OAUTH_USER(HttpStatus.BAD_REQUEST, ErrorCode.E3000, "존재하지 않는 OAuth 유저입니다.", LogLevel.ERROR),
+    MALFORMED_JWT(HttpStatus.BAD_REQUEST, ErrorCode.E3001, "JWT가 손상되었습니다.", LogLevel.ERROR),
+    UNSUPPORTED_JWT(HttpStatus.BAD_REQUEST, ErrorCode.E3002, "지원하지 않는 JWT 형식입니다.", LogLevel.ERROR),
+    EXPIRED_JWT(HttpStatus.BAD_REQUEST, ErrorCode.E3003, "JWT 기한이 만료되었습니다.", LogLevel.ERROR),
+    INVALID_SIGNATURE(HttpStatus.BAD_REQUEST, ErrorCode.E3004, "JWT Signature 검증에 실패했습니다.", LogLevel.ERROR),
+    INVALID_JWT(HttpStatus.BAD_REQUEST, ErrorCode.E3005, "JWT가 유효하지 않습니다.", LogLevel.ERROR),
+    NOT_FOUND_SUBJECT(HttpStatus.BAD_REQUEST, ErrorCode.E3006, "Subject를 찾을 수 없습니다.", LogLevel.ERROR),
+
+    INVALID_MEMBER_KEY(HttpStatus.BAD_REQUEST, ErrorCode.E9000, "멤버 key가 유효하지 않습니다.", LogLevel.ERROR);
 
     private final HttpStatus status;
     private final ErrorCode errorCode;

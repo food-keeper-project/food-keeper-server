@@ -3,13 +3,11 @@ package com.foodkeeper.foodkeeperserver.auth.implement;
 import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
-import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.sql.Date;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -21,7 +19,7 @@ public class JwtGenerator {
     private static final Long ACCESS_TOKEN_VALIDATION_MILLIS = 1000L * 60 * 30;
     private static final Long REFRESH_TOKEN_VALIDATION_MILLIS = 1000L * 60 * 60 * 24 * 30;
 
-    private final Key secretKey;
+    private final SecretKey secretKey;
 
     public Jwt generateJwt(String memberKey) {
         if (memberKey == null || memberKey.isBlank()) {
@@ -31,20 +29,18 @@ public class JwtGenerator {
     }
 
     private String generateAccessToken(String memberKey) {
-        return buildToken(memberKey)
-                .setExpiration(Date.from(Instant.now().plus(ACCESS_TOKEN_VALIDATION_MILLIS, ChronoUnit.MILLIS)))
-                .compact();
+        return buildToken(memberKey, ACCESS_TOKEN_VALIDATION_MILLIS);
     }
 
     private String generateRefreshToken(String memberKey) {
-        return buildToken(memberKey)
-                .setExpiration(Date.from(Instant.now().plus(REFRESH_TOKEN_VALIDATION_MILLIS, ChronoUnit.MILLIS)))
-                .compact();
+        return buildToken(memberKey, REFRESH_TOKEN_VALIDATION_MILLIS);
     }
 
-    private JwtBuilder buildToken(String memberKey) {
+    private String buildToken(String memberKey, long expireMillis) {
         return Jwts.builder()
-                .setSubject(memberKey)
-                .signWith(secretKey, SignatureAlgorithm.HS256);
+                .subject(memberKey)
+                .expiration(Date.from(Instant.now().plus(expireMillis, ChronoUnit.MILLIS)))
+                .signWith(secretKey)
+                .compact();
     }
 }

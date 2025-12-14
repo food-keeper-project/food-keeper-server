@@ -2,6 +2,7 @@ package com.foodkeeper.foodkeeperserver.auth.business;
 
 import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
 import com.foodkeeper.foodkeeperserver.auth.domain.MemberRegister;
+import com.foodkeeper.foodkeeperserver.auth.domain.MemberRole;
 import com.foodkeeper.foodkeeperserver.auth.domain.OAuthMember;
 import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
 import com.foodkeeper.foodkeeperserver.auth.implement.OAuthAuthenticator;
@@ -35,6 +36,7 @@ public class SignInService {
                     .imageUrl(oAuthMember.profileImageUrl())
                     .signUpType(SignUpType.OAUTH)
                     .signUpIpAddress(register.ipAddress())
+                    .memberRole(MemberRole.ROLE_USER)
                     .build();
             memberKey = memberRegistrar.register(newMember, oAuthMember);
         }
