@@ -2,8 +2,8 @@ package com.foodkeeper.foodkeeperserver.member.business;
 
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
+import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.OauthRepository;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
-import com.foodkeeper.foodkeeperserver.member.fixture.MemberEntityFixture;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,16 +16,18 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
 
     @Mock MemberRepository memberRepository;
+    @Mock OauthRepository oauthRepository;
     MemberService memberService;
 
     @BeforeEach
     void setUp() {
-        MemberFinder memberFinder = new MemberFinder(memberRepository);
+        MemberFinder memberFinder = new MemberFinder(memberRepository, oauthRepository);
         memberService = new MemberService(memberFinder);
     }
 
@@ -34,14 +36,16 @@ class MemberServiceTest {
     void findMemberByKey() {
         // given
         String memberKey = "memberKey";
-        MemberEntity memberEntity = MemberEntityFixture.DEFAULT.get();
+        MemberEntity memberEntity = mock(MemberEntity.class);
+        Member member = Member.builder().memberKey(memberKey).build();
         given(memberRepository.findByMemberKey(memberKey)).willReturn(Optional.of(memberEntity));
+        given(memberEntity.toDomain()).willReturn(member);
 
         // when
-        Member member = memberService.findMember(memberKey);
+        Member foundMember = memberService.findMember(memberKey);
 
         // then
-        assertThat(member.memberKey()).isEqualTo("memberKey");
+        assertThat(foundMember.memberKey()).isEqualTo("memberKey");
     }
 
 

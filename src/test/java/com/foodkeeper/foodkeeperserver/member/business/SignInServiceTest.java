@@ -1,0 +1,121 @@
+package com.foodkeeper.foodkeeperserver.member.business;
+
+import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
+import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.OauthEntity;
+import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.SignInLogEntity;
+import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
+import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.OauthRepository;
+import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.SignInLogRepository;
+import com.foodkeeper.foodkeeperserver.member.domain.Jwt;
+import com.foodkeeper.foodkeeperserver.member.domain.MemberRegister;
+import com.foodkeeper.foodkeeperserver.member.domain.OAuthMember;
+import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
+import com.foodkeeper.foodkeeperserver.member.implement.*;
+import io.jsonwebtoken.security.Keys;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+
+@ExtendWith(MockitoExtension.class)
+class SignInServiceTest {
+
+    @Mock MemberRepository memberRepository;
+    @Mock OauthRepository oauthRepository;
+    @Mock KakaoAuthenticator kakaoAuthenticator;
+    @Mock SignInLogRepository signInLogRepository;
+    Key secretKey;
+    SignInService signInService;
+
+    @BeforeEach
+    void setUp() {
+        MemberFinder memberFinder = new MemberFinder(memberRepository, oauthRepository);
+        MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, oauthRepository);
+        secretKey = Keys.hmacShaKeyFor("this_is_a_test_secret_key_abcdefghijtlmnopqr".getBytes(StandardCharsets.UTF_8));
+        JwtGenerator jwtGenerator = new JwtGenerator(secretKey);
+        SignInLogAppender signInLogAppender = new SignInLogAppender(signInLogRepository);
+        signInService = new SignInService(memberFinder, memberRegistrar, kakaoAuthenticator, jwtGenerator,
+                signInLogAppender);
+    }
+
+    @Test
+    @DisplayName("기존 OAuth 회원이면 memberKey를 조회해 JWT를 발급한다.")
+    void issueJwtIfOAuthMemberExist() {
+        // given
+        String account = "account";
+        String accessToken = "accessToken";
+        String memberKey = "memberKey";
+        MemberRegister register = MemberRegister.builder()
+                .accessToken(accessToken)
+                .ipAddress("127.0.0.1")
+                .build();
+        OAuthMember oauthMember = OAuthMember.builder()
+                .account(account)
+                .email("email@test.com")
+                .nickname("nickname")
+                .profileImageUrl("https://test.com/image.jpg")
+                .build();
+        OauthEntity oauthEntity = new OauthEntity(OAuthProvider.KAKAO, account, memberKey);
+        SignInLogEntity signInLogEntity = mock(SignInLogEntity.class);
+        given(kakaoAuthenticator.authenticate(eq(accessToken))).willReturn(oauthMember);
+        given(oauthRepository.existsByAccount(eq(account))).willReturn(true);
+        given(oauthRepository.findByAccount(eq(account))).willReturn(Optional.of(oauthEntity));
+        given(signInLogRepository.save(any(SignInLogEntity.class))).willReturn(signInLogEntity);
+
+        // when
+        Jwt jwt = signInService.signInByOAuth(register);
+
+        // then
+        assertThat(jwt.accessToken()).isNotBlank();
+        assertThat(jwt.refreshToken()).isNotBlank();
+        assertThat(jwt.accessToken()).isNotEqualTo(jwt.refreshToken());
+    }
+
+    @Test
+    @DisplayName("신규 OAuth 회원이면 회원가입 후 JWT를 발급한다.")
+    void issueJwtIfOAuthMemberNotExistAfterRegister() {
+        // given
+        String account = "account";
+        String accessToken = "accessToken";
+        String memberKey = "memberKey";
+        MemberRegister register = MemberRegister.builder()
+                .accessToken(accessToken)
+                .ipAddress("127.0.0.1")
+                .build();
+        OAuthMember oauthMember = OAuthMember.builder()
+                .account(account)
+                .email("email@test.com")
+                .nickname("nickname")
+                .profileImageUrl("https://test.com/image.jpg")
+                .build();
+        OauthEntity oauthEntity = new OauthEntity(OAuthProvider.KAKAO, account, memberKey);
+        MemberEntity memberEntity = mock(MemberEntity.class);
+        SignInLogEntity signInLogEntity = mock(SignInLogEntity.class);
+        given(memberEntity.getMemberKey()).willReturn(memberKey);
+        given(kakaoAuthenticator.authenticate(eq(accessToken))).willReturn(oauthMember);
+        given(oauthRepository.existsByAccount(eq(account))).willReturn(false);
+        given(memberRepository.save(any(MemberEntity.class))).willReturn(memberEntity);
+        given(oauthRepository.save(any(OauthEntity.class))).willReturn(oauthEntity);
+        given(signInLogRepository.save(any(SignInLogEntity.class))).willReturn(signInLogEntity);
+
+        // when
+        Jwt jwt = signInService.signInByOAuth(register);
+
+        // then
+        assertThat(jwt.accessToken()).isNotBlank();
+        assertThat(jwt.refreshToken()).isNotBlank();
+        assertThat(jwt.accessToken()).isNotEqualTo(jwt.refreshToken());
+    }
+}
