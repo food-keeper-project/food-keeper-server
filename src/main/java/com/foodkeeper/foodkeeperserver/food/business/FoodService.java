@@ -1,11 +1,13 @@
 package com.foodkeeper.foodkeeperserver.food.business;
 
+import com.foodkeeper.foodkeeperserver.food.business.request.FoodRegisterDto;
+import com.foodkeeper.foodkeeperserver.food.domain.Food;
+import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
+import com.foodkeeper.foodkeeperserver.food.domain.SelectedFoodCategory;
 import com.foodkeeper.foodkeeperserver.food.implement.ImageManager;
-import com.foodkeeper.foodkeeperserver.food.dto.request.FoodRegisterRequest;
-import com.foodkeeper.foodkeeperserver.food.entity.Food;
-import com.foodkeeper.foodkeeperserver.food.entity.FoodCategory;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodCategoryFinder;
-import com.foodkeeper.foodkeeperserver.food.implement.FoodCreator;
+import com.foodkeeper.foodkeeperserver.food.implement.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.implement.SelectedFoodCategoryCreator;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
@@ -21,24 +23,22 @@ import java.util.List;
 public class FoodService {
 
     private final ImageManager imageManager;
-    private final FoodCreator foodCreator;
+    private final FoodRegister foodRegister;
     private final FoodCategoryFinder foodCategoryFinder;
     private final SelectedFoodCategoryCreator selectedFoodCategoryCreator;
 
     @Transactional
-    public Long registerFood(FoodRegisterRequest request, MultipartFile file, String memberId) {
-
-
+    public Long registerFood(FoodRegisterDto dto, MultipartFile file, String memberId) {
         String imageUrl = imageManager.fileUpload(file);
+        Food food = dto.toDomain(imageUrl,memberId);
         try {
-            Food food = FoodRegisterRequest.toEntity(request, imageUrl, memberId);
-            Food savedFood = foodCreator.save(food);
-
+            Food saveFood = foodRegister.register(food);
             //todo 카테고리 선택 방식에 따라 인자값 수정
-            List<FoodCategory> foodCategories = foodCategoryFinder.findAll(request.categoryIds());
-            foodCategories.forEach(category -> selectedFoodCategoryCreator.save(savedFood.getId(), category.getId()));
-            return savedFood.getId();
-        } catch (RuntimeException e) {
+            List<FoodCategory> foodCategories = foodCategoryFinder.findAll(dto.categoryIds());
+            foodCategories.forEach(category ->
+                    selectedFoodCategoryCreator.save(SelectedFoodCategory.create(food.id(), category.id())));
+            return saveFood.id();
+        } catch (RuntimeException e) { // DB 롤백 시 사진 삭제
             imageManager.deleteFile(imageUrl);
             throw new AppException(ErrorType.DEFAULT_ERROR, e);
         }

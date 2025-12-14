@@ -1,8 +1,8 @@
 package com.foodkeeper.foodkeeperserver.food.implement;
 
-import com.foodkeeper.foodkeeperserver.food.entity.SelectedFoodCategory;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.SelectedFoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.fixture.SelectedFoodCategoryFixture;
-import com.foodkeeper.foodkeeperserver.food.repository.SelectedFoodCategoryRepository;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.SelectedFoodCategoryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
-public class SelectedFoodCategoryCreatorTest {
+public class SelectedFoodEntityCategoryCreatorTest {
 
     @InjectMocks
     private SelectedFoodCategoryCreator selectedFoodCategoryCreator;
@@ -28,10 +28,10 @@ public class SelectedFoodCategoryCreatorTest {
     @DisplayName("카테고리 생성 시 리포지토리 호출 및 결과 반환")
     void save_SUCCESS() throws Exception {
         //given
-        SelectedFoodCategory selectedCategory = SelectedFoodCategoryFixture.createSelectedFoodCategory(1L,1L,1L);
-        SelectedFoodCategory savedSelectedCategory = SelectedFoodCategoryFixture.createSelectedFoodCategory(1L,1L,1L);
+        SelectedFoodCategoryEntity selectedCategory = SelectedFoodCategoryFixture.createSelectedFoodCategory(1L,1L,1L);
+        SelectedFoodCategoryEntity savedSelectedCategory = SelectedFoodCategoryFixture.createSelectedFoodCategory(1L,1L,1L);
 
-        given(selectedFoodCategoryRepository.save(any(SelectedFoodCategory.class))).willReturn(savedSelectedCategory);
+        given(selectedFoodCategoryRepository.save(any(SelectedFoodCategoryEntity.class))).willReturn(savedSelectedCategory);
         //when
         Long resultId = selectedFoodCategoryCreator.save(1L,1L);
         //then

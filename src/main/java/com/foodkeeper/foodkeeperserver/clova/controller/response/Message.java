@@ -1,4 +1,4 @@
-package com.foodkeeper.foodkeeperserver.clova.dto.response;
+package com.foodkeeper.foodkeeperserver.clova.controller.response;
 
 import com.foodkeeper.foodkeeperserver.clova.domain.Role;
 

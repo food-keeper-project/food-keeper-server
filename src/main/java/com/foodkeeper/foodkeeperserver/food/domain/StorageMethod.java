@@ -1,4 +1,4 @@
-package com.foodkeeper.foodkeeperserver.food.entity;
+package com.foodkeeper.foodkeeperserver.food.domain;
 
 public enum StorageMethod {
     REFRIGERATED, // 냉장

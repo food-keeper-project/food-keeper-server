@@ -1,13 +1,14 @@
-package com.foodkeeper.foodkeeperserver.food.entity;
+package com.foodkeeper.foodkeeperserver.food.dataaccess.entity;
 
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.BaseEntity;
+import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FoodCategory extends BaseEntity {
+public class FoodCategoryEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,15 +22,16 @@ public class FoodCategory extends BaseEntity {
     private String memberId;
 
     @Builder
-    private FoodCategory(String name, String memberId){
+    private FoodCategoryEntity(String name, String memberId){
         this.name = name;
         this.memberId = memberId;
     }
 
-    public static FoodCategory create(String name, String memberId){
-        return FoodCategory.builder()
-                .name(name)
-                .memberId(memberId)
-                .build();
+    public FoodCategory toDomain(){
+        return new FoodCategory(
+                this.id,
+                this.name,
+                this.memberId
+        );
     }
 }

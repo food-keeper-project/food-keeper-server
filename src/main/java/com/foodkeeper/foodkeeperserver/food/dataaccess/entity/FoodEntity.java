@@ -1,8 +1,10 @@
-package com.foodkeeper.foodkeeperserver.food.entity;
+package com.foodkeeper.foodkeeperserver.food.dataaccess.entity;
 
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.BaseEntity;
 
 
+import com.foodkeeper.foodkeeperserver.food.domain.Food;
+import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
 import jakarta.persistence.*;
 
 import lombok.AccessLevel;
@@ -16,7 +18,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Food extends BaseEntity {
+public class FoodEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,13 +48,13 @@ public class Food extends BaseEntity {
     private String memberId;
 
     @Builder
-    private Food(String name,
-                 String imageUrl,
-                 StorageMethod storageMethod,
-                 LocalDate expiryDate,
-                 String memo,
-                 int selectedCategoryCount,
-                 String memberId) {
+    private FoodEntity(String name,
+                       String imageUrl,
+                       StorageMethod storageMethod,
+                       LocalDate expiryDate,
+                       String memo,
+                       int selectedCategoryCount,
+                       String memberId) {
         this.name = name;
         this.imageUrl = (imageUrl != null) ? imageUrl : "";
         this.storageMethod = storageMethod;
@@ -60,5 +62,29 @@ public class Food extends BaseEntity {
         this.memo = (memo != null) ? memo : "";
         this.selectedCategoryCount = selectedCategoryCount;
         this.memberId = memberId;
+    }
+
+    public static FoodEntity from(Food food){
+        return FoodEntity.builder()
+                .name(food.name())
+                .imageUrl(food.imageUrl())
+                .storageMethod(food.storageMethod())
+                .expiryDate(food.expiryDate())
+                .memo(food.memo())
+                .selectedCategoryCount(food.selectedCategoryCount())
+                .memberId(food.memberId())
+                .build();
+    }
+    public Food toDomain(){
+        return new Food(
+                this.id,
+                this.name,
+                this.imageUrl,
+                this.storageMethod,
+                this.expiryDate,
+                this.memo,
+                this.selectedCategoryCount,
+                this.memberId
+        );
     }
 }
