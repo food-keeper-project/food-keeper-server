@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-@Table(name = "sign_in")
-public class SignInEntity extends BaseEntity {
+@Table(name = "sign_in_log")
+public class SignInLogEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "sign_in_id")
+    @Column(name = "sign_in_log_id")
     private Long id;
 
     @Column(nullable = false, length = 20)
@@ -22,7 +22,7 @@ public class SignInEntity extends BaseEntity {
     @Column(nullable = false)
     private String memberKey;
 
-    public SignInEntity(String ipAddress, String memberKey) {
+    public SignInLogEntity(String ipAddress, String memberKey) {
         this.ipAddress = ipAddress;
         this.memberKey = memberKey;
     }
