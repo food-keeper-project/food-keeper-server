@@ -1,8 +1,9 @@
 package com.foodkeeper.foodkeeperserver.food.implement;
 
-import com.foodkeeper.foodkeeperserver.food.entity.Food;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
+import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
-import com.foodkeeper.foodkeeperserver.food.repository.FoodRepository;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,25 +17,25 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
-public class FoodCreatorTest {
+public class FoodEntityRegisterTest {
 
     @InjectMocks
-    private FoodCreator foodCreator;
+    private FoodRegister foodRegister;
 
     @Mock
     private FoodRepository foodRepository;
 
     @Test
     @DisplayName("식재료 저장 요청 시 리포지토리 호출 및 결과 반환")
-    void save_SUCCESS() throws Exception {
+    void register_SUCCESS() throws Exception {
         //given
-        Food food = FoodFixture.createFood(1L);
-        Food savedFood = FoodFixture.createFood(1L);
+        Food food = FoodFixture.createFood();
+        FoodEntity foodEntity = FoodFixture.createFoodEntity();
 
-        given(foodRepository.save(any(Food.class))).willReturn(savedFood);
+        given(foodRepository.save(any(FoodEntity.class))).willReturn(foodEntity);
         //when
-        Food resultFood = foodCreator.save(food);
+        Food savedFood = foodRegister.register(food);
         //then
-        assertThat(resultFood).isEqualTo(savedFood);
+        assertThat(savedFood.name()).isEqualTo(foodEntity.getName());
     }
 }

@@ -32,12 +32,12 @@ public class FoodService {
         String imageUrl = imageManager.fileUpload(file);
         Food food = dto.toDomain(imageUrl,memberId);
         try {
-            Food saveFood = foodRegister.register(food);
-            //todo 카테고리 선택 방식에 따라 인자값 수정
+            Food savedFood = foodRegister.register(food);
+            //todo 카테고리 선택 방식에 따라 인자값 수정, 카테고리 선택 시에 매번 모두 조회?
             List<FoodCategory> foodCategories = foodCategoryFinder.findAll(dto.categoryIds());
             foodCategories.forEach(category ->
-                    selectedFoodCategoryCreator.save(SelectedFoodCategory.create(food.id(), category.id())));
-            return saveFood.id();
+                    selectedFoodCategoryCreator.save(SelectedFoodCategory.create(savedFood.id(), category.id())));
+            return savedFood.id();
         } catch (RuntimeException e) { // DB 롤백 시 사진 삭제
             imageManager.deleteFile(imageUrl);
             throw new AppException(ErrorType.DEFAULT_ERROR, e);

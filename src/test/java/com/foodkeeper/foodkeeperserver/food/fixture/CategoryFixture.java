@@ -1,21 +1,37 @@
 package com.foodkeeper.foodkeeperserver.food.fixture;
 
+
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
+import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
 public class CategoryFixture {
 
-    // 카테고리 Mock 객체
-    public static List<FoodCategoryEntity> createCategory(List<Long> ids) {
+    public static final String MEMBER_ID = "memberId";
+
+    public static List<FoodCategory> createCategory(List<Long> ids) {
         return ids.stream()
-                .map(id -> {
-                    FoodCategoryEntity foodCategoryEntity = FoodCategoryEntity.create("카테고리" +id,"memberId");
-                    ReflectionTestUtils.setField(foodCategoryEntity,"id",id);
-                    return foodCategoryEntity;
-                })
+                .map(CategoryFixture::createCategory)
                 .toList();
     }
 
+    public static List<FoodCategoryEntity> createCategoryEntity(List<Long> ids) {
+        return ids.stream()
+                .map(CategoryFixture::createCategoryEntity)
+                .toList();
+    }
+
+    // 단일 도메인 생성
+    public static FoodCategory createCategory(Long id) {
+        return new FoodCategory(id, "카테고리" + id, MEMBER_ID);
+    }
+
+    // 단일 엔티티 생성
+    public static FoodCategoryEntity createCategoryEntity(Long id) {
+        FoodCategoryEntity foodCategoryEntity = FoodCategoryEntity.from(createCategory(id));
+        ReflectionTestUtils.setField(foodCategoryEntity,"id",id);
+        return foodCategoryEntity;
+    }
 }

@@ -16,5 +16,5 @@ public record Food(
         String memo,
         Integer selectedCategoryCount,
         String memberId
-        ) {
+) {
 }

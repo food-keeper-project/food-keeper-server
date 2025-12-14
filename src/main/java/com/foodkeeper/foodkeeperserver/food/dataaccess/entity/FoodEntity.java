@@ -25,10 +25,10 @@ public class FoodEntity extends BaseEntity {
     @Column(name = "food_id")
     private Long id;
 
-    @Column(name = "name",nullable = false, length = 50)
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @Column(name = "image_url",nullable = false)
+    @Column(name = "image_url", nullable = false)
     private String imageUrl;
 
     @Enumerated(EnumType.STRING)
@@ -38,7 +38,7 @@ public class FoodEntity extends BaseEntity {
     @Column(name = "expiry_date", nullable = false)
     private LocalDate expiryDate;
 
-    @Column(name = "memo",nullable = false)
+    @Column(name = "memo", nullable = false)
     private String memo;
 
     @Column(name = "selected_category_count", nullable = false)
@@ -48,13 +48,14 @@ public class FoodEntity extends BaseEntity {
     private String memberId;
 
     @Builder
-    private FoodEntity(String name,
-                       String imageUrl,
-                       StorageMethod storageMethod,
-                       LocalDate expiryDate,
-                       String memo,
-                       int selectedCategoryCount,
-                       String memberId) {
+    private FoodEntity(
+            String name,
+            String imageUrl,
+            StorageMethod storageMethod,
+            LocalDate expiryDate,
+            String memo,
+            int selectedCategoryCount,
+            String memberId) {
         this.name = name;
         this.imageUrl = (imageUrl != null) ? imageUrl : "";
         this.storageMethod = storageMethod;
@@ -64,7 +65,7 @@ public class FoodEntity extends BaseEntity {
         this.memberId = memberId;
     }
 
-    public static FoodEntity from(Food food){
+    public static FoodEntity from(Food food) {
         return FoodEntity.builder()
                 .name(food.name())
                 .imageUrl(food.imageUrl())
@@ -75,7 +76,8 @@ public class FoodEntity extends BaseEntity {
                 .memberId(food.memberId())
                 .build();
     }
-    public Food toDomain(){
+
+    public Food toDomain() {
         return new Food(
                 this.id,
                 this.name,

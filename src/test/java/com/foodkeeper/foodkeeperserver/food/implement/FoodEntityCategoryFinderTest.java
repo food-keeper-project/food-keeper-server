@@ -1,6 +1,7 @@
 package com.foodkeeper.foodkeeperserver.food.implement;
 
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
+import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
 import com.foodkeeper.foodkeeperserver.food.fixture.CategoryFixture;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodCategoryRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -29,13 +30,19 @@ public class FoodEntityCategoryFinderTest {
     void findFoodCategories_SUCCESS() throws Exception {
         //given
         List<Long> categoryIds = List.of(1L,2L);
-        List<FoodCategoryEntity> foodCategories = CategoryFixture.createCategory(categoryIds);
+        List<FoodCategoryEntity> foodCategoryEntities = CategoryFixture.createCategoryEntity(categoryIds);
 
-        given(foodCategoryRepository.findAllById(categoryIds)).willReturn(foodCategories);
+        given(foodCategoryRepository.findAllById(categoryIds)).willReturn(foodCategoryEntities);
         //when
-        List<FoodCategoryEntity> foodCategoryEntityList = foodCategoryFinder.findAll(categoryIds);
+        List<FoodCategory> foodCategoryList = foodCategoryFinder.findAll(categoryIds);
         //then
-        assertThat(foodCategoryEntityList).isEqualTo(foodCategories);
+        List<FoodCategory> expectedDomains = foodCategoryEntities.stream()
+                .map(FoodCategoryEntity::toDomain)
+                .toList();
+
+        assertThat(foodCategoryList)
+                .usingRecursiveComparison()
+                .isEqualTo(expectedDomains);
 
     }
 }

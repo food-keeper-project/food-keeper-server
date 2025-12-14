@@ -34,4 +34,11 @@ public class FoodCategoryEntity extends BaseEntity {
                 this.memberId
         );
     }
+
+    public static FoodCategoryEntity from(FoodCategory foodCategory){
+        return FoodCategoryEntity.builder()
+                .name(foodCategory.name())
+                .memberId(foodCategory.memberId())
+                .build();
+    }
 }

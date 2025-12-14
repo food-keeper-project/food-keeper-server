@@ -12,8 +12,8 @@ public class SelectedFoodCategoryCreator {
 
     private final SelectedFoodCategoryRepository selectedFoodCategoryRepository;
 
-    public Long save(SelectedFoodCategory selectedFoodCategory) {
+    public void save(SelectedFoodCategory selectedFoodCategory) {
         SelectedFoodCategoryEntity selectedFoodCategoryEntity = SelectedFoodCategoryEntity.from(selectedFoodCategory);
-        return selectedFoodCategoryRepository.save(selectedFoodCategoryEntity).getId();
+        selectedFoodCategoryRepository.save(selectedFoodCategoryEntity);
     }
 }
