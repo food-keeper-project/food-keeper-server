@@ -13,15 +13,16 @@ public class SwaggerConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
+        String securitySchemeName = "bearerAuth";
         SecurityScheme scheme = new SecurityScheme()
                 .type(SecurityScheme.Type.HTTP)
                 .scheme("bearer")
                 .bearerFormat("JWT");
-        SecurityRequirement requirement = new SecurityRequirement().addList("JWT");
+        SecurityRequirement requirement = new SecurityRequirement().addList(securitySchemeName);
 
         return new OpenAPI()
                 .info(openApiInfo())
-                .components(new Components().addSecuritySchemes("Bearer", scheme))
+                .components(new Components().addSecuritySchemes(securitySchemeName, scheme))
                 .addSecurityItem(requirement);
     }
 
