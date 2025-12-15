@@ -3,7 +3,9 @@ package com.foodkeeper.foodkeeperserver.member.domain;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.Gender;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.SignUpType;
 import lombok.Builder;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 @Builder
 public record Member(
         Long id,
@@ -15,5 +17,4 @@ public record Member(
         SignUpType signUpType,
         String signUpIp,
         Boolean isDeleted
-) {
-}
+) {}

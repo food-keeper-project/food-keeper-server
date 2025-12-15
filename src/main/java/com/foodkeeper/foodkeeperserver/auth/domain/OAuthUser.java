@@ -1,6 +1,7 @@
 package com.foodkeeper.foodkeeperserver.auth.domain;
 
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -22,6 +23,7 @@ public record OAuthUser(Member member,
     }
 
     @Override
+    @NullMarked
     public String getName() {
         return member.memberKey();
     }
