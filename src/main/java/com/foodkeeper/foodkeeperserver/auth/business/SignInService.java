@@ -9,10 +9,10 @@ import com.foodkeeper.foodkeeperserver.auth.implement.OAuthAuthenticator;
 import com.foodkeeper.foodkeeperserver.auth.implement.SignInLogAppender;
 import com.foodkeeper.foodkeeperserver.member.domain.NewMember;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.SignUpType;
-import com.foodkeeper.foodkeeperserver.member.implement.*;
+import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
+import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
