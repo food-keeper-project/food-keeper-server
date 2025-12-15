@@ -8,6 +8,7 @@ import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
     private final MemberService memberService;
 
+    @NullMarked
     @Operation(summary = "프로필 조회", description = "프로필 조회 API")
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<ProfileResponse>> getProfile(@AuthMember Member authMember) {

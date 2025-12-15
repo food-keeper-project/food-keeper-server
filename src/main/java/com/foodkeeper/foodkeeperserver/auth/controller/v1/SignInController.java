@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +28,7 @@ public class SignInController {
     private final SignInService signinService;
 
     @Operation(summary = "카카오 로그인", description = "카카오 로그인 API")
+    @NullMarked
     @PostMapping("/kakao")
     public ResponseEntity<ApiResponse<AuthTokenResponse>> signInWithKakao(
             @Valid @RequestBody SignInRequest signInRequest, HttpServletRequest request) {
