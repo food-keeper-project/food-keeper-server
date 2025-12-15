@@ -1,6 +1,6 @@
 package com.foodkeeper.foodkeeperserver.auth.dataaccess.entity;
 
-import com.foodkeeper.foodkeeperserver.auth.domain.MemberRole;
+import com.foodkeeper.foodkeeperserver.auth.domain.enums.MemberRole;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

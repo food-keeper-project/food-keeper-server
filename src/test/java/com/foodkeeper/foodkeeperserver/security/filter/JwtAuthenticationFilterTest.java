@@ -4,7 +4,7 @@ import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.MemberRoleEntity;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.MemberRoleRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
 import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
-import com.foodkeeper.foodkeeperserver.auth.domain.MemberRole;
+import com.foodkeeper.foodkeeperserver.auth.domain.enums.MemberRole;
 import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
 import com.foodkeeper.foodkeeperserver.auth.implement.MemberRoleFinder;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;

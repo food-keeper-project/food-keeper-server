@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.auth.domain;
 
+import com.foodkeeper.foodkeeperserver.auth.domain.enums.MemberRole;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.List;

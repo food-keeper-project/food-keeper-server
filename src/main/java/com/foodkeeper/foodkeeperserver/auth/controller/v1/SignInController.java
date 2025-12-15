@@ -4,7 +4,7 @@ import com.foodkeeper.foodkeeperserver.auth.business.SignInService;
 import com.foodkeeper.foodkeeperserver.auth.controller.v1.request.SignInRequest;
 import com.foodkeeper.foodkeeperserver.auth.controller.v1.response.AuthTokenResponse;
 import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
-import com.foodkeeper.foodkeeperserver.auth.domain.MemberRegister;
+import com.foodkeeper.foodkeeperserver.auth.domain.SignInContext;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,7 +32,7 @@ public class SignInController {
     @PostMapping("/kakao")
     public ResponseEntity<ApiResponse<AuthTokenResponse>> signInWithKakao(
             @Valid @RequestBody SignInRequest signInRequest, HttpServletRequest request) {
-        MemberRegister register = MemberRegister.builder()
+        SignInContext register = SignInContext.builder()
                 .accessToken(signInRequest.accessToken())
                 .oAuthProvider(OAuthProvider.KAKAO)
                 .fcmToken(signInRequest.fcmToken())

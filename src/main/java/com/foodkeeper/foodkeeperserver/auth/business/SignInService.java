@@ -1,6 +1,7 @@
 package com.foodkeeper.foodkeeperserver.auth.business;
 
 import com.foodkeeper.foodkeeperserver.auth.domain.*;
+import com.foodkeeper.foodkeeperserver.auth.domain.enums.MemberRole;
 import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
 import com.foodkeeper.foodkeeperserver.auth.implement.OAuthAuthenticator;
 import com.foodkeeper.foodkeeperserver.auth.implement.SignInLogAppender;
@@ -22,8 +23,8 @@ public class SignInService {
     private final MemberFinder memberFinder;
     private final MemberRegistrar memberRegistrar;
 
-    public Jwt signInByOAuth(MemberRegister register) {
-        OAuthMember oAuthMember = oauthAuthenticator.authenticate(register.accessToken());
+    public Jwt signInByOAuth(SignInContext context) {
+        OAuthMember oAuthMember = oauthAuthenticator.authenticate(context.accessToken());
 
         String memberKey;
         if (memberFinder.existsByOauthAccount(oAuthMember.account())) {
@@ -34,13 +35,13 @@ public class SignInService {
                     .nickname(oAuthMember.nickname())
                     .imageUrl(oAuthMember.profileImageUrl())
                     .signUpType(SignUpType.OAUTH)
-                    .signUpIpAddress(register.ipAddress())
+                    .signUpIpAddress(context.ipAddress())
                     .memberRoles(new MemberRoles(List.of(MemberRole.ROLE_USER)))
                     .build();
             memberKey = memberRegistrar.register(newMember, oAuthMember);
         }
 
-        signInLogAppender.append(register.ipAddress(), memberKey);
+        signInLogAppender.append(context.ipAddress(), memberKey);
 
         return jwtGenerator.generateJwt(memberKey);
     }

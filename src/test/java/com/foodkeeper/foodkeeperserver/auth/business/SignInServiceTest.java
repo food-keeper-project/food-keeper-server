@@ -11,7 +11,7 @@ import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberReposi
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.SignInLogRepository;
 import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
-import com.foodkeeper.foodkeeperserver.auth.domain.MemberRegister;
+import com.foodkeeper.foodkeeperserver.auth.domain.SignInContext;
 import com.foodkeeper.foodkeeperserver.auth.domain.OAuthMember;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.member.implement.*;
@@ -25,7 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,7 +62,7 @@ class SignInServiceTest {
         String account = "account";
         String accessToken = "accessToken";
         String memberKey = "memberKey";
-        MemberRegister register = MemberRegister.builder()
+        SignInContext register = SignInContext.builder()
                 .accessToken(accessToken)
                 .ipAddress("127.0.0.1")
                 .build();
@@ -96,7 +95,7 @@ class SignInServiceTest {
         String account = "account";
         String accessToken = "accessToken";
         String memberKey = "memberKey";
-        MemberRegister register = MemberRegister.builder()
+        SignInContext register = SignInContext.builder()
                 .accessToken(accessToken)
                 .ipAddress("127.0.0.1")
                 .build();

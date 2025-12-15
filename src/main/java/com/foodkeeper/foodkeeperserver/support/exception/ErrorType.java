@@ -19,6 +19,8 @@ public enum ErrorType {
     INVALID_SIGNATURE(HttpStatus.BAD_REQUEST, ErrorCode.E3004, "JWT Signature 검증에 실패했습니다.", LogLevel.ERROR),
     INVALID_JWT(HttpStatus.BAD_REQUEST, ErrorCode.E3005, "JWT가 유효하지 않습니다.", LogLevel.ERROR),
     NOT_FOUND_SUBJECT(HttpStatus.BAD_REQUEST, ErrorCode.E3006, "Subject를 찾을 수 없습니다.", LogLevel.ERROR),
+    OAUTH_ACCESS_TOKEN_IS_NULL(HttpStatus.BAD_REQUEST, ErrorCode.E3007, "OAuth 엑세스 토큰은 null일 수 없습니다.", LogLevel.ERROR),
+    FCM_TOKEN_IS_NULL(HttpStatus.BAD_REQUEST, ErrorCode.E3008, "FCM 토큰은 null일 수 없습니다.", LogLevel.ERROR),
 
     INVALID_MEMBER_KEY(HttpStatus.BAD_REQUEST, ErrorCode.E9000, "멤버 key가 유효하지 않습니다.", LogLevel.ERROR),
     INVALID_NICKNAME_LENGTH(HttpStatus.BAD_REQUEST, ErrorCode.E9001, "멤버 닉네임은 20자를 넘을 수 없습니다.", LogLevel.ERROR),

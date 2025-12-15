@@ -23,7 +23,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @ExtendWith(MockitoExtension.class)
-class KakaoAuthenticatorTest {
+class KakaoSignInContextTest {
 
     MockRestServiceServer mockServer;
     KakaoAuthenticator kakaoAuthenticator;
