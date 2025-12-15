@@ -4,7 +4,6 @@ import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +23,7 @@ class JwtValidatorTest {
 
     @Test
     @DisplayName("토큰이 만료되면 AppException이 발생한다.")
-    void throwAppExceptionExceptionIfTokenIsExpired() throws Exception {
+    void throwAppExceptionExceptionIfTokenIsExpired() {
         String memberKey = "memberKey";
         String token =
                 Jwts.builder()
@@ -41,7 +40,7 @@ class JwtValidatorTest {
 
     @Test
     @DisplayName("JWT가 손상되면 AppException이 발생한다.")
-    void throwAppExceptionIfTokenIsMalformed() throws Exception {
+    void throwAppExceptionIfTokenIsMalformed() {
         String memberKey = "memberKey";
         String token =
                 Jwts.builder()
@@ -59,7 +58,7 @@ class JwtValidatorTest {
 
     @Test
     @DisplayName("Signature가 맞지 않으면 AppException이 발생한다.")
-    void throwAppExceptionIfSignatureIsInvalid() throws Exception {
+    void throwAppExceptionIfSignatureIsInvalid() {
         String signature = "1signaturesignaturesignaturesignaturesignaturesignature";
         SecretKey invalidSecretKey = Keys.hmacShaKeyFor(signature.getBytes(StandardCharsets.UTF_8));
         String memberKey = "memberKey";
@@ -78,7 +77,7 @@ class JwtValidatorTest {
 
     @Test
     @DisplayName("지원하지 않는 JWT 형태이면 AppException이 발생한다.")
-    void throwAppExceptionExceptionIfJwtIsUnsupported() throws Exception {
+    void throwAppExceptionExceptionIfJwtIsUnsupported() {
         String memberKey = "memberKey";
         String token =
                 Jwts.builder()
@@ -94,7 +93,7 @@ class JwtValidatorTest {
 
     @Test
     @DisplayName("JWT 검증에 성공하면 subject를 반환한다.")
-    void getMemberIdIfJwtIsInvalid() throws Exception {
+    void getMemberIdIfJwtIsInvalid() {
         String memberKey = "memberKey";
         String token =
                 Jwts.builder()

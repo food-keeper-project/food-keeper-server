@@ -9,13 +9,11 @@ import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
 import com.foodkeeper.foodkeeperserver.auth.implement.MemberRoleFinder;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
-import com.foodkeeper.foodkeeperserver.member.domain.Member;
 import com.foodkeeper.foodkeeperserver.member.fixture.MemberEntityFixture;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
 import com.foodkeeper.foodkeeperserver.security.jwt.JwtValidator;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
-import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -113,7 +111,7 @@ class JwtAuthenticationFilterTest {
 
     @Test
     @DisplayName("헤더에 Token이 유효하지 않으면 인증에 실패한다.")
-    void notAuthenticatedIfTokenIsInvalid() throws Exception {
+    void notAuthenticatedIfTokenIsInvalid() {
         MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
         MockHttpServletResponse httpServletResponse = new MockHttpServletResponse();
         FilterChain mockFilterChain = mock(FilterChain.class);
