@@ -2,6 +2,7 @@ package com.foodkeeper.foodkeeperserver.food.business;
 
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodListResponse;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.MyFoodResponse;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.SelectedFoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
@@ -19,6 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +37,7 @@ public class FoodService {
     @Transactional
     public Long registerFood(FoodRegister dto, MultipartFile file, String memberId) {
         String imageUrl = imageManager.fileUpload(file); // 비동기 업로드
-        Food food = dto.toDomain(imageUrl,memberId);
+        Food food = dto.toDomain(imageUrl, memberId);
         try {
             Food savedFood = foodManager.register(food);
             //todo 카테고리 선택 방식에 따라 인자값 수정, 카테고리 선택 시에 매번 모두 조회?
@@ -46,19 +51,45 @@ public class FoodService {
         }
     }
 
+    // 커서 리스트 조회
     @Transactional(readOnly = true)
-    public FoodListResponse getFoodList(FoodCursorFinder finder, String memberId) {
-        List<Food> foods = foodManager.findFoodList(finder,memberId);
+    public FoodListResponse getFoodList(FoodCursorFinder finder) {
+        List<Food> foods = foodManager.findFoodList(finder);
 
         boolean hasNext = false;
-        if(foods.size() > finder.limit()) {
+        if (foods.size() > finder.limit()) {
             hasNext = true;
-            foods.remove(finder.limit().intValue()); // 가져온 다음 페이지 제거
+            foods.remove(finder.limit().intValue()); // 가져온 확인용 다음 페이지 제거
         }
+        // 식재료 카테고리Id 값들 조회
+        List<Long> foodIds = foods.stream().map(Food::id).toList();
+        List<SelectedFoodCategory> mappings = selectedFoodCategoryManager.findByFoodIds(foodIds);
+
+        // key : foodId, value : List<CategoryId>
+        Map<Long, List<Long>> categoryMap = mappings.stream()
+                .collect(Collectors.groupingBy(
+                        SelectedFoodCategory::foodId,
+                        Collectors.mapping(SelectedFoodCategory::foodCategoryId, Collectors.toList())
+                ));
+
+        // 응답 객체 변환
         List<MyFoodResponse> foodResponses = foods.stream()
-                .map(MyFoodResponse::toFoodResponse)
+                .map(food -> {
+                    List<Long> categoryIds = categoryMap.getOrDefault(food.id(), List.of());
+                    return MyFoodResponse.toFoodResponse(food, categoryIds);
+                })
                 .toList();
-        return new FoodListResponse(foodResponses,hasNext);
+        return new FoodListResponse(foodResponses, hasNext);
     }
 
+    // 단일 조회
+    @Transactional(readOnly = true)
+    public MyFoodResponse getFood(Long id, String memberId) {
+        Food food = foodManager.findFood(id, memberId);
+        List<SelectedFoodCategory> mappings = selectedFoodCategoryManager.findByFoodId(id);
+        List<Long> categoryIds = mappings.stream()
+                .map(SelectedFoodCategory::foodCategoryId)
+                .toList();
+        return MyFoodResponse.toFoodResponse(food,categoryIds);
+    }
 }

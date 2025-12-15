@@ -1,16 +1,16 @@
 package com.foodkeeper.foodkeeperserver.food.business;
 
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodCategoryRepository;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.SelectedFoodCategoryRepository;
-import com.foodkeeper.foodkeeperserver.food.implement.ImageManager;
-import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
-import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.fixture.CategoryFixture;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodCategoryManager;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
+import com.foodkeeper.foodkeeperserver.food.implement.ImageManager;
 import com.foodkeeper.foodkeeperserver.food.implement.SelectedFoodCategoryManager;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
@@ -29,12 +29,12 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class FoodEntityServiceTest {
+public class FoodServiceTest {
 
     @InjectMocks
     FoodService foodService;
@@ -69,12 +69,12 @@ public class FoodEntityServiceTest {
     @DisplayName("식제품 추가 기능 구현 성공")
     void registerFood_SUCCESS() throws Exception {
         // given
-        String memberId = "memberId";
+        String memberId = FoodFixture.MEMBER_ID;
         MultipartFile mockFile = new MockMultipartFile("image", "test.jpg", "image/jpeg", "data".getBytes());
         List<Long> categoryIds = List.of(1L, 2L);
         FoodRegister dto = FoodFixture.createRegisterDto(categoryIds);
 
-        FoodEntity mockFoodEntity = FoodFixture.createFoodEntity();
+        FoodEntity mockFoodEntity = FoodFixture.createFoodEntity(1L);
         List<FoodCategoryEntity> mockCategories = CategoryFixture.createCategoryEntity(categoryIds);
 
         given(imageManager.fileUpload(any())).willReturn("파일 경로");
@@ -107,4 +107,5 @@ public class FoodEntityServiceTest {
                 .extracting("errorType")
                 .isEqualTo(ErrorType.DEFAULT_ERROR);
     }
+
 }

@@ -8,7 +8,7 @@ public record SelectedFoodCategory(
         Long foodId,
         Long foodCategoryId
 ) {
-    public static SelectedFoodCategory create(Long foodId, Long foodCategoryId){
+    public static SelectedFoodCategory create(Long foodId, Long foodCategoryId) {
         return SelectedFoodCategory.builder()
                 .foodId(foodId)
                 .foodCategoryId(foodCategoryId)

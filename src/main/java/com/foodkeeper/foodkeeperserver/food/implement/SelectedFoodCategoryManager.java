@@ -6,6 +6,8 @@ import com.foodkeeper.foodkeeperserver.food.domain.SelectedFoodCategory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class SelectedFoodCategoryManager {
@@ -16,4 +18,19 @@ public class SelectedFoodCategoryManager {
         SelectedFoodCategoryEntity selectedFoodCategoryEntity = SelectedFoodCategoryEntity.from(selectedFoodCategory);
         selectedFoodCategoryRepository.save(selectedFoodCategoryEntity);
     }
+
+    public List<SelectedFoodCategory> findByFoodIds(List<Long> foodIds) {
+        List<SelectedFoodCategoryEntity> entities = selectedFoodCategoryRepository.findByFoodIds(foodIds);
+        return entities.stream()
+                .map(SelectedFoodCategoryEntity::toDomain)
+                .toList();
+    }
+
+    public List<SelectedFoodCategory> findByFoodId(Long foodId) {
+        List<SelectedFoodCategoryEntity> entities = selectedFoodCategoryRepository.findByFoodId(foodId);
+        return entities.stream()
+                .map(SelectedFoodCategoryEntity::toDomain)
+                .toList();
+    }
+
 }

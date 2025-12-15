@@ -1,12 +1,14 @@
 package com.foodkeeper.foodkeeperserver.food.fixture;
 
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class FoodFixture {
@@ -29,9 +31,20 @@ public class FoodFixture {
                 MEMO
         );
     }
-    public static Food createFood() {
+
+    public static FoodCursorFinder createFirstPageFinder() {
+        return new FoodCursorFinder(
+                MEMBER_ID,
+                null,
+                null,
+                null,
+                10
+        );
+    }
+
+    public static Food createFood(Long id) {
         return Food.builder()
-                .id(ID)
+                .id(id)
                 .name(NAME)
                 .imageUrl(IMAGE_URL)
                 .storageMethod(STORAGE_METHOD)
@@ -39,12 +52,20 @@ public class FoodFixture {
                 .memo(MEMO)
                 .selectedCategoryCount(1)
                 .memberId(MEMBER_ID)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public static FoodEntity createFoodEntity() {
-        FoodEntity foodEntity = FoodEntity.from(createFood());
-        ReflectionTestUtils.setField(foodEntity,"id",1L);
+    public static FoodEntity createFoodEntity(Long id) {
+        FoodEntity foodEntity = FoodEntity.from(createFood(id));
+        ReflectionTestUtils.setField(foodEntity, "id", id);
         return foodEntity;
+    }
+
+    public static Food createCustomFood(Long id, LocalDateTime createdAt) {
+        return Food.builder()
+                .id(id)
+                .createdAt(createdAt)
+                .build();
     }
 }

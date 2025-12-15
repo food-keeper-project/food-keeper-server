@@ -5,6 +5,7 @@ import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record MyFoodResponse(
         Long id,
@@ -13,9 +14,10 @@ public record MyFoodResponse(
         StorageMethod storageMethod,
         LocalDate expiryDate,
         String memo,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        List<Long> categoryIds
 ) {
-    public static MyFoodResponse toFoodResponse(Food food) {
+    public static MyFoodResponse toFoodResponse(Food food, List<Long> categoryIds) {
         return new MyFoodResponse(
                 food.id(),
                 food.name(),
@@ -23,7 +25,8 @@ public record MyFoodResponse(
                 food.storageMethod(),
                 food.expiryDate(),
                 food.memo(),
-                food.createdAt()
+                food.createdAt(),
+                categoryIds
         );
     }
 }

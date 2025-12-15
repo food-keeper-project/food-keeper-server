@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.food.dataaccess.repository.custom;
 
+import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QFoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QSelectedFoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
@@ -25,25 +26,15 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
     // 날자 최신순 정렬- 기본 디폴트,
     // 카테고리 분류 조회
     @Override
-    public List<Food> findFoodCursorList(FoodCursorFinder foodFinder, String memberId) {
-        JPAQuery<Food> query = queryFactory
-                .select(Projections.constructor(Food.class,
-                        foodEntity.id,
-                        foodEntity.name,
-                        foodEntity.imageUrl,
-                        foodEntity.storageMethod,
-                        foodEntity.expiryDate,
-                        foodEntity.memo,
-                        foodEntity.selectedCategoryCount,
-                        foodEntity.memberId,
-                        foodEntity.createdAt))
-                .from(foodEntity);
+    public List<FoodEntity> findFoodCursorList(FoodCursorFinder foodFinder) {
+        JPAQuery<FoodEntity> query = queryFactory
+                .selectFrom(foodEntity);
 
         applyCategoryFilter(query, foodFinder.categoryId());
 
         return query
                 .where(
-                        foodEntity.memberId.eq(memberId),
+                        foodEntity.memberId.eq(foodFinder.memberId()),
                         cursorCondition(foodFinder.lastCreatedAt(), foodFinder.lastId())
                 )
                 .orderBy(foodEntity.createdAt.desc(),foodEntity.id.desc())
@@ -52,7 +43,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
     }
 
     // 카테고리 선택했을 시 필터링 조회
-    private void applyCategoryFilter(JPAQuery<Food> query, Long categoryId) {
+    private void applyCategoryFilter(JPAQuery<FoodEntity> query, Long categoryId) {
         if (categoryId != null) {
             query.join(selectedFoodCategoryEntity)
                     .on(foodEntity.id.eq(selectedFoodCategoryEntity.foodId))

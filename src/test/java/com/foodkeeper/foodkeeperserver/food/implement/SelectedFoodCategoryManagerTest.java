@@ -19,7 +19,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class SelectedFoodEntityCategoryCreatorTest {
+public class SelectedFoodCategoryManagerTest {
 
     @InjectMocks
     SelectedFoodCategoryManager selectedFoodCategoryManager;
