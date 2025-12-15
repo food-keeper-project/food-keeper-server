@@ -1,6 +1,5 @@
 package com.foodkeeper.foodkeeperserver.security.exception;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
@@ -14,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -23,6 +23,8 @@ import java.nio.charset.StandardCharsets;
 @Component
 @RequiredArgsConstructor
 public class AuthenticationExceptionHandler {
+
+    private final ObjectMapper objectMapper;
 
     public void handle(HttpServletResponse response, AppException exception)
             throws IOException {
@@ -49,7 +51,7 @@ public class AuthenticationExceptionHandler {
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         PrintWriter writer = response.getWriter();
-        writer.write(new ObjectMapper().writeValueAsString(ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(body)));
+        writer.write(objectMapper.writeValueAsString(ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(body)));
         writer.flush();
     }
 

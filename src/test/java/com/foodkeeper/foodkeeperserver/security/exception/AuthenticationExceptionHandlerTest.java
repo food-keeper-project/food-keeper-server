@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
@@ -14,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class AuthenticationExceptionHandlerTest {
 
-    AuthenticationExceptionHandler authenticationExceptionHandler = new AuthenticationExceptionHandler();
+    AuthenticationExceptionHandler authenticationExceptionHandler = new AuthenticationExceptionHandler(new ObjectMapper());
 
     @Test
     @DisplayName("ApplicationException을 response를 통해 출력한다.")
