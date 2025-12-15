@@ -1,8 +1,8 @@
 package com.foodkeeper.foodkeeperserver.config.auth;
 
 import com.foodkeeper.foodkeeperserver.security.filter.AuthExceptionTranslationFilter;
-import com.foodkeeper.foodkeeperserver.security.jwt.JwtAuthenticationEntryPoint;
 import com.foodkeeper.foodkeeperserver.security.filter.JwtAuthenticationFilter;
+import com.foodkeeper.foodkeeperserver.security.jwt.JwtAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +32,7 @@ public class SecurityConfig {
 
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         PathPatternRequestMatcher.Builder mvc = withDefaults();
         return http
                 .httpBasic(AbstractHttpConfigurer::disable)
