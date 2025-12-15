@@ -37,19 +37,19 @@ import static org.mockito.Mockito.verify;
 public class FoodEntityServiceTest {
 
     @InjectMocks
-    private FoodService foodService;
+    FoodService foodService;
 
     @Mock
-    private ImageManager imageManager;
+    ImageManager imageManager;
 
     @Mock
-    private FoodRepository foodRepository;
+    FoodRepository foodRepository;
 
     @Mock
-    private FoodCategoryRepository foodCategoryRepository;
+    FoodCategoryRepository foodCategoryRepository;
 
     @Mock
-    private SelectedFoodCategoryRepository selectedFoodCategoryRepository;
+    SelectedFoodCategoryRepository selectedFoodCategoryRepository;
 
     @BeforeEach
     void setUp() {

@@ -1,9 +1,12 @@
 package com.foodkeeper.foodkeeperserver.food.controller.v1;
 
 import com.foodkeeper.foodkeeperserver.food.business.FoodService;
-import com.foodkeeper.foodkeeperserver.food.business.request.FoodRegisterDto;
-import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodRegisterResponse;
+import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodCursorRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodRegisterRequest;
+import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodListResponse;
+import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodRegisterResponse;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,10 +29,20 @@ public class FoodController {
     public ResponseEntity<ApiResponse<FoodRegisterResponse>> createFood(@RequestPart @Valid FoodRegisterRequest request,
                                                                         @RequestPart(required = false) MultipartFile image){
         String memberId = "memberId"; // todo 로그인 방식 구현 후 리팩토링
-        FoodRegisterDto dto = FoodRegisterRequest.toDto(request);
-        Long foodId = foodService.registerFood(dto,image,memberId);
+        FoodRegister register = FoodRegisterRequest.toDto(request);
+        Long foodId = foodService.registerFood(register,image,memberId);
         return ResponseEntity.ok(ApiResponse.success(new FoodRegisterResponse(foodId)));
     }
+
+    @Operation(summary = "식재료 전체 조회", description = "식재료 전체 조회 API")
+    @GetMapping
+    public ResponseEntity<ApiResponse<FoodListResponse>> getFoods(@ModelAttribute FoodCursorRequest request){
+        String memberId = "memberId"; // todo 로그인 방식 구현 후 리팩토링
+        FoodCursorFinder finder = FoodCursorRequest.toFinder(request,memberId);
+        FoodListResponse foodListResponse = foodService.getFoodList(finder,memberId);
+        return ResponseEntity.ok(ApiResponse.success(foodListResponse));
+    }
+
 
 
 }

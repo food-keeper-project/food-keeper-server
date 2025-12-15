@@ -1,5 +1,8 @@
 package com.foodkeeper.foodkeeperserver.food.business;
 
+import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodListResponse;
+import com.foodkeeper.foodkeeperserver.food.controller.v1.response.MyFoodResponse;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
@@ -28,7 +31,7 @@ public class FoodService {
 
     @Transactional
     public Long registerFood(FoodRegister dto, MultipartFile file, String memberId) {
-        String imageUrl = imageManager.fileUpload(file); // 비동기 방식 업로드
+        String imageUrl = imageManager.fileUpload(file); // 비동기 업로드
         Food food = dto.toDomain(imageUrl,memberId);
         try {
             Food savedFood = foodManager.register(food);
@@ -41,6 +44,21 @@ public class FoodService {
             imageManager.deleteFile(imageUrl);
             throw new AppException(ErrorType.DEFAULT_ERROR, e);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public FoodListResponse getFoodList(FoodCursorFinder finder, String memberId) {
+        List<Food> foods = foodManager.findFoodList(finder,memberId);
+
+        boolean hasNext = false;
+        if(foods.size() > finder.limit()) {
+            hasNext = true;
+            foods.remove(finder.limit().intValue()); // 가져온 다음 페이지 제거
+        }
+        List<MyFoodResponse> foodResponses = foods.stream()
+                .map(MyFoodResponse::toFoodResponse)
+                .toList();
+        return new FoodListResponse(foodResponses,hasNext);
     }
 
 }

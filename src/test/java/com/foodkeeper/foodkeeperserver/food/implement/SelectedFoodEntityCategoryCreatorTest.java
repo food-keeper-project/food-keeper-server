@@ -22,10 +22,10 @@ import static org.mockito.Mockito.verify;
 public class SelectedFoodEntityCategoryCreatorTest {
 
     @InjectMocks
-    private SelectedFoodCategoryManager selectedFoodCategoryManager;
+    SelectedFoodCategoryManager selectedFoodCategoryManager;
 
     @Mock
-    private SelectedFoodCategoryRepository selectedFoodCategoryRepository;
+    SelectedFoodCategoryRepository selectedFoodCategoryRepository;
 
     @Test
     @DisplayName("카테고리 생성 시 리포지토리 호출 및 결과 반환")

@@ -20,10 +20,10 @@ import static org.mockito.BDDMockito.given;
 public class FoodEntityRegisterTest {
 
     @InjectMocks
-    private FoodManager foodManager;
+    FoodManager foodManager;
 
     @Mock
-    private FoodRepository foodRepository;
+    FoodRepository foodRepository;
 
     @Test
     @DisplayName("식재료 저장 요청 시 리포지토리 호출 및 결과 반환")

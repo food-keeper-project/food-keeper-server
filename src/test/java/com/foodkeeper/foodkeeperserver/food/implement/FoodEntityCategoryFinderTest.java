@@ -20,10 +20,10 @@ import static org.mockito.BDDMockito.given;
 public class FoodEntityCategoryFinderTest {
 
     @InjectMocks
-    private FoodCategoryManager foodCategoryManager;
+    FoodCategoryManager foodCategoryManager;
 
     @Mock
-    private FoodCategoryRepository foodCategoryRepository;
+    FoodCategoryRepository foodCategoryRepository;
 
     @Test
     @DisplayName("식재료 카테고리Id 리스트를 받아서 조회")

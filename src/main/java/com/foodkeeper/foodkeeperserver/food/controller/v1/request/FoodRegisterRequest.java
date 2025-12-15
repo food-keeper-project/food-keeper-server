@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
 
-//todo 카테고리 선택수 검증
+
 public record FoodRegisterRequest(
         @NotBlank String name,
         @NotNull @Size(min = 1, max = 3) List<Long> categoryIds,
@@ -19,7 +19,7 @@ public record FoodRegisterRequest(
 ) {
     public static FoodRegister toDto(FoodRegisterRequest request){
         return new FoodRegister(
-                request.name(),
+                request.name,
                 request.categoryIds,
                 request.storageMethod,
                 request.expiryDate,

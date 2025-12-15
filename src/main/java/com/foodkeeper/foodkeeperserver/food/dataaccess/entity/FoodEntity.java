@@ -86,7 +86,8 @@ public class FoodEntity extends BaseEntity {
                 this.expiryDate,
                 this.memo,
                 this.selectedCategoryCount,
-                this.memberId
+                this.memberId,
+                this.getCreatedAt()
         );
     }
 }

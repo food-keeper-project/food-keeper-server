@@ -3,6 +3,7 @@ package com.foodkeeper.foodkeeperserver.food.domain;
 import lombok.Builder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Builder
 public record Food(
@@ -13,6 +14,7 @@ public record Food(
         LocalDate expiryDate,
         String memo,
         Integer selectedCategoryCount,
-        String memberId
+        String memberId,
+        LocalDateTime createdAt
 ) {
 }
