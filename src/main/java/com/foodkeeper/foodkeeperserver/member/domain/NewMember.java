@@ -1,18 +1,22 @@
 package com.foodkeeper.foodkeeperserver.member.domain;
 
+import ch.qos.logback.core.util.StringUtil;
 import com.foodkeeper.foodkeeperserver.auth.domain.MemberRoles;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.SignUpType;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.Builder;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.net.URI;
 import java.util.regex.Pattern;
 
+@NullMarked
 @Builder
-public record NewMember(String email,
-                        String nickname,
-                        String imageUrl,
+public record NewMember(@Nullable String email,
+                        @Nullable String nickname,
+                        @Nullable String imageUrl,
                         SignUpType signUpType,
                         String signUpIpAddress,
                         MemberRoles memberRoles) {
@@ -23,15 +27,19 @@ public record NewMember(String email,
                             "(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}$");
 
     public NewMember {
+        email = StringUtil.nullStringToEmpty(email);
+        nickname = StringUtil.nullStringToEmpty(nickname);
+        imageUrl = StringUtil.nullStringToEmpty(imageUrl);
+
         if (nickname.length() > NICKNAME_MAX_LENGTH) {
             throw new AppException(ErrorType.INVALID_NICKNAME_LENGTH);
         }
 
-        if (email != null && !isValidEmail(email)) {
+        if (!StringUtil.isNullOrEmpty(email) && !isValidEmail(email)) {
             throw new AppException(ErrorType.INVALID_EMAIL);
         }
 
-        if (imageUrl != null && !isValidImageUrl(imageUrl)) {
+        if (!StringUtil.isNullOrEmpty(imageUrl) && !isValidImageUrl(imageUrl)) {
             throw new AppException(ErrorType.INVALID_IMAGE_URL);
         }
 
