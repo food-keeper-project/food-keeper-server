@@ -1,9 +1,6 @@
 package com.foodkeeper.foodkeeperserver.auth.business;
 
-import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
-import com.foodkeeper.foodkeeperserver.auth.domain.MemberRegister;
-import com.foodkeeper.foodkeeperserver.auth.domain.MemberRole;
-import com.foodkeeper.foodkeeperserver.auth.domain.OAuthMember;
+import com.foodkeeper.foodkeeperserver.auth.domain.*;
 import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
 import com.foodkeeper.foodkeeperserver.auth.implement.OAuthAuthenticator;
 import com.foodkeeper.foodkeeperserver.auth.implement.SignInLogAppender;
@@ -13,6 +10,8 @@ import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +35,7 @@ public class SignInService {
                     .imageUrl(oAuthMember.profileImageUrl())
                     .signUpType(SignUpType.OAUTH)
                     .signUpIpAddress(register.ipAddress())
-                    .memberRole(MemberRole.ROLE_USER)
+                    .memberRoles(new MemberRoles(List.of(MemberRole.ROLE_USER)))
                     .build();
             memberKey = memberRegistrar.register(newMember, oAuthMember);
         }

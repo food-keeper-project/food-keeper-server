@@ -23,7 +23,8 @@ public class MemberRegistrar {
     public String register(NewMember newMember, OAuthMember oauthMember) {
         MemberEntity memberEntity = memberRepository.save(MemberEntity.from(newMember));
         oauthRepository.save(new OauthEntity(oauthMember.provider(), oauthMember.account(), memberEntity.getMemberKey()));
-        memberRoleRepository.save(new MemberRoleEntity(newMember.memberRole(), memberEntity.getMemberKey()));
+        newMember.memberRoles().forEach(role ->
+                memberRoleRepository.save(new MemberRoleEntity(role, memberEntity.getMemberKey())));
 
         return memberEntity.getMemberKey();
     }

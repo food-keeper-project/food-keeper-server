@@ -16,4 +16,8 @@ public enum ErrorCode {
     E3006,
 
     E9000,
+    E9001,
+    E9002,
+    E9003,
+    E9004,
 }
