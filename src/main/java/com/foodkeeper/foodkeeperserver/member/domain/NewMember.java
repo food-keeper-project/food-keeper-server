@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 @NullMarked
 @Builder
-public record NewMember(@Nullable String email,
+public record NewMember(String email,
                         @Nullable String nickname,
                         @Nullable String imageUrl,
                         SignUpType signUpType,
@@ -27,7 +27,6 @@ public record NewMember(@Nullable String email,
                             "(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}$");
 
     public NewMember {
-        email = StringUtil.nullStringToEmpty(email);
         nickname = StringUtil.nullStringToEmpty(nickname);
         imageUrl = StringUtil.nullStringToEmpty(imageUrl);
 
@@ -35,33 +34,33 @@ public record NewMember(@Nullable String email,
             throw new AppException(ErrorType.INVALID_NICKNAME_LENGTH);
         }
 
-        if (!StringUtil.isNullOrEmpty(email) && !isValidEmail(email)) {
+        if (isInvalidEmail(email)) {
             throw new AppException(ErrorType.INVALID_EMAIL);
         }
 
-        if (!StringUtil.isNullOrEmpty(imageUrl) && !isValidImageUrl(imageUrl)) {
+        if (!StringUtil.isNullOrEmpty(imageUrl) && isInValidImageUrl(imageUrl)) {
             throw new AppException(ErrorType.INVALID_IMAGE_URL);
         }
 
-        if (!isValidIpAddress(signUpIpAddress)) {
+        if (isInvalidIpAddress(signUpIpAddress)) {
             throw new AppException(ErrorType.INVALID_ACCESS_PATH);
         }
     }
 
-    private static boolean isValidEmail(String email) {
-        return EMAIL_PATTERN.matcher(email).matches();
+    private static boolean isInvalidEmail(String email) {
+        return email == null || !EMAIL_PATTERN.matcher(email).matches();
     }
 
-    private static boolean isValidImageUrl(String imageUrl) {
+    private static boolean isInValidImageUrl(String imageUrl) {
         try {
             URI uri = URI.create(imageUrl);
-            return uri.getScheme() != null & uri.getHost() != null;
+            return uri.getScheme() == null | uri.getHost() == null;
         } catch (IllegalArgumentException e) {
-            return false;
+            return true;
         }
     }
 
-    private static boolean isValidIpAddress(String ipAddress) {
-        return IPV4_PATTERN.matcher(ipAddress).matches();
+    private static boolean isInvalidIpAddress(String ipAddress) {
+        return ipAddress == null || !IPV4_PATTERN.matcher(ipAddress).matches();
     }
 }
