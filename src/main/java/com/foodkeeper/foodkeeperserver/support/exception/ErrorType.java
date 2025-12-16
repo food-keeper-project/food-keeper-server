@@ -25,7 +25,11 @@ public enum ErrorType {
     INVALID_MEMBER_KEY(HttpStatus.BAD_REQUEST, ErrorCode.E9000, "멤버 key가 유효하지 않습니다.", LogLevel.ERROR),
     INVALID_NICKNAME_LENGTH(HttpStatus.BAD_REQUEST, ErrorCode.E9001, "멤버 닉네임은 20자를 넘을 수 없습니다.", LogLevel.ERROR),
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, ErrorCode.E9002, "이메일이 유효하지 않습니다.", LogLevel.ERROR),
-    INVALID_IMAGE_URL(HttpStatus.BAD_REQUEST, ErrorCode.E9003, "이미지 URL이 유효하지 않습니다.", LogLevel.ERROR)
+    INVALID_IMAGE_URL(HttpStatus.BAD_REQUEST, ErrorCode.E9003, "이미지 URL이 유효하지 않습니다.", LogLevel.ERROR),
+
+    CATEGORY_SELECT_ERROR(HttpStatus.BAD_REQUEST, ErrorCode.E1000, "카테고리 선택 개수가 옳바르지 않습니다.", LogLevel.ERROR),
+
+    S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E5000, "이미지 업로드에 실패했습니다.", LogLevel.ERROR)
     ;
 
     private final HttpStatus status;
