@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.member.implement;
 
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.OauthEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
@@ -8,6 +9,8 @@ import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Component
 @Transactional(readOnly = true)
@@ -21,12 +24,7 @@ public class MemberFinder {
                 .toDomain();
     }
 
-    public boolean existsByOauthAccount(String oauthAccount) {
-        return oauthRepository.existsByAccount(oauthAccount);
-    }
-
-    public String findMemberKeyByOAuthAccount(String oAuthAccount) {
-        return oauthRepository.findByAccount(oAuthAccount).orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_DATA))
-                .getMemberKey();
+    public Optional<String> findMemberKeyByOAuthAccount(String oAuthAccount) {
+        return oauthRepository.findByAccount(oAuthAccount).map(OauthEntity::getMemberKey);
     }
 }

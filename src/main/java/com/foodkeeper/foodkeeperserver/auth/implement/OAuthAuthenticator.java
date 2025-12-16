@@ -1,7 +1,7 @@
 package com.foodkeeper.foodkeeperserver.auth.implement;
 
-import com.foodkeeper.foodkeeperserver.auth.domain.OAuthMember;
+import com.foodkeeper.foodkeeperserver.auth.domain.OAuthUser;
 
 public interface OAuthAuthenticator {
-    OAuthMember authenticate(String accessToken);
+    OAuthUser authenticate(String accessToken);
 }

@@ -1,8 +1,7 @@
 package com.foodkeeper.foodkeeperserver.auth.implement;
 
 import com.foodkeeper.foodkeeperserver.auth.domain.KakaoUser;
-import com.foodkeeper.foodkeeperserver.auth.domain.OAuthMember;
-import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
+import com.foodkeeper.foodkeeperserver.auth.domain.OAuthUser;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,7 @@ public class KakaoAuthenticator implements OAuthAuthenticator {
 
     private final RestClient restClient;
 
-    public OAuthMember authenticate(String accessToken) {
+    public OAuthUser authenticate(String accessToken) {
         KakaoUser kakaoUser = restClient.get().uri(KAKAO_USER_INFO_URL)
                 .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
                 .retrieve()
@@ -29,12 +28,6 @@ public class KakaoAuthenticator implements OAuthAuthenticator {
             throw new AppException(ErrorType.INVALID_OAUTH_USER);
         }
 
-        return OAuthMember.builder()
-                .account(kakaoUser.id().toString())
-                .provider(OAuthProvider.KAKAO)
-                .nickname(kakaoUser.kakaoAccount().profile().nickname())
-                .email(kakaoUser.kakaoAccount().email())
-                .profileImageUrl(kakaoUser.kakaoAccount().profile().profileImageUrl())
-                .build();
+        return kakaoUser.toOAuthUser();
     }
 }

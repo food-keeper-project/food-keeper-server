@@ -1,6 +1,6 @@
 package com.foodkeeper.foodkeeperserver.security.filter;
 
-import com.foodkeeper.foodkeeperserver.auth.domain.OAuthUser;
+import com.foodkeeper.foodkeeperserver.auth.domain.AuthMember;
 import com.foodkeeper.foodkeeperserver.auth.implement.MemberRoleFinder;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
@@ -50,10 +50,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String subject = jwtValidator.getSubjectIfValid(token.substring(BEARER.length()));
             Member member = memberFinder.find(subject);
             List<SimpleGrantedAuthority> authorities = memberRoleFinder.findAll(subject).getAuthorities();
-            OAuthUser oAuthUser = new OAuthUser(member, new HashMap<>(), authorities);
+            AuthMember authMember = new AuthMember(member, new HashMap<>(), authorities);
 
             SecurityContextHolder.getContext()
-                    .setAuthentication(new UsernamePasswordAuthenticationToken(oAuthUser, null, authorities));
+                    .setAuthentication(new UsernamePasswordAuthenticationToken(authMember, null, authorities));
         }
     }
 

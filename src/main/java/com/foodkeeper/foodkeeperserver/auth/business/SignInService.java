@@ -1,11 +1,13 @@
 package com.foodkeeper.foodkeeperserver.auth.business;
 
-import com.foodkeeper.foodkeeperserver.auth.domain.*;
+import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
+import com.foodkeeper.foodkeeperserver.auth.domain.MemberRoles;
+import com.foodkeeper.foodkeeperserver.auth.domain.OAuthUser;
+import com.foodkeeper.foodkeeperserver.auth.domain.SignInContext;
 import com.foodkeeper.foodkeeperserver.auth.domain.enums.MemberRole;
 import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
 import com.foodkeeper.foodkeeperserver.auth.implement.OAuthAuthenticator;
 import com.foodkeeper.foodkeeperserver.auth.implement.SignInLogAppender;
-import com.foodkeeper.foodkeeperserver.member.domain.NewMember;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.SignUpType;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
@@ -24,22 +26,13 @@ public class SignInService {
     private final MemberRegistrar memberRegistrar;
 
     public Jwt signInByOAuth(SignInContext context) {
-        OAuthMember oAuthMember = oauthAuthenticator.authenticate(context.accessToken());
+        OAuthUser oAuthUser = oauthAuthenticator.authenticate(context.accessToken());
 
-        String memberKey;
-        if (memberFinder.existsByOauthAccount(oAuthMember.account())) {
-            memberKey = memberFinder.findMemberKeyByOAuthAccount(oAuthMember.account());
-        } else {
-            NewMember newMember = NewMember.builder()
-                    .email(oAuthMember.email())
-                    .nickname(oAuthMember.nickname())
-                    .imageUrl(oAuthMember.profileImageUrl())
-                    .signUpType(SignUpType.OAUTH)
-                    .signUpIpAddress(context.ipAddress())
-                    .memberRoles(new MemberRoles(List.of(MemberRole.ROLE_USER)))
-                    .build();
-            memberKey = memberRegistrar.register(newMember, oAuthMember);
-        }
+        String memberKey = memberFinder.findMemberKeyByOAuthAccount(oAuthUser.account())
+                .orElseGet(() ->
+                        memberRegistrar.register(oAuthUser.toNewOAuthMember(
+                                SignUpType.OAUTH, context.ipAddress(), new MemberRoles(List.of(MemberRole.ROLE_USER))))
+                );
 
         signInLogAppender.append(context.ipAddress(), memberKey);
 

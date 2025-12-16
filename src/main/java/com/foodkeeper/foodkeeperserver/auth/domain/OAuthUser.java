@@ -1,30 +1,31 @@
 package com.foodkeeper.foodkeeperserver.auth.domain;
 
-import com.foodkeeper.foodkeeperserver.member.domain.Member;
-import org.jspecify.annotations.NullMarked;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import com.foodkeeper.foodkeeperserver.member.domain.NewMember;
+import com.foodkeeper.foodkeeperserver.member.domain.NewOAuthMember;
+import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
+import com.foodkeeper.foodkeeperserver.member.domain.enums.SignUpType;
+import lombok.Builder;
 
-import java.util.Collection;
-import java.util.Map;
+@Builder
+public record OAuthUser(String account,
+                        OAuthProvider provider,
+                        String nickname,
+                        String email,
+                        String profileImageUrl) {
 
-public record OAuthUser(Member member,
-                        Map<String, Object> attributes,
-                        Collection<? extends GrantedAuthority> authorities) implements OAuth2User {
-
-    @Override
-    public Map<String, Object> getAttributes() {
-        return attributes;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
-    }
-
-    @Override
-    @NullMarked
-    public String getName() {
-        return member.memberKey();
+    public NewOAuthMember toNewOAuthMember(SignUpType signUpType, String signUpIpAddress, MemberRoles memberRoles) {
+        NewMember newMember = NewMember.builder()
+                .email(email)
+                .nickname(nickname)
+                .imageUrl(profileImageUrl)
+                .signUpType(signUpType)
+                .signUpIpAddress(signUpIpAddress)
+                .memberRoles(memberRoles)
+                .build();
+        return NewOAuthMember.builder()
+                .member(newMember)
+                .provider(provider)
+                .oauthAccount(account)
+                .build();
     }
 }
