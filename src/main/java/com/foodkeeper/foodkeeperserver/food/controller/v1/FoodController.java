@@ -4,10 +4,13 @@ import com.foodkeeper.foodkeeperserver.food.business.FoodService;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodCursorRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodRegisterRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodListResponse;
+import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodNameResponse;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodRegisterResponse;
-import com.foodkeeper.foodkeeperserver.food.controller.v1.response.MyFoodResponse;
+import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponse;
+import com.foodkeeper.foodkeeperserver.food.domain.MyFood;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
+import com.foodkeeper.foodkeeperserver.food.domain.response.FoodCursorResult;
 import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Tag(name = "Food", description = "식재료 관련 API")
 @RestController
@@ -40,16 +45,23 @@ public class FoodController {
     public ResponseEntity<ApiResponse<FoodListResponse>> getFoods(@ModelAttribute FoodCursorRequest request) {
         String memberId = "memberId"; // todo 로그인 방식 구현 후 리팩토링
         FoodCursorFinder finder = FoodCursorRequest.toFinder(request, memberId);
-        FoodListResponse foodListResponse = foodService.getFoodList(finder);
-        return ResponseEntity.ok(ApiResponse.success(foodListResponse));
+        FoodCursorResult result = foodService.getFoodList(finder);
+        return ResponseEntity.ok(ApiResponse.success(new FoodListResponse(result.foods(), result.hasNext())));
     }
 
     @Operation(summary = "식재료 단일 조회", description = "식재료 단일 조회 API")
     @GetMapping("/{foodId}")
-    public ResponseEntity<ApiResponse<MyFoodResponse>> getFood(@PathVariable Long foodId) {
+    public ResponseEntity<ApiResponse<FoodResponse>> getFood(@PathVariable Long foodId) {
         String memberId = "memberId"; // todo 로그인 방식 구현 후 리팩토링
-        MyFoodResponse foodResponse = foodService.getFood(foodId,memberId);
-        return ResponseEntity.ok(ApiResponse.success(foodResponse));
+        MyFood myFood = foodService.getFood(foodId,memberId);
+        return ResponseEntity.ok(ApiResponse.success(FoodResponse.toFoodResponse(myFood)));
     }
 
+    @Operation(summary = "식재료 AI 이름 조회", description = "식재료 AI 이름 조회 API")
+    @GetMapping("/recommend")
+    public ResponseEntity<ApiResponse<FoodNameResponse>> getFoodNames(@RequestParam List<Long> ids) {
+        String memberId = "memberId"; // todo 로그인 방식 구현 후 리팩토링
+        List<String> names = foodService.getFoodNames(ids,memberId);
+        return ResponseEntity.ok(ApiResponse.success(new FoodNameResponse(names)));
+    }
 }

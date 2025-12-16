@@ -1,16 +1,15 @@
 package com.foodkeeper.foodkeeperserver.food.business;
 
-import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodListResponse;
-import com.foodkeeper.foodkeeperserver.food.controller.v1.response.MyFoodResponse;
-import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.SelectedFoodCategoryEntity;
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
+import com.foodkeeper.foodkeeperserver.food.domain.MyFood;
 import com.foodkeeper.foodkeeperserver.food.domain.SelectedFoodCategory;
-import com.foodkeeper.foodkeeperserver.food.implement.ImageManager;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
+import com.foodkeeper.foodkeeperserver.food.domain.response.FoodCursorResult;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodCategoryManager;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
+import com.foodkeeper.foodkeeperserver.food.implement.ImageManager;
 import com.foodkeeper.foodkeeperserver.food.implement.SelectedFoodCategoryManager;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
@@ -22,8 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +50,7 @@ public class FoodService {
 
     // 커서 리스트 조회
     @Transactional(readOnly = true)
-    public FoodListResponse getFoodList(FoodCursorFinder finder) {
+    public FoodCursorResult getFoodList(FoodCursorFinder finder) {
         List<Food> foods = foodManager.findFoodList(finder);
 
         boolean hasNext = false;
@@ -73,23 +70,29 @@ public class FoodService {
                 ));
 
         // 응답 객체 변환
-        List<MyFoodResponse> foodResponses = foods.stream()
+        List<MyFood> foodResponses = foods.stream()
                 .map(food -> {
                     List<Long> categoryIds = categoryMap.getOrDefault(food.id(), List.of());
-                    return MyFoodResponse.toFoodResponse(food, categoryIds);
+                    return MyFood.of(food, categoryIds);
                 })
                 .toList();
-        return new FoodListResponse(foodResponses, hasNext);
+        return new FoodCursorResult(foodResponses, hasNext);
     }
 
     // 단일 조회
     @Transactional(readOnly = true)
-    public MyFoodResponse getFood(Long id, String memberId) {
+    public MyFood getFood(Long id, String memberId) {
         Food food = foodManager.findFood(id, memberId);
         List<SelectedFoodCategory> mappings = selectedFoodCategoryManager.findByFoodId(id);
         List<Long> categoryIds = mappings.stream()
                 .map(SelectedFoodCategory::foodCategoryId)
                 .toList();
-        return MyFoodResponse.toFoodResponse(food,categoryIds);
+        return MyFood.of(food,categoryIds);
+    }
+
+    // 이름 조회
+    @Transactional(readOnly = true)
+    public List<String> getFoodNames(List<Long> ids, String memberId) {
+        return foodManager.findFoodNames(ids,memberId);
     }
 }

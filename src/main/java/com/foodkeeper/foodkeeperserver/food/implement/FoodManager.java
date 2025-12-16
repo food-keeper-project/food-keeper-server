@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.food.implement;
 
+import com.foodkeeper.foodkeeperserver.common.utils.ListUtil;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
@@ -32,5 +33,9 @@ public class FoodManager {
     public Food findFood(Long id, String memberId) {
         return foodRepository.findByIdAndMemberId(id, memberId).orElseThrow(() -> new AppException(ErrorType.FOOD_DATA_NOT_FOUND))
                 .toDomain();
+    }
+
+    public List<String> findFoodNames(List<Long> ids, String memberId) {
+        return ListUtil.getOrElseThrowList(foodRepository.findNamesByIdsAndMemberId(ids,memberId));
     }
 }
