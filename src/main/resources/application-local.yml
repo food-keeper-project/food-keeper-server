@@ -21,3 +21,24 @@ spring:
 logging:
   level:
     com.foodkeeper: debug
+
+cloud:
+  aws:
+    s3:
+      bucket: food-keeper
+    credentials:
+      access-key: access-key
+      secret-key: secret-key
+    region:
+      static: kr-standard
+    stack:
+      auto: false
+
+custom:
+  s3:
+    endpoint: storage-url
+
+clova:
+  url: clova-url
+  api-key: api-key
+  gateway-key: gateway-key
