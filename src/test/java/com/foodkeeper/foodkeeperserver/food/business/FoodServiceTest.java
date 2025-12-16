@@ -108,4 +108,5 @@ public class FoodServiceTest {
                 .isEqualTo(ErrorType.DEFAULT_ERROR);
     }
 
+
 }

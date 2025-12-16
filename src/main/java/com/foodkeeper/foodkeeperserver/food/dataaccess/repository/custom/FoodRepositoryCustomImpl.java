@@ -3,12 +3,8 @@ package com.foodkeeper.foodkeeperserver.food.dataaccess.repository.custom;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QFoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QSelectedFoodCategoryEntity;
-import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
-import com.querydsl.core.types.Ops;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +43,24 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
     }
 
     @Override
+    public List<String> findNamesByIdAndMemberId(List<Long> ids, String memberId) {
+
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return queryFactory
+                .select(foodEntity.name)
+                .from(foodEntity)
+                .where(
+                        foodEntity.id.in(ids),
+                        foodEntity.memberId.eq(memberId)
+                )
+                .fetch();
+    }
+
+
+    // 유통기한 임박한 식재료 조회
+    @Override
     public List<FoodEntity> findImminentFoods(String memberId) {
         List<FoodEntity> foods = queryFactory
                 .selectFrom(foodEntity)
@@ -61,7 +75,6 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                 .sorted(Comparator.comparing(FoodEntity::getExpiryDate)) // 유통기한순
                 .toList();
     }
-
 
     // 카테고리 선택했을 시 필터링 조회
     private void applyCategoryFilter(JPAQuery<FoodEntity> query, Long categoryId) {

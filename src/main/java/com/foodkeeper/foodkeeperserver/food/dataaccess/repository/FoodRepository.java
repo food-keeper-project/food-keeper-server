@@ -12,7 +12,4 @@ import java.util.Optional;
 
 public interface FoodRepository extends JpaRepository<FoodEntity,Long>, FoodRepositoryCustom {
     Optional<FoodEntity> findByIdAndMemberId(Long id, String memberId);
-
-    @Query("select f.name from FoodEntity f where f.id in :ids and f.memberId = :memberId")
-    List<String> findNamesByIdsAndMemberId(@Param("ids") List<Long> ids, @Param("memberId") String memberId);
 }

@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -56,7 +57,38 @@ public class FoodManagerTest {
         List<Food> results = foodManager.findFoodList(finder);
         //then
         assertThat(results).hasSize(2);
-        assertThat(results.getFirst().name()).isEqualTo("우유");
+        assertThat(results.getFirst().name()).isEqualTo(FoodFixture.NAME);
         assertThat(results.get(0)).isInstanceOf(Food.class);
     }
+
+    @Test
+    @DisplayName("식재료 단일 조회 시 식재료 세부정보 반환")
+    void findFoodById_SUCCESS() throws Exception {
+        //given
+        Long foodId = FoodFixture.ID;
+        String memberId = FoodFixture.MEMBER_ID;
+
+        FoodEntity foodEntity = FoodFixture.createFoodEntity(foodId);
+        given(foodRepository.findByIdAndMemberId(foodId, memberId)).willReturn(Optional.of(foodEntity));
+        //when
+        Food food = foodManager.findFood(foodId, memberId);
+        //then
+        assertThat(food.name()).isEqualTo(FoodFixture.NAME);
+        assertThat(food.memberId()).isEqualTo(memberId);
+    }
+
+    @Test
+    @DisplayName("선택된 식재료들의 이름 조회 시 이름 리스트 반환")
+    void findFoodNames_SUCCESS() throws Exception {
+        //given
+        List<Long> ids = List.of(1L,2L);
+        String memberId = FoodFixture.MEMBER_ID;
+        List<String> names = List.of("라면","고기");
+        given(foodRepository.findNamesByIdAndMemberId(ids,memberId)).willReturn(names);
+        //when
+        List<String> resultNames = foodManager.findFoodNames(ids,memberId);
+        //then
+        assertThat(resultNames).isEqualTo(names);
+    }
+
 }

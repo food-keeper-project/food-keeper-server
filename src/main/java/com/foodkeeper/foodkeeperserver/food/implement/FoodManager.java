@@ -37,7 +37,7 @@ public class FoodManager {
 
     // 사용자가 식재료 선택 -> foodId 값으로 이름 조회 -> 응답값으로 AI 요청
     public List<String> findFoodNames(List<Long> ids, String memberId) {
-        return ListUtil.getOrElseThrowList(foodRepository.findNamesByIdsAndMemberId(ids,memberId));
+        return foodRepository.findNamesByIdAndMemberId(ids,memberId);
     }
 
     // 알림 설정 리스트 조회
