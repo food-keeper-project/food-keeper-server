@@ -3,14 +3,12 @@ package com.foodkeeper.foodkeeperserver.food.controller.v1;
 import com.foodkeeper.foodkeeperserver.food.business.FoodService;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodCursorRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodRegisterRequest;
-import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodListResponse;
-import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodNameResponse;
-import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodRegisterResponse;
-import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponse;
+import com.foodkeeper.foodkeeperserver.food.controller.v1.response.*;
 import com.foodkeeper.foodkeeperserver.food.domain.MyFood;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.domain.response.FoodCursorResult;
+import com.foodkeeper.foodkeeperserver.food.domain.response.ImminentFood;
 import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -63,5 +61,13 @@ public class FoodController {
         String memberId = "memberId"; // todo 로그인 방식 구현 후 리팩토링
         List<String> names = foodService.getFoodNames(ids,memberId);
         return ResponseEntity.ok(ApiResponse.success(new FoodNameResponse(names)));
+    }
+
+    @Operation(summary = "유통기한 임박 식재료 리스트 조회", description = "유통기한 임박 식재료 조회 API")
+    @GetMapping("/imminent")
+    public ResponseEntity<ApiResponse<FoodImminentResponse>> getImminentFoods() {
+        String memberId = "memberId"; // todo 로그인 방식 구현 후 리팩토링
+        List<ImminentFood> foods = foodService.getImminentFoods(memberId);
+        return ResponseEntity.ok(ApiResponse.success(new FoodImminentResponse(foods)));
     }
 }

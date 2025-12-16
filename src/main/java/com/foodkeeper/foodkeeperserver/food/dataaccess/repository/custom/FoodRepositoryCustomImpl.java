@@ -5,14 +5,18 @@ import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QFoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QSelectedFoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
+import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Repository
@@ -37,10 +41,27 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                         foodEntity.memberId.eq(foodFinder.memberId()),
                         cursorCondition(foodFinder.lastCreatedAt(), foodFinder.lastId())
                 )
-                .orderBy(foodEntity.createdAt.desc(),foodEntity.id.desc())
+                .orderBy(foodEntity.createdAt.desc(), foodEntity.id.desc())
                 .limit(foodFinder.limit() + 1)
                 .fetch();
     }
+
+    @Override
+    public List<FoodEntity> findImminentFoods(String memberId) {
+        List<FoodEntity> foods = queryFactory
+                .selectFrom(foodEntity)
+                .where(foodEntity.memberId.eq(memberId))
+                .fetch();
+
+        LocalDate today = LocalDate.now();
+        return foods.stream()
+                .filter(food -> {
+                    return food.isImminent(today);
+                })
+                .sorted(Comparator.comparing(FoodEntity::getExpiryDate)) // 유통기한순
+                .toList();
+    }
+
 
     // 카테고리 선택했을 시 필터링 조회
     private void applyCategoryFilter(JPAQuery<FoodEntity> query, Long categoryId) {
@@ -58,7 +79,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
         }
         return foodEntity.createdAt.lt(lastCreatedAt)
                 .or(foodEntity.createdAt.eq(lastCreatedAt)
-                .and(foodEntity.id.lt(lastId)));
+                        .and(foodEntity.id.lt(lastId)));
     }
 
 

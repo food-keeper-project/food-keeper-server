@@ -10,6 +10,7 @@ public record MyFood(
         String imageUrl,
         StorageMethod storageMethod,
         LocalDate expiryDate,
+        Integer expiryAlarm,
         String memo,
         LocalDateTime createdAt,
         List<Long> categoryIds
@@ -21,6 +22,7 @@ public record MyFood(
                 food.imageUrl(),
                 food.storageMethod(),
                 food.expiryDate(),
+                food.expiryAlarm(),
                 food.memo(),
                 food.createdAt(),
                 categoryIds

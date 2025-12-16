@@ -7,6 +7,7 @@ import com.foodkeeper.foodkeeperserver.food.domain.SelectedFoodCategory;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.domain.response.FoodCursorResult;
+import com.foodkeeper.foodkeeperserver.food.domain.response.ImminentFood;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodCategoryManager;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
 import com.foodkeeper.foodkeeperserver.food.implement.ImageManager;
@@ -94,5 +95,14 @@ public class FoodService {
     @Transactional(readOnly = true)
     public List<String> getFoodNames(List<Long> ids, String memberId) {
         return foodManager.findFoodNames(ids,memberId);
+    }
+
+    // 유통기한 임박 재료 리스트 조회
+    @Transactional(readOnly = true)
+    public List<ImminentFood> getImminentFoods(String memberId) {
+        List<Food> foods = foodManager.findImminentFoods(memberId);
+        return foods.stream()
+                .map(ImminentFood::of)
+                .toList();
     }
 }
