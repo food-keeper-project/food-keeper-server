@@ -19,16 +19,16 @@ public class RestClientConfig {
 
     @Bean("APIRestClient")
     @Primary
-    public RestClient kakakoRestClient() {
+    public RestClient commonRestClient() {
         return RestClient.builder()
-                .requestFactory(createFactory(API_CONNECT_TIMEOUT,API_READ_TIMEOUT))
+                .requestFactory(createFactory(API_CONNECT_TIMEOUT, API_READ_TIMEOUT))
                 .build();
     }
 
     @Bean("clovaRestClient")
     public RestClient clovaRestClient() {
         return RestClient.builder()
-                .requestFactory(createFactory(CLOVA_CONNECT_TIMEOUT,CLOVA_READ_TIMEOUT))
+                .requestFactory(createFactory(CLOVA_CONNECT_TIMEOUT, CLOVA_READ_TIMEOUT))
                 .build();
     }
 
