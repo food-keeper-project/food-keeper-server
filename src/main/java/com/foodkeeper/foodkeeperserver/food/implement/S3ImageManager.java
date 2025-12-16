@@ -14,7 +14,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -27,9 +29,9 @@ public class S3ImageManager implements ImageManager {
 
     @Async
     @Override
-    public String fileUpload(MultipartFile file) {
+    public CompletableFuture<String> fileUpload(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            return "";
+            return CompletableFuture.completedFuture("");
         }
         String url = toUrls(file);
 
@@ -39,7 +41,7 @@ public class S3ImageManager implements ImageManager {
             metadata.setContentLength(file.getSize());
             metadata.setContentType(file.getContentType());
             amazonS3.putObject(bucket, url, inputStream, metadata);
-            return url;
+            return CompletableFuture.completedFuture(url);
         } catch (IOException e) {
             throw new AppException(ErrorType.S3_UPLOAD_ERROR);
         }
@@ -65,7 +67,7 @@ public class S3ImageManager implements ImageManager {
                 DateTimeFormatter.ofPattern("yyyyMMdd");
         String createdDate = now.format(dateTimeFormatter);
         String uuid = UUID.randomUUID().toString();
-        String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+        String ext = Objects.requireNonNull(file.getOriginalFilename()).substring(file.getOriginalFilename().lastIndexOf("."));
         return createdDate + "/" + uuid + ext;
     }
 }
