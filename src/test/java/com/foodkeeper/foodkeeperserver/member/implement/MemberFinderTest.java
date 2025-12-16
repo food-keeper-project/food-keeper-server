@@ -1,9 +1,9 @@
 package com.foodkeeper.foodkeeperserver.member.implement;
 
-import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.OauthEntity;
-import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
+import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
+import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
@@ -19,11 +19,9 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 
 @ExtendWith(MockitoExtension.class)
 class MemberFinderTest {
@@ -65,34 +63,6 @@ class MemberFinderTest {
     }
 
     @Test
-    @DisplayName("OAuth Account와 일치하는 멤버가 있으면 true를 반환한다.")
-    void returnTrueIfMemberExistsByOAuthAccount() {
-        // given
-        String oauthAccount = "oauthAccount";
-        given(oauthRepository.existsByAccount(eq("oauthAccount"))).willReturn(true);
-
-        // when
-        boolean exists = memberFinder.existsByOauthAccount(oauthAccount);
-
-        // then
-        assertThat(exists).isTrue();
-    }
-
-    @Test
-    @DisplayName("OAuth Account와 일치하는 멤버가 없으면 false를 반환한다.")
-    void returnFalseIfMemberNotExistsByOAuthAccount() {
-        // given
-        String oauthAccount = "oauthAccount";
-        given(oauthRepository.existsByAccount(any())).willReturn(false);
-
-        // when
-        boolean exists = memberFinder.existsByOauthAccount(oauthAccount);
-
-        // then
-        assertThat(exists).isFalse();
-    }
-
-    @Test
     @DisplayName("OAuth Account와 일치하는 멤버의 멤버키를 조회한다.")
     void findMemberKeyByOAuthAccount() {
         // given
@@ -101,24 +71,9 @@ class MemberFinderTest {
         given(oauthRepository.findByAccount(eq(oauthAccount))).willReturn(Optional.of(oauthEntity));
 
         // when
-        String memberKey = memberFinder.findMemberKeyByOAuthAccount(oauthAccount);
+        String memberKey = memberFinder.findMemberKeyByOAuthAccount(oauthAccount).orElse(null);
 
         // then
         assertThat(memberKey).isEqualTo("memberKey");
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 OAuthAccount이면 AppException이 발생한다.")
-    void throwAppExceptionIfOAuthAccountNotExist() {
-        // given
-        String oauthAccount = "notExistOAuthAccount";
-
-        given(oauthRepository.findByAccount(oauthAccount)).willReturn(Optional.empty());
-
-        // then
-        assertThatThrownBy(() -> memberFinder.findMemberKeyByOAuthAccount(oauthAccount))
-                .isInstanceOf(AppException.class)
-                .extracting("errorType")
-                .isEqualTo(ErrorType.NOT_FOUND_DATA);
     }
 }

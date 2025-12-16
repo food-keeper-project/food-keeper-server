@@ -1,6 +1,6 @@
 package com.foodkeeper.foodkeeperserver.auth.implement;
 
-import com.foodkeeper.foodkeeperserver.auth.domain.OAuthMember;
+import com.foodkeeper.foodkeeperserver.auth.domain.OAuthUser;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,11 +45,11 @@ class KakaoAuthenticatorTest {
         String kakaoResponse = """
                 {
                   "id": 123456789,
-                  "kakaoAccount": {
+                  "kakao_account": {
                     "email": "test@kakao.com",
                     "profile": {
                       "nickname": "kakao",
-                      "profileImageUrl": "https://image.kakao.com/profile.jpg"
+                      "profile_image_url": "https://image.kakao.com/profile.jpg"
                     }
                   }
                 }
@@ -60,14 +60,14 @@ class KakaoAuthenticatorTest {
                 .andRespond(withSuccess(kakaoResponse, MediaType.APPLICATION_JSON));
 
         // when
-        OAuthMember oauthMember = kakaoAuthenticator.authenticate(accessToken);
+        OAuthUser oauthUser = kakaoAuthenticator.authenticate(accessToken);
 
         // then
-        assertThat(oauthMember.account()).isEqualTo("123456789");
-        assertThat(oauthMember.provider()).isEqualTo(OAuthProvider.KAKAO);
-        assertThat(oauthMember.email()).isEqualTo("test@kakao.com");
-        assertThat(oauthMember.nickname()).isEqualTo("kakao");
-        assertThat(oauthMember.profileImageUrl())
+        assertThat(oauthUser.account()).isEqualTo("123456789");
+        assertThat(oauthUser.provider()).isEqualTo(OAuthProvider.KAKAO);
+        assertThat(oauthUser.email()).isEqualTo("test@kakao.com");
+        assertThat(oauthUser.nickname()).isEqualTo("kakao");
+        assertThat(oauthUser.profileImageUrl())
                 .isEqualTo("https://image.kakao.com/profile.jpg");
     }
 

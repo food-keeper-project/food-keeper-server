@@ -1,20 +1,21 @@
 package com.foodkeeper.foodkeeperserver.auth.business;
 
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.OauthEntity;
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.SignInLogEntity;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.MemberRoleRepository;
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.SignInLogRepository;
+import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
+import com.foodkeeper.foodkeeperserver.auth.domain.OAuthUser;
+import com.foodkeeper.foodkeeperserver.auth.domain.SignInContext;
 import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
 import com.foodkeeper.foodkeeperserver.auth.implement.KakaoAuthenticator;
 import com.foodkeeper.foodkeeperserver.auth.implement.SignInLogAppender;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
-import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.OauthEntity;
-import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.SignInLogEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
-import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
-import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.SignInLogRepository;
-import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
-import com.foodkeeper.foodkeeperserver.auth.domain.SignInContext;
-import com.foodkeeper.foodkeeperserver.auth.domain.OAuthMember;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
-import com.foodkeeper.foodkeeperserver.member.implement.*;
+import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
+import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -65,8 +66,10 @@ class SignInServiceTest {
         SignInContext register = SignInContext.builder()
                 .accessToken(accessToken)
                 .ipAddress("127.0.0.1")
+                .fcmToken("fcmToken")
+                .oAuthProvider(OAuthProvider.KAKAO)
                 .build();
-        OAuthMember oauthMember = OAuthMember.builder()
+        OAuthUser oauthUser = OAuthUser.builder()
                 .account(account)
                 .email("email@test.com")
                 .nickname("nickname")
@@ -74,8 +77,7 @@ class SignInServiceTest {
                 .build();
         OauthEntity oauthEntity = new OauthEntity(OAuthProvider.KAKAO, account, memberKey);
         SignInLogEntity signInLogEntity = mock(SignInLogEntity.class);
-        given(kakaoAuthenticator.authenticate(eq(accessToken))).willReturn(oauthMember);
-        given(oauthRepository.existsByAccount(eq(account))).willReturn(true);
+        given(kakaoAuthenticator.authenticate(eq(accessToken))).willReturn(oauthUser);
         given(oauthRepository.findByAccount(eq(account))).willReturn(Optional.of(oauthEntity));
         given(signInLogRepository.save(any(SignInLogEntity.class))).willReturn(signInLogEntity);
 
@@ -98,9 +100,12 @@ class SignInServiceTest {
         SignInContext register = SignInContext.builder()
                 .accessToken(accessToken)
                 .ipAddress("127.0.0.1")
+                .fcmToken("fcmToken")
+                .oAuthProvider(OAuthProvider.KAKAO)
                 .build();
-        OAuthMember oauthMember = OAuthMember.builder()
+        OAuthUser oauthUser = OAuthUser.builder()
                 .account(account)
+                .provider(OAuthProvider.KAKAO)
                 .email("email@test.com")
                 .nickname("nickname")
                 .profileImageUrl("https://test.com/image.jpg")
@@ -109,8 +114,7 @@ class SignInServiceTest {
         MemberEntity memberEntity = mock(MemberEntity.class);
         SignInLogEntity signInLogEntity = mock(SignInLogEntity.class);
         given(memberEntity.getMemberKey()).willReturn(memberKey);
-        given(kakaoAuthenticator.authenticate(eq(accessToken))).willReturn(oauthMember);
-        given(oauthRepository.existsByAccount(eq(account))).willReturn(false);
+        given(kakaoAuthenticator.authenticate(eq(accessToken))).willReturn(oauthUser);
         given(memberRepository.save(any(MemberEntity.class))).willReturn(memberEntity);
         given(oauthRepository.save(any(OauthEntity.class))).willReturn(oauthEntity);
         given(signInLogRepository.save(any(SignInLogEntity.class))).willReturn(signInLogEntity);
