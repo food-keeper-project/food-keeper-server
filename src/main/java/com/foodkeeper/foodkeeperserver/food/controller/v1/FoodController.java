@@ -29,7 +29,7 @@ public class FoodController {
     public ResponseEntity<ApiResponse<FoodRegisterResponse>> createFood(@RequestPart @Valid FoodRegisterRequest request,
                                                                         @RequestPart(required = false) MultipartFile image) {
         String memberId = "memberId"; // todo 로그인 방식 구현 후 리팩토링
-        FoodRegister register = FoodRegisterRequest.toRequest(request);
+        FoodRegister register = FoodRegisterRequest.toRegister(request);
         Long foodId = foodService.registerFood(register, image, memberId);
         return ResponseEntity.ok(ApiResponse.success(new FoodRegisterResponse(foodId)));
     }
