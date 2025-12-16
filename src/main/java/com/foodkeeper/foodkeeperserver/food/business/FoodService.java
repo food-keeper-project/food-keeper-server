@@ -27,13 +27,13 @@ public class FoodService {
     private final SelectedFoodCategoryManager selectedFoodCategoryManager;
 
     @Transactional
-    public Long registerFood(FoodRegister dto, MultipartFile file, String memberId) {
+    public Long registerFood(FoodRegister register, MultipartFile file, String memberId) {
         String imageUrl = imageManager.fileUpload(file); // 비동기 방식 업로드
-        Food food = dto.toDomain(imageUrl,memberId);
+        Food food = register.toDomain(imageUrl,memberId);
         try {
             Food savedFood = foodManager.register(food);
             //todo 카테고리 선택 방식에 따라 인자값 수정, 카테고리 선택 시에 매번 모두 조회?
-            List<FoodCategory> foodCategories = foodCategoryManager.findAll(dto.categoryIds());
+            List<FoodCategory> foodCategories = foodCategoryManager.findAll(register.categoryIds());
             foodCategories.forEach(category ->
                     selectedFoodCategoryManager.save(SelectedFoodCategory.create(savedFood.id(), category.id())));
             return savedFood.id();

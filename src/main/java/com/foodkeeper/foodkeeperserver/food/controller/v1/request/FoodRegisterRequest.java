@@ -17,7 +17,7 @@ public record FoodRegisterRequest(
         LocalDate expiryDate,
         @NotNull String memo
 ) {
-    public static FoodRegister toDto(FoodRegisterRequest request){
+    public static FoodRegister toRequest(FoodRegisterRequest request){
         return new FoodRegister(
                 request.name(),
                 request.categoryIds,
