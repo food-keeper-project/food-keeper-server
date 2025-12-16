@@ -1,16 +1,16 @@
 package com.foodkeeper.foodkeeperserver.food.business;
 
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodCategoryRepository;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.SelectedFoodCategoryRepository;
-import com.foodkeeper.foodkeeperserver.food.implement.ImageManager;
-import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
-import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.fixture.CategoryFixture;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodCategoryManager;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
+import com.foodkeeper.foodkeeperserver.food.implement.ImageManager;
 import com.foodkeeper.foodkeeperserver.food.implement.SelectedFoodCategoryManager;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
@@ -29,33 +29,25 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class FoodEntityServiceTest {
 
-    @InjectMocks
-    private FoodService foodService;
-
-    @Mock
-    private ImageManager imageManager;
-
-    @Mock
-    private FoodRepository foodRepository;
-
-    @Mock
-    private FoodCategoryRepository foodCategoryRepository;
-
-    @Mock
-    private SelectedFoodCategoryRepository selectedFoodCategoryRepository;
+    @InjectMocks FoodService foodService;
+    @Mock ImageManager imageManager;
+    @Mock FoodRepository foodRepository;
+    @Mock FoodCategoryRepository foodCategoryRepository;
+    @Mock SelectedFoodCategoryRepository selectedFoodCategoryRepository;
 
     @BeforeEach
     void setUp() {
         FoodManager foodManager = new FoodManager(foodRepository);
         FoodCategoryManager foodCategoryManager = new FoodCategoryManager(foodCategoryRepository);
-        SelectedFoodCategoryManager selectedFoodCategoryManager = new SelectedFoodCategoryManager(selectedFoodCategoryRepository);
+        SelectedFoodCategoryManager selectedFoodCategoryManager =
+                new SelectedFoodCategoryManager(selectedFoodCategoryRepository);
 
         foodService = new FoodService(
                 imageManager,
@@ -81,9 +73,9 @@ public class FoodEntityServiceTest {
         given(foodCategoryRepository.findAllById(categoryIds)).willReturn(mockCategories);
         given(foodRepository.save(any(FoodEntity.class))).willReturn(mockFoodEntity);
 
-
         // when
         foodService.registerFood(dto, mockFile, memberId);
+
         // then
         ArgumentCaptor<FoodEntity> foodCaptor = ArgumentCaptor.forClass(FoodEntity.class);
         verify(foodRepository).save(foodCaptor.capture());
@@ -99,8 +91,8 @@ public class FoodEntityServiceTest {
     void validateCategorySize_FAIL() throws Exception {
         //given
         List<Long> categoryIds = List.of(1L, 2L, 3L, 4L);
-
         FoodRegister registerDto = FoodFixture.createRegisterDto(categoryIds);
+
         //when + then
         assertThatThrownBy(() -> foodService.registerFood(registerDto, null, "memberId"))
                 .isInstanceOf(AppException.class)

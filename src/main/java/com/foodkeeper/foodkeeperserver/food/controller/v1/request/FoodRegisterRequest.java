@@ -1,7 +1,7 @@
 package com.foodkeeper.foodkeeperserver.food.controller.v1.request;
 
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -17,7 +17,7 @@ public record FoodRegisterRequest(
         LocalDate expiryDate,
         @NotNull String memo
 ) {
-    public static FoodRegister toRegister(FoodRegisterRequest request){
+    public static FoodRegister toRegister(FoodRegisterRequest request) {
         return new FoodRegister(
                 request.name(),
                 request.categoryIds,

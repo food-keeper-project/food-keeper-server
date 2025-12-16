@@ -8,7 +8,7 @@ public record FoodCategory(
         String name,
         String memberId
 ) {
-    public static FoodCategory create(String name, String memberId){
+    public static FoodCategory create(String name, String memberId) {
         return FoodCategory.builder()
                 .name(name)
                 .memberId(memberId)

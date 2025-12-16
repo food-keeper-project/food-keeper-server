@@ -1,9 +1,9 @@
 package com.foodkeeper.foodkeeperserver.food.fixture;
 
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
@@ -29,6 +29,7 @@ public class FoodFixture {
                 MEMO
         );
     }
+
     public static Food createFood() {
         return Food.builder()
                 .id(ID)
@@ -44,7 +45,7 @@ public class FoodFixture {
 
     public static FoodEntity createFoodEntity() {
         FoodEntity foodEntity = FoodEntity.from(createFood());
-        ReflectionTestUtils.setField(foodEntity,"id",1L);
+        ReflectionTestUtils.setField(foodEntity, "id", 1L);
         return foodEntity;
     }
 }

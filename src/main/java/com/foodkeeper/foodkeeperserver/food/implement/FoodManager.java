@@ -16,6 +16,4 @@ public class FoodManager {
         FoodEntity foodEntity = foodRepository.save(FoodEntity.from(food));
         return foodEntity.toDomain();
     }
-
-
 }

@@ -28,7 +28,7 @@ public class S3ImageManager implements ImageManager {
     @Async
     @Override
     public String fileUpload(MultipartFile file) {
-        if(file == null || file.isEmpty()){
+        if (file == null || file.isEmpty()) {
             return "";
         }
         String url = toUrls(file);

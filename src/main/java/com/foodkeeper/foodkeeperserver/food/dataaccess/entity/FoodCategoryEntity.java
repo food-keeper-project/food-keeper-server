@@ -3,7 +3,10 @@ package com.foodkeeper.foodkeeperserver.food.dataaccess.entity;
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.BaseEntity;
 import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -15,19 +18,19 @@ public class FoodCategoryEntity extends BaseEntity {
     @Column(name = "food_category_id")
     private Long id;
 
-    @Column(name = "name",nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "member_id", nullable = false)
     private String memberId;
 
     @Builder
-    private FoodCategoryEntity(String name, String memberId){
+    private FoodCategoryEntity(String name, String memberId) {
         this.name = name;
         this.memberId = memberId;
     }
 
-    public FoodCategory toDomain(){
+    public FoodCategory toDomain() {
         return new FoodCategory(
                 this.id,
                 this.name,
@@ -35,7 +38,7 @@ public class FoodCategoryEntity extends BaseEntity {
         );
     }
 
-    public static FoodCategoryEntity from(FoodCategory foodCategory){
+    public static FoodCategoryEntity from(FoodCategory foodCategory) {
         return FoodCategoryEntity.builder()
                 .name(foodCategory.name())
                 .memberId(foodCategory.memberId())

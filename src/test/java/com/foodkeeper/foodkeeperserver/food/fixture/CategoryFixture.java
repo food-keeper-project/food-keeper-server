@@ -31,7 +31,7 @@ public class CategoryFixture {
     // 단일 엔티티 생성
     public static FoodCategoryEntity createCategoryEntity(Long id) {
         FoodCategoryEntity foodCategoryEntity = FoodCategoryEntity.from(createCategory(id));
-        ReflectionTestUtils.setField(foodCategoryEntity,"id",id);
+        ReflectionTestUtils.setField(foodCategoryEntity, "id", id);
         return foodCategoryEntity;
     }
 }
