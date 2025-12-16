@@ -59,7 +59,7 @@ public class FoodEntityServiceTest {
 
     @Test
     @DisplayName("식제품 추가 기능 구현 성공")
-    void registerFood_SUCCESS() throws Exception {
+    void registerFood_SUCCESS() {
         // given
         String memberId = "memberId";
         MultipartFile mockFile = new MockMultipartFile("image", "test.jpg", "image/jpeg", "data".getBytes());
@@ -88,7 +88,7 @@ public class FoodEntityServiceTest {
 
     @Test
     @DisplayName("카테고리가 3개 초과하면 에러 발생")
-    void validateCategorySize_FAIL() throws Exception {
+    void validateCategorySize_FAIL() {
         //given
         List<Long> categoryIds = List.of(1L, 2L, 3L, 4L);
         FoodRegister registerDto = FoodFixture.createRegisterDto(categoryIds);

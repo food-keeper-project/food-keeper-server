@@ -22,26 +22,26 @@ public class FoodEntity extends BaseEntity {
     @Column(name = "food_id")
     private Long id;
 
-    @Column(name = "name", nullable = false, length = 50)
+    @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(name = "image_url", nullable = false)
+    @Column(nullable = false)
     private String imageUrl;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "storage_method", length = 20, nullable = false)
+    @Column(length = 20, nullable = false)
     private StorageMethod storageMethod;
 
-    @Column(name = "expiry_date", nullable = false)
+    @Column(nullable = false)
     private LocalDate expiryDate;
 
-    @Column(name = "memo", nullable = false)
+    @Column(nullable = false)
     private String memo;
 
-    @Column(name = "selected_category_count", nullable = false)
+    @Column(nullable = false)
     private int selectedCategoryCount;
 
-    @Column(name = "member_id", nullable = false)
+    @Column(nullable = false)
     private String memberId;
 
     @Builder

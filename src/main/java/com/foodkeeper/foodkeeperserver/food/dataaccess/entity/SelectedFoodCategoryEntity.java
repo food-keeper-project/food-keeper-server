@@ -18,10 +18,10 @@ public class SelectedFoodCategoryEntity {
     @Column(name = "selected_food_category_id")
     private Long id;
 
-    @Column(name = "food_id", nullable = false)
+    @Column(nullable = false)
     private Long foodId;
 
-    @Column(name = "food_category_id", nullable = false)
+    @Column(nullable = false)
     private Long foodCategoryId;
 
     @Builder

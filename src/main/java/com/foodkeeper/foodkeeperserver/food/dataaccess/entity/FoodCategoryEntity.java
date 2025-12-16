@@ -18,10 +18,10 @@ public class FoodCategoryEntity extends BaseEntity {
     @Column(name = "food_category_id")
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "member_id", nullable = false)
+    @Column(nullable = false)
     private String memberId;
 
     @Builder

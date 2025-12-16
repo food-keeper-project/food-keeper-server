@@ -28,7 +28,7 @@ public class SelectedFoodEntityCategoryCreatorTest {
 
     @Test
     @DisplayName("카테고리 생성 시 리포지토리 호출 및 결과 반환")
-    void save_SUCCESS() throws Exception {
+    void save_SUCCESS() {
         //given
         SelectedFoodCategory selectedCategory = SelectedFoodCategoryFixture.createSelectedCategory(1L, 1L);
         SelectedFoodCategoryEntity selectedFoodCategoryEntity = SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 1L);

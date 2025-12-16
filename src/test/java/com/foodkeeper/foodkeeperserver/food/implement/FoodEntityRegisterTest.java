@@ -26,7 +26,7 @@ public class FoodEntityRegisterTest {
 
     @Test
     @DisplayName("식재료 저장 요청 시 리포지토리 호출 및 결과 반환")
-    void register_SUCCESS() throws Exception {
+    void register_SUCCESS() {
         //given
         Food food = FoodFixture.createFood();
         FoodEntity foodEntity = FoodFixture.createFoodEntity();
