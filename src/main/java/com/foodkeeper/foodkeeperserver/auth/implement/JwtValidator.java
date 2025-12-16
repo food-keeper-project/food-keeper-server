@@ -1,9 +1,9 @@
-package com.foodkeeper.foodkeeperserver.security.jwt;
+package com.foodkeeper.foodkeeperserver.auth.implement;
 
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.SecurityException;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +37,7 @@ public class JwtValidator {
             throw new AppException(ErrorType.UNSUPPORTED_JWT);
         } catch (ExpiredJwtException e) {
             throw new AppException(ErrorType.EXPIRED_JWT);
-        } catch (SecurityException e) {
+        } catch (SecurityException | SignatureException e) {
             throw new AppException(ErrorType.INVALID_SIGNATURE);
         } catch (IllegalArgumentException e) {
             throw new AppException(ErrorType.INVALID_JWT);
