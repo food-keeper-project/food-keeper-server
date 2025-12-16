@@ -43,6 +43,7 @@ class MemberRegistrarTest {
         NewMember newMember = NewMember.builder()
                 .signUpIpAddress("127.0.0.1")
                 .memberRoles(new MemberRoles(List.of(MemberRole.ROLE_USER)))
+                .email("test@mail.com")
                 .build();
         NewOAuthMember newOAuthMember = NewOAuthMember.builder()
                 .member(newMember)

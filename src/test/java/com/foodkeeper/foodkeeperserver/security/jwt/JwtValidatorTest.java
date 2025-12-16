@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.security.jwt;
 
+import com.foodkeeper.foodkeeperserver.auth.implement.JwtValidator;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import io.jsonwebtoken.Jwts;
@@ -59,7 +60,7 @@ class JwtValidatorTest {
     @Test
     @DisplayName("Signature가 맞지 않으면 AppException이 발생한다.")
     void throwAppExceptionIfSignatureIsInvalid() {
-        String signature = "1signaturesignaturesignaturesignaturesignaturesignature";
+        String signature = "1signaturesignaturesignaturesignature";
         SecretKey invalidSecretKey = Keys.hmacShaKeyFor(signature.getBytes(StandardCharsets.UTF_8));
         String memberKey = "memberKey";
         String token =
