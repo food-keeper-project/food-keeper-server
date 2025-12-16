@@ -18,6 +18,7 @@ public class FoodFixture {
     public static final String MEMO = "우유 마시쪙";
     public static final StorageMethod STORAGE_METHOD = StorageMethod.FROZEN;
     public static final LocalDate EXPIRY_DATE = LocalDate.now().plusDays(1);
+    public static final Integer EXPIRY_ALARM = 3;
     public static final String IMAGE_URL = "https://s3.aws.com/milk.jpg";
     public static final String MEMBER_ID = "memberId";
 
@@ -28,6 +29,7 @@ public class FoodFixture {
                 categoryIds,
                 STORAGE_METHOD,
                 EXPIRY_DATE,
+                3,
                 MEMO
         );
     }

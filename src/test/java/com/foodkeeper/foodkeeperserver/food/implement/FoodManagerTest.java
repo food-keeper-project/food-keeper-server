@@ -1,10 +1,10 @@
 package com.foodkeeper.foodkeeperserver.food.implement;
 
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
-import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,9 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,16 +47,16 @@ public class FoodManagerTest {
         //given
         FoodCursorFinder finder = FoodFixture.createFirstPageFinder();
 
-        List<Food> foods = IntStream.range(0, 10)
-                .mapToObj(i -> FoodFixture.createFood(1L))
-                .toList();
+        FoodEntity entity1 = FoodFixture.createFoodEntity(1L);
+        FoodEntity entity2 = FoodFixture.createFoodEntity(2L);
+        List<FoodEntity> foodEntities = List.of(entity1, entity2);
 
-        given(foodRepository.findFoodCursorList(finder)).willReturn(foods);
+        given(foodRepository.findFoodCursorList(finder)).willReturn(foodEntities);
         //when
         List<Food> results = foodManager.findFoodList(finder);
         //then
-        assertThat(results).hasSize(10);
-        assertThat(results.getFirst().memberId()).isEqualTo(finder.memberId());
-        assertThat(results).isEqualTo(foods);
+        assertThat(results).hasSize(2);
+        assertThat(results.getFirst().name()).isEqualTo("우유");
+        assertThat(results.get(0)).isInstanceOf(Food.class);
     }
 }

@@ -88,13 +88,13 @@ public class FoodService {
         List<Long> categoryIds = mappings.stream()
                 .map(SelectedFoodCategory::foodCategoryId)
                 .toList();
-        return MyFood.of(food,categoryIds);
+        return MyFood.of(food, categoryIds);
     }
 
-    // 이름 조회
+    // 이름 조회 - ai 용
     @Transactional(readOnly = true)
     public List<String> getFoodNames(List<Long> ids, String memberId) {
-        return foodManager.findFoodNames(ids,memberId);
+        return foodManager.findFoodNames(ids, memberId);
     }
 
     // 유통기한 임박 재료 리스트 조회
@@ -105,4 +105,5 @@ public class FoodService {
                 .map(ImminentFood::of)
                 .toList();
     }
+
 }

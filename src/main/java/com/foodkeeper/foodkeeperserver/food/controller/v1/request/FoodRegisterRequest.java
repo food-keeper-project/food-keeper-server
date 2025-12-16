@@ -15,6 +15,7 @@ public record FoodRegisterRequest(
         @NotNull @Size(min = 1, max = 3) List<Long> categoryIds,
         @NotNull StorageMethod storageMethod,
         LocalDate expiryDate,
+        @NotNull @Size(min = 0, max = 14) Integer expiryAlarm,
         @NotNull String memo
 ) {
     public static FoodRegister toDto(FoodRegisterRequest request) {
@@ -23,6 +24,7 @@ public record FoodRegisterRequest(
                 request.categoryIds,
                 request.storageMethod,
                 request.expiryDate,
+                request.expiryAlarm,
                 request.memo
         );
     }
