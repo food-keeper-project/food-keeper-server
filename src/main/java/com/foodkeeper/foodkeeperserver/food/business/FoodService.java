@@ -29,8 +29,8 @@ public class FoodService {
 
     @Transactional
     public Long registerFood(FoodRegister register, MultipartFile file, String memberId) {
-        CompletableFuture<String> future = imageManager.fileUpload(file);
-        Food food = register.toDomain(future.join(), memberId);
+        CompletableFuture<String> imageUrlFuture = imageManager.fileUpload(file);
+        Food food = register.toDomain(imageUrlFuture.join(), memberId);
         try {
             Food savedFood = foodManager.register(food);
             //todo 카테고리 선택 방식에 따라 인자값 수정, 카테고리 선택 시에 매번 모두 조회?
@@ -39,7 +39,7 @@ public class FoodService {
                     selectedFoodCategoryManager.save(SelectedFoodCategory.create(savedFood.id(), category.id())));
             return savedFood.id();
         } catch (RuntimeException e) { // DB 롤백 시 사진 삭제
-            imageManager.deleteFile(future.join());
+            imageManager.deleteFile(imageUrlFuture.join());
             throw new AppException(ErrorType.DEFAULT_ERROR, e);
         }
     }
