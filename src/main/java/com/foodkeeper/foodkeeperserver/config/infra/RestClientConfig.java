@@ -2,6 +2,7 @@ package com.foodkeeper.foodkeeperserver.config.infra;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
@@ -17,6 +18,7 @@ public class RestClientConfig {
     private static final int CLOVA_READ_TIMEOUT = 20;
 
     @Bean("APIRestClient")
+    @Primary
     public RestClient kakakoRestClient() {
         return RestClient.builder()
                 .requestFactory(createFactory(API_CONNECT_TIMEOUT,API_READ_TIMEOUT))
