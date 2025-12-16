@@ -10,6 +10,7 @@ import com.foodkeeper.foodkeeperserver.auth.domain.OAuthUser;
 import com.foodkeeper.foodkeeperserver.auth.domain.SignInContext;
 import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
 import com.foodkeeper.foodkeeperserver.auth.implement.KakaoAuthenticator;
+import com.foodkeeper.foodkeeperserver.auth.implement.RefreshTokenManager;
 import com.foodkeeper.foodkeeperserver.auth.implement.SignInLogAppender;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
@@ -52,8 +53,9 @@ class SignInServiceTest {
         SignInLogAppender signInLogAppender = new SignInLogAppender(signInLogRepository);
         MemberFinder memberFinder = new MemberFinder(memberRepository, oauthRepository);
         MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, oauthRepository, memberRoleRepository);
-        signInService = new SignInService(kakaoAuthenticator, jwtGenerator,
-                signInLogAppender, memberFinder, memberRegistrar);
+        RefreshTokenManager refreshTokenManager = new RefreshTokenManager(memberRepository);
+        signInService = new SignInService(kakaoAuthenticator, memberFinder, memberRegistrar, signInLogAppender,
+                jwtGenerator, refreshTokenManager);
     }
 
     @Test

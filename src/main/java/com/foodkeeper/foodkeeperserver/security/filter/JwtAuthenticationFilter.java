@@ -4,7 +4,7 @@ import com.foodkeeper.foodkeeperserver.auth.domain.AuthMember;
 import com.foodkeeper.foodkeeperserver.auth.implement.MemberRoleFinder;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
-import com.foodkeeper.foodkeeperserver.security.jwt.JwtValidator;
+import com.foodkeeper.foodkeeperserver.auth.implement.JwtValidator;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

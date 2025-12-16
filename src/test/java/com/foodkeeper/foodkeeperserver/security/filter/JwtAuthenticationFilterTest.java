@@ -11,7 +11,7 @@ import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
 import com.foodkeeper.foodkeeperserver.member.fixture.MemberEntityFixture;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
-import com.foodkeeper.foodkeeperserver.security.jwt.JwtValidator;
+import com.foodkeeper.foodkeeperserver.auth.implement.JwtValidator;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import io.jsonwebtoken.security.Keys;

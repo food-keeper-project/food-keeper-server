@@ -7,6 +7,7 @@ import com.foodkeeper.foodkeeperserver.auth.domain.SignInContext;
 import com.foodkeeper.foodkeeperserver.auth.domain.enums.MemberRole;
 import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
 import com.foodkeeper.foodkeeperserver.auth.implement.OAuthAuthenticator;
+import com.foodkeeper.foodkeeperserver.auth.implement.RefreshTokenManager;
 import com.foodkeeper.foodkeeperserver.auth.implement.SignInLogAppender;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.SignUpType;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
@@ -20,10 +21,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SignInService {
     private final OAuthAuthenticator oauthAuthenticator;
-    private final JwtGenerator jwtGenerator;
-    private final SignInLogAppender signInLogAppender;
     private final MemberFinder memberFinder;
     private final MemberRegistrar memberRegistrar;
+    private final SignInLogAppender signInLogAppender;
+    private final JwtGenerator jwtGenerator;
+    private final RefreshTokenManager refreshTokenManager;
 
     public Jwt signInByOAuth(SignInContext context) {
         OAuthUser oAuthUser = oauthAuthenticator.authenticate(context.accessToken());
@@ -36,6 +38,8 @@ public class SignInService {
 
         signInLogAppender.append(context.ipAddress(), memberKey);
 
-        return jwtGenerator.generateJwt(memberKey);
+        Jwt jwt = jwtGenerator.generateJwt(memberKey);
+        refreshTokenManager.updateRefreshToken(memberKey, jwt.refreshToken());
+        return jwt;
     }
 }

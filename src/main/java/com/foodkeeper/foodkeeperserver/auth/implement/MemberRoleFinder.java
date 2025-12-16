@@ -5,8 +5,10 @@ import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.MemberRoleRepo
 import com.foodkeeper.foodkeeperserver.auth.domain.MemberRoles;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberRoleFinder {
 

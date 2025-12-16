@@ -45,6 +45,9 @@ public class MemberEntity extends BaseEntity {
     @Column(nullable = false, length = 20)
     private String signUpIpAddress;
 
+    @Column
+    private String refreshToken;
+
     public static MemberEntity from(NewMember member) {
         MemberEntity memberEntity = new MemberEntity();
         memberEntity.memberKey = UUID.randomUUID().toString();
