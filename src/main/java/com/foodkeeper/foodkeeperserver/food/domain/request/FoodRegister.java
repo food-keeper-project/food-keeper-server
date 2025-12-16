@@ -12,7 +12,7 @@ public record FoodRegister(String name,
                            LocalDate expiryDate,
                            String memo) {
 
-    public Food toDomain(String imageUrl, String memberId) {
+    public Food toFood(String imageUrl, String memberId) {
         return Food.builder()
                 .name(this.name)
                 .imageUrl(imageUrl)
