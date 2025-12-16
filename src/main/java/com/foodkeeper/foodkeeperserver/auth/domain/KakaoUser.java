@@ -1,8 +1,8 @@
 package com.foodkeeper.foodkeeperserver.auth.domain;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.annotation.JsonNaming;
 
 import java.time.LocalDateTime;
 
