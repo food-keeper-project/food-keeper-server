@@ -108,10 +108,13 @@ public class FoodServiceTest {
     void validateCategorySize_FAIL() throws Exception {
         //given
         List<Long> categoryIds = List.of(1L, 2L, 3L, 4L);
-
+        MockMultipartFile mockImage = new MockMultipartFile("image", "test.jpg", "image/jpeg", "test data".getBytes());
         FoodRegister registerDto = FoodFixture.createRegisterDto(categoryIds);
+
+        given(imageManager.fileUpload(any()))
+                .willReturn(CompletableFuture.completedFuture("https://dummy-url.com/image.jpg"));
         //when + then
-        assertThatThrownBy(() -> foodService.registerFood(registerDto, null, "memberId"))
+        assertThatThrownBy(() -> foodService.registerFood(registerDto, mockImage, "memberId"))
                 .isInstanceOf(AppException.class)
                 .extracting("errorType")
                 .isEqualTo(ErrorType.DEFAULT_ERROR);
