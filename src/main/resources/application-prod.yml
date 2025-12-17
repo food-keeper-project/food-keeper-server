@@ -19,6 +19,22 @@ logging:
   level:
     com.foodkeeper: info
 
+cloud:
+  aws:
+    s3:
+      bucket: food-keeper
+    credentials:
+      access-key: ${NAVER_STORAGE_ACCESS_KEY}
+      secret-key: ${NAVER_STORAGE_SECRET_KEY}
+    region:
+      static: kr-standard
+    stack:
+      auto: false
+
+custom:
+  s3:
+    endpoint: ${NAVER_STORAGE_URL}
+
 clova:
   url: ${CLOVA_MODEL_URL}
   api-key: ${CLOVA_API_KEY}
