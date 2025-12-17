@@ -56,7 +56,7 @@ public class FoodController {
         MyFood myFood = foodService.getFood(foodId,memberId);
         return ResponseEntity.ok(ApiResponse.success(FoodResponse.toFoodResponse(myFood)));
     }
-
+    // 이름만 반환하는 게 아니라 id, name, remainDays 를 반환해야될듯?
     @Operation(summary = "식재료 AI 이름 조회", description = "식재료 AI 이름 조회 API")
     @GetMapping("/recommend")
     public ResponseEntity<ApiResponse<FoodNameResponse>> getFoodNames(@RequestParam List<Long> ids) {

@@ -12,4 +12,5 @@ public enum ErrorCode {
     E2000, // 레시피 관련 에러
 
     E5000, // S3 관련 에러
+    E6000
 }

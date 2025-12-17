@@ -1,4 +1,4 @@
-package com.foodkeeper.foodkeeperserver.clova.domain;
+package com.foodkeeper.foodkeeperserver.recipe.domain;
 
 import lombok.RequiredArgsConstructor;
 
