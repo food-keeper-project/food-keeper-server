@@ -40,7 +40,7 @@ public class FoodFixture {
                 null,
                 null,
                 null,
-                10
+                2
         );
     }
 
@@ -64,10 +64,4 @@ public class FoodFixture {
         return foodEntity;
     }
 
-    public static Food createCustomFood(Long id, LocalDateTime createdAt) {
-        return Food.builder()
-                .id(id)
-                .createdAt(createdAt)
-                .build();
-    }
 }

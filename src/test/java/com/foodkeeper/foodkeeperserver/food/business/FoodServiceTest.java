@@ -2,12 +2,18 @@ package com.foodkeeper.foodkeeperserver.food.business;
 
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.SelectedFoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodCategoryRepository;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.SelectedFoodCategoryRepository;
+import com.foodkeeper.foodkeeperserver.food.domain.MyFood;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
+import com.foodkeeper.foodkeeperserver.food.domain.response.FoodCursorResult;
+import com.foodkeeper.foodkeeperserver.food.domain.response.ImminentFood;
 import com.foodkeeper.foodkeeperserver.food.fixture.CategoryFixture;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
+import com.foodkeeper.foodkeeperserver.food.fixture.SelectedFoodCategoryFixture;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodCategoryManager;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
 import com.foodkeeper.foodkeeperserver.food.implement.ImageManager;
@@ -25,7 +31,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -108,5 +116,82 @@ public class FoodServiceTest {
                 .isEqualTo(ErrorType.DEFAULT_ERROR);
     }
 
+    @Test
+    @DisplayName("커서 조회 시 limit 보다 많으면 hasNext 는 true 이고, 초과되면 하나는 제거되고 카테고리 매핑")
+    void getFoodList_hasNext_TRUE() throws Exception {
+        //given
+        FoodCursorFinder finder = FoodFixture.createFirstPageFinder();
+        List<FoodEntity> foodEntities = new ArrayList<>();
+        foodEntities.add(FoodFixture.createFoodEntity(1L));
+        foodEntities.add(FoodFixture.createFoodEntity(2L));
+        foodEntities.add(FoodFixture.createFoodEntity(3L));
 
+
+        List<SelectedFoodCategoryEntity> selectedFoodCategories = List.of(
+                SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 1L),
+                SelectedFoodCategoryFixture.createSelectedCategoryEntity(2L, 2L)
+        );
+        given(foodRepository.findFoodCursorList(finder)).willReturn(foodEntities);
+        given(selectedFoodCategoryRepository.findByFoodIds(List.of(1L, 2L))).willReturn(selectedFoodCategories);
+        //when
+        FoodCursorResult result = foodService.getFoodList(finder);
+        //then
+        assertThat(result.hasNext()).isTrue();
+        assertThat(result.foods()).hasSize(2);
+        assertThat(result.foods().getFirst().categoryIds().getFirst()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("식재료 단일 조회 시 카테고리와 매핑된 상태로 결과 반환")
+    void getFood_SUCCESS() throws Exception {
+        //given
+        FoodEntity food = FoodFixture.createFoodEntity(1L);
+        List<SelectedFoodCategoryEntity> selectedFoodCategories = List.of(
+                SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 1L),
+                SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 2L)
+        );
+
+        given(foodRepository.findByIdAndMemberId(1L, FoodFixture.MEMBER_ID)).willReturn(Optional.of(food));
+        given(selectedFoodCategoryRepository.findByFoodId(1L)).willReturn(selectedFoodCategories);
+        //when
+        MyFood result = foodService.getFood(1L, FoodFixture.MEMBER_ID);
+        //then
+        assertThat(result.categoryIds()).hasSize(2).containsExactly(1L, 2L);
+
+    }
+
+    @Test
+    @DisplayName("foodId 리스트와 memberId 으로 foodName을 List<String>로 결과 반환")
+    void getFoodNames_SUCCESS() throws Exception {
+        //given
+        List<Long> ids = List.of(1L,2L);
+        String memberId = FoodFixture.MEMBER_ID;
+        String foodName = FoodFixture.NAME;
+        FoodEntity food1 = FoodFixture.createFoodEntity(ids.get(0));
+        FoodEntity food2 = FoodFixture.createFoodEntity(ids.get(1));
+        given(foodRepository.findNamesByIdAndMemberId(ids,memberId)).willReturn(List.of(food1.getName(),food2.getName()));
+        //when
+        List<String> names = foodService.getFoodNames(ids,memberId);
+        //then
+        assertThat(names).hasSize(2);
+        assertThat(names.getFirst()).isEqualTo(foodName);
+        assertThat(names.getLast()).isEqualTo(foodName);
+    }
+
+    @Test
+    @DisplayName("임박한 재료 리스트를 조회했을 때 foodName, remainDays 반환")
+    void getImminentFood_SUCCESS() throws Exception {
+        //given
+        String memberId = FoodFixture.MEMBER_ID;
+        FoodEntity food1 = FoodFixture.createFoodEntity(1L);
+        FoodEntity food2 = FoodFixture.createFoodEntity(2L);
+
+        given(foodRepository.findImminentFoods(memberId)).willReturn(List.of(food1,food2));
+        //when
+        List<ImminentFood> results = foodService.getImminentFoods(memberId);
+        //then
+        assertThat(results).hasSize(2);
+        assertThat(results.getFirst().name()).isEqualTo(food1.getName());
+        assertThat(results.getFirst().remainDay()).isEqualTo(1L); // FoodFixture.EXPIRY_DATE = 내일
+    }
 }
