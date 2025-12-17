@@ -110,7 +110,6 @@ public class FoodServiceTest {
         List<Long> categoryIds = List.of(1L, 2L, 3L, 4L);
         MockMultipartFile mockImage = new MockMultipartFile("image", "test.jpg", "image/jpeg", "test data".getBytes());
         FoodRegister registerDto = FoodFixture.createRegisterDto(categoryIds);
-
         given(imageManager.fileUpload(any()))
                 .willReturn(CompletableFuture.completedFuture("https://dummy-url.com/image.jpg"));
         //when + then
@@ -168,14 +167,14 @@ public class FoodServiceTest {
     @DisplayName("foodId 리스트와 memberId 으로 foodName을 List<String>로 결과 반환")
     void getFoodNames_SUCCESS() throws Exception {
         //given
-        List<Long> ids = List.of(1L,2L);
+        List<Long> ids = List.of(1L, 2L);
         String memberId = FoodFixture.MEMBER_ID;
         String foodName = FoodFixture.NAME;
         FoodEntity food1 = FoodFixture.createFoodEntity(ids.get(0));
         FoodEntity food2 = FoodFixture.createFoodEntity(ids.get(1));
-        given(foodRepository.findNamesByIdAndMemberId(ids,memberId)).willReturn(List.of(food1.getName(),food2.getName()));
+        given(foodRepository.findNamesByIdAndMemberId(ids, memberId)).willReturn(List.of(food1.getName(), food2.getName()));
         //when
-        List<String> names = foodService.getFoodNames(ids,memberId);
+        List<String> names = foodService.getFoodNames(ids, memberId);
         //then
         assertThat(names).hasSize(2);
         assertThat(names.getFirst()).isEqualTo(foodName);
@@ -190,7 +189,7 @@ public class FoodServiceTest {
         FoodEntity food1 = FoodFixture.createFoodEntity(1L);
         FoodEntity food2 = FoodFixture.createFoodEntity(2L);
 
-        given(foodRepository.findImminentFoods(memberId)).willReturn(List.of(food1,food2));
+        given(foodRepository.findImminentFoods(memberId)).willReturn(List.of(food1, food2));
         //when
         List<ImminentFood> results = foodService.getImminentFoods(memberId);
         //then
