@@ -34,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -85,7 +86,7 @@ public class FoodServiceTest {
         FoodEntity mockFoodEntity = FoodFixture.createFoodEntity(1L);
         List<FoodCategoryEntity> mockCategories = CategoryFixture.createCategoryEntity(categoryIds);
 
-        given(imageManager.fileUpload(any())).willReturn("파일 경로");
+        given(imageManager.fileUpload(any())).willReturn(CompletableFuture.completedFuture("파일 경로"));
         given(foodCategoryRepository.findAllById(categoryIds)).willReturn(mockCategories);
         given(foodRepository.save(any(FoodEntity.class))).willReturn(mockFoodEntity);
 
