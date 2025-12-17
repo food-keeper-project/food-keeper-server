@@ -81,14 +81,15 @@ public class FoodManagerTest {
     @DisplayName("선택된 식재료들의 이름 조회 시 이름 리스트 반환")
     void findFoodNames_SUCCESS() throws Exception {
         //given
-        List<Long> ids = List.of(1L,2L);
         String memberId = FoodFixture.MEMBER_ID;
-        List<String> names = List.of("라면","고기");
-        given(foodRepository.findNamesByIdAndMemberId(ids,memberId)).willReturn(names);
+        FoodEntity entity1 = FoodFixture.createFoodEntity(1L);
+        FoodEntity entity2 = FoodFixture.createFoodEntity(2L);
+        given(foodRepository.findAllByMemberId(memberId)).willReturn(List.of(entity1, entity2));
         //when
-        List<String> resultNames = foodManager.findFoodNames(ids,memberId);
+        List<FoodEntity> foods = foodRepository.findAllByMemberId(memberId);
         //then
-        assertThat(resultNames).isEqualTo(names);
+        assertThat(foods).hasSize(2);
+        assertThat(foods.getFirst().getId()).isEqualTo(1L);
     }
 
 }

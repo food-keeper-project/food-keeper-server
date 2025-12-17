@@ -7,7 +7,7 @@ import com.foodkeeper.foodkeeperserver.food.domain.SelectedFoodCategory;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.domain.response.FoodCursorResult;
-import com.foodkeeper.foodkeeperserver.food.domain.response.ImminentFood;
+import com.foodkeeper.foodkeeperserver.food.domain.RecipeFood;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodCategoryManager;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
 import com.foodkeeper.foodkeeperserver.food.implement.ImageManager;
@@ -92,19 +92,27 @@ public class FoodService {
         return MyFood.of(food, categoryIds);
     }
 
-    // 이름 조회 - ai 용
+
     @Transactional(readOnly = true)
-    public List<String> getFoodNames(List<Long> ids, String memberId) {
-        return foodManager.findFoodNames(ids, memberId);
+    public List<RecipeFood> getAllByMemberId(String memberId) {
+        List<Food> foods = foodManager.findAllByMemberId(memberId);
+        return foods.stream()
+                .map(RecipeFood::of)
+                .toList();
     }
 
     // 유통기한 임박 재료 리스트 조회
     @Transactional(readOnly = true)
-    public List<ImminentFood> getImminentFoods(String memberId) {
+    public List<RecipeFood> getImminentFoods(String memberId) {
         List<Food> foods = foodManager.findImminentFoods(memberId);
         return foods.stream()
-                .map(ImminentFood::of)
+                .map(RecipeFood::of)
                 .toList();
     }
 
 }
+/**
+ * 원래는 RecipeFood, ImminentFood 도메인 객체를 분리해야될지 고민하다가
+ * 두 객체의 성질이 유통기한 임박 시간을 계산해주는지 여부에 따라 값이 달라지는 것 말고는 똑같은 역할을 하는 객체라고 생각이 들어서 하나로 통일했습니다
+ * 모든 식재료를 조회했을 때의 도메인 객체와, 유통기한 임박 설정 기간에 따라 값이 필터링 되는 도메인 객체를 나눠야 하는지 원호님 생각이 궁금합니다.
+ */

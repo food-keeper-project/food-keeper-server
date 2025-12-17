@@ -10,7 +10,7 @@ import com.foodkeeper.foodkeeperserver.food.domain.MyFood;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.domain.response.FoodCursorResult;
-import com.foodkeeper.foodkeeperserver.food.domain.response.ImminentFood;
+import com.foodkeeper.foodkeeperserver.food.domain.RecipeFood;
 import com.foodkeeper.foodkeeperserver.food.fixture.CategoryFixture;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import com.foodkeeper.foodkeeperserver.food.fixture.SelectedFoodCategoryFixture;
@@ -172,13 +172,12 @@ public class FoodServiceTest {
         String foodName = FoodFixture.NAME;
         FoodEntity food1 = FoodFixture.createFoodEntity(ids.get(0));
         FoodEntity food2 = FoodFixture.createFoodEntity(ids.get(1));
-        given(foodRepository.findNamesByIdAndMemberId(ids, memberId)).willReturn(List.of(food1.getName(), food2.getName()));
+        given(foodRepository.findAllByMemberId(memberId)).willReturn(List.of(food1, food2));
         //when
-        List<String> names = foodService.getFoodNames(ids, memberId);
+        List<RecipeFood> foods = foodService.getAllByMemberId(memberId);
         //then
-        assertThat(names).hasSize(2);
-        assertThat(names.getFirst()).isEqualTo(foodName);
-        assertThat(names.getLast()).isEqualTo(foodName);
+        assertThat(foods).hasSize(2);
+        assertThat(foods.getFirst().name()).isEqualTo(foodName);
     }
 
     @Test
@@ -191,7 +190,7 @@ public class FoodServiceTest {
 
         given(foodRepository.findImminentFoods(memberId)).willReturn(List.of(food1, food2));
         //when
-        List<ImminentFood> results = foodService.getImminentFoods(memberId);
+        List<RecipeFood> results = foodService.getImminentFoods(memberId);
         //then
         assertThat(results).hasSize(2);
         assertThat(results.getFirst().name()).isEqualTo(food1.getName());

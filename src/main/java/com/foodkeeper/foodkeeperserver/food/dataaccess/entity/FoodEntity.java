@@ -17,7 +17,7 @@ import java.time.temporal.ChronoUnit;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FoodEntity extends BaseEntity {
-
+    //todo 복합인덱스 생성 필요
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "food_id")
