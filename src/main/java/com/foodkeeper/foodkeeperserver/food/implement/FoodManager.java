@@ -36,9 +36,12 @@ public class FoodManager {
                 .toDomain();
     }
 
-    // 사용자가 식재료 선택 -> foodId 값으로 이름 조회 -> 응답값으로 AI 요청
-    public List<String> findFoodNames(List<Long> ids, String memberId) {
-        return foodRepository.findNamesByIdAndMemberId(ids, memberId);
+    // 1) 이름 정렬 2) 최신순
+    public List<Food> findAllByMemberId(String memberId) {
+        List<FoodEntity> foods = foodRepository.findAllByMemberId(memberId);
+        return foods.stream()
+                .map(FoodEntity::toDomain)
+                .toList();
     }
 
     // 알림 설정 리스트 조회

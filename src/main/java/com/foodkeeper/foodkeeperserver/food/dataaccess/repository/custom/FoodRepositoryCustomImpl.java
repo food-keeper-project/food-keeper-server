@@ -43,17 +43,17 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
     }
 
     @Override
-    public List<String> findNamesByIdAndMemberId(List<Long> ids, String memberId) {
+    public List<FoodEntity> findAllByMemberId(String memberId) {
 
-        if (ids == null || ids.isEmpty()) {
-            return List.of();
-        }
         return queryFactory
-                .select(foodEntity.name)
+                .select(foodEntity)
                 .from(foodEntity)
                 .where(
-                        foodEntity.id.in(ids),
                         foodEntity.memberId.eq(memberId)
+                )
+                .orderBy(
+                        foodEntity.name.asc(),
+                        foodEntity.createdAt.desc()
                 )
                 .fetch();
     }

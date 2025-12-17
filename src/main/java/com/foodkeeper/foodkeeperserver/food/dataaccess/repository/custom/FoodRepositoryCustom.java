@@ -8,7 +8,7 @@ import java.util.List;
 public interface FoodRepositoryCustom {
     List<FoodEntity> findFoodCursorList(FoodCursorFinder foodFinder);
 
-    List<String> findNamesByIdAndMemberId(List<Long> ids, String memberId);
+    List<FoodEntity> findAllByMemberId(String memberId);
 
     List<FoodEntity> findImminentFoods(String memberId);
 

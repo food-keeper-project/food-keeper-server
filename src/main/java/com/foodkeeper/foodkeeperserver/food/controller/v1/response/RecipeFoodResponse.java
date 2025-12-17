@@ -4,5 +4,5 @@ import com.foodkeeper.foodkeeperserver.food.domain.RecipeFood;
 
 import java.util.List;
 
-public record FoodImminentResponse(List<RecipeFood> recipeFoods) {
+public record RecipeFoodResponse(List<RecipeFood> recipeFoods) {
 }
