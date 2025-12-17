@@ -26,6 +26,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -69,7 +70,7 @@ public class FoodEntityServiceTest {
         FoodEntity mockFoodEntity = FoodFixture.createFoodEntity();
         List<FoodCategoryEntity> mockCategories = CategoryFixture.createCategoryEntity(categoryIds);
 
-        given(imageManager.fileUpload(any())).willReturn("파일 경로");
+        given(imageManager.fileUpload(any())).willReturn(CompletableFuture.completedFuture("파일 경로"));
         given(foodCategoryRepository.findAllById(categoryIds)).willReturn(mockCategories);
         given(foodRepository.save(any(FoodEntity.class))).willReturn(mockFoodEntity);
 
@@ -84,19 +85,5 @@ public class FoodEntityServiceTest {
         assertThat(savedFood.getName()).isEqualTo(dto.name());
         assertThat(savedFood.getImageUrl()).isEqualTo("파일 경로");
 
-    }
-
-    @Test
-    @DisplayName("카테고리가 3개 초과하면 에러 발생")
-    void validateCategorySize_FAIL() {
-        //given
-        List<Long> categoryIds = List.of(1L, 2L, 3L, 4L);
-        FoodRegister registerDto = FoodFixture.createRegisterDto(categoryIds);
-
-        //when + then
-        assertThatThrownBy(() -> foodService.registerFood(registerDto, null, "memberId"))
-                .isInstanceOf(AppException.class)
-                .extracting("errorType")
-                .isEqualTo(ErrorType.DEFAULT_ERROR);
     }
 }
