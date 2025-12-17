@@ -33,7 +33,7 @@ public class BookmarkedFoodEntity extends BaseEntity {
     private String memberKey;
 
     @Builder
-    public BookmarkedFoodEntity(String name,
+    private BookmarkedFoodEntity(String name,
                                 String imageUrl,
                                 StorageMethod storageMethod,
                                 String memberKey) {
