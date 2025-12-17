@@ -1,6 +1,8 @@
 package com.foodkeeper.foodkeeperserver.bookmarkedfood.dataaccess.entity;
 
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.BaseEntity;
+import com.foodkeeper.foodkeeperserver.food.domain.Food;
+import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -25,7 +27,7 @@ public class BookmarkedFoodEntity extends BaseEntity {
     private String imageUrl;
 
     @Column(nullable = false, length = 20)
-    private String storageMethod;
+    private StorageMethod storageMethod;
 
     @Column(nullable = false)
     private String memberKey;
@@ -33,11 +35,20 @@ public class BookmarkedFoodEntity extends BaseEntity {
     @Builder
     public BookmarkedFoodEntity(String name,
                                 String imageUrl,
-                                String storageMethod,
+                                StorageMethod storageMethod,
                                 String memberKey) {
         this.name = name;
         this.imageUrl = imageUrl;
         this.storageMethod = storageMethod;
         this.memberKey = memberKey;
+    }
+
+    public static BookmarkedFoodEntity from(Food food, String memberKey) {
+        return BookmarkedFoodEntity.builder()
+                .name(food.name())
+                .imageUrl(food.imageUrl())
+                .storageMethod(food.storageMethod())
+                .memberKey(memberKey)
+                .build();
     }
 }

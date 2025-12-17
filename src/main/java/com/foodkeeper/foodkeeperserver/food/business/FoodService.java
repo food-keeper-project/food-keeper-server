@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.food.business;
 
+import com.foodkeeper.foodkeeperserver.bookmarkedfood.implement.FoodBookmarker;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
 import com.foodkeeper.foodkeeperserver.food.domain.SelectedFoodCategory;
@@ -26,6 +27,7 @@ public class FoodService {
     private final FoodManager foodManager;
     private final FoodCategoryManager foodCategoryManager;
     private final SelectedFoodCategoryManager selectedFoodCategoryManager;
+    private final FoodBookmarker foodBookmarker;
 
     @Transactional
     public Long registerFood(FoodRegister register, MultipartFile file, String memberId) {
@@ -44,4 +46,7 @@ public class FoodService {
         }
     }
 
+    public Long bookmarkFood(Long foodId, String memberKey) {
+        return foodBookmarker.bookmark(foodManager.find(foodId), memberKey);
+    }
 }
