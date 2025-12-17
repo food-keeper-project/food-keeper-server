@@ -2,6 +2,13 @@ spring:
   config:
     activate:
       on-profile: local
+
+  datasource:
+    first:
+      jdbc-url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+      username: sa
+      password:
+
   jpa:
     properties:
       hibernate:
@@ -10,10 +17,6 @@ spring:
         hbm2ddl:
           auto: create
         dialect: org.hibernate.dialect.H2Dialect
-  datasource:
-    jdbc-url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
-    username: sa
-    password:
   h2:
     console:
       enabled: true
@@ -21,3 +24,24 @@ spring:
 logging:
   level:
     com.foodkeeper: debug
+
+cloud:
+  aws:
+    s3:
+      bucket: food-keeper
+    credentials:
+      access-key: access-key
+      secret-key: secret-key
+    region:
+      static: kr-standard
+    stack:
+      auto: false
+
+custom:
+  s3:
+    endpoint: storage-url
+
+clova:
+  url: clova-url
+  api-key: api-key
+  gateway-key: gateway-key

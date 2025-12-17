@@ -2,7 +2,10 @@ package com.foodkeeper.foodkeeperserver.food.dataaccess.entity;
 
 import com.foodkeeper.foodkeeperserver.food.domain.SelectedFoodCategory;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -15,26 +18,27 @@ public class SelectedFoodCategoryEntity {
     @Column(name = "selected_food_category_id")
     private Long id;
 
-    @Column(name = "food_id",nullable = false)
+    @Column(nullable = false)
     private Long foodId;
 
-    @Column(name = "food_category_id",nullable = false)
+    @Column(nullable = false)
     private Long foodCategoryId;
 
     @Builder
-    private SelectedFoodCategoryEntity(Long foodId, Long foodCategoryId){
+    private SelectedFoodCategoryEntity(Long foodId, Long foodCategoryId) {
         this.foodId = foodId;
         this.foodCategoryId = foodCategoryId;
     }
 
-    public SelectedFoodCategory toDomain(){
+    public SelectedFoodCategory toDomain() {
         return new SelectedFoodCategory(
                 this.id,
                 this.foodId,
                 this.foodCategoryId
         );
     }
-    public static SelectedFoodCategoryEntity from(SelectedFoodCategory selectedFoodCategory){
+
+    public static SelectedFoodCategoryEntity from(SelectedFoodCategory selectedFoodCategory) {
         return SelectedFoodCategoryEntity.builder()
                 .foodId(selectedFoodCategory.foodId())
                 .foodCategoryId(selectedFoodCategory.foodCategoryId())

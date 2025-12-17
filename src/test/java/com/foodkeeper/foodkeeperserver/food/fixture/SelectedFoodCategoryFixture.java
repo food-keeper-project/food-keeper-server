@@ -2,7 +2,6 @@ package com.foodkeeper.foodkeeperserver.food.fixture;
 
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.SelectedFoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.domain.SelectedFoodCategory;
-import org.springframework.test.util.ReflectionTestUtils;
 
 public class SelectedFoodCategoryFixture {
 

@@ -27,6 +27,6 @@ public class ApiControllerAdvice {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Object>> handleException(Exception e) {
         log.error("[Exception]: {}", e.getMessage());
-        return new ResponseEntity<>(ApiResponse.error(ErrorType.DEFAULT_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(ApiResponse.error(ErrorType.DEFAULT_ERROR, e), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
