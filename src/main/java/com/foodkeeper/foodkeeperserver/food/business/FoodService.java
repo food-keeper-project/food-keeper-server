@@ -1,13 +1,9 @@
 package com.foodkeeper.foodkeeperserver.food.business;
 
-import com.foodkeeper.foodkeeperserver.food.domain.Food;
-import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
-import com.foodkeeper.foodkeeperserver.food.domain.MyFood;
-import com.foodkeeper.foodkeeperserver.food.domain.SelectedFoodCategory;
+import com.foodkeeper.foodkeeperserver.food.domain.*;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.domain.response.FoodCursorResult;
-import com.foodkeeper.foodkeeperserver.food.domain.RecipeFood;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodCategoryManager;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
 import com.foodkeeper.foodkeeperserver.food.implement.ImageManager;

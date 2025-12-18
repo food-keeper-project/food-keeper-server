@@ -11,8 +11,5 @@ public class RecipeService {
     private final ClovaService clovaService;
     private final FoodManager foodManager;
 
-    // 유통기한 임박한 식재료 기반 AI 호출
 
-
-    // 전체 식재료 기반 AI 호출
 }
