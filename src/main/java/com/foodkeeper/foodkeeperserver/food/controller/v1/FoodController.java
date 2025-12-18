@@ -4,8 +4,8 @@ import com.foodkeeper.foodkeeperserver.food.business.FoodService;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodCursorRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodRegisterRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.*;
-import com.foodkeeper.foodkeeperserver.food.domain.MyFood;
 import com.foodkeeper.foodkeeperserver.food.domain.RecipeFood;
+import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.domain.response.FoodCursorResult;
@@ -53,8 +53,8 @@ public class FoodController {
     @GetMapping("/{foodId}")
     public ResponseEntity<ApiResponse<FoodResponse>> getFood(@PathVariable Long foodId) {
         String memberId = "memberId"; // todo 로그인 방식 구현 후 리팩토링
-        MyFood myFood = foodService.getFood(foodId, memberId);
-        return ResponseEntity.ok(ApiResponse.success(FoodResponse.toFoodResponse(myFood)));
+        RegisteredFood RegisteredFood = foodService.getFood(foodId, memberId);
+        return ResponseEntity.ok(ApiResponse.success(FoodResponse.toFoodResponse(RegisteredFood)));
     }
 
     @Operation(summary = "레시피 추천용 식재료 전체 조회", description = "레시피 추천용 식재료 전체 조회 API")

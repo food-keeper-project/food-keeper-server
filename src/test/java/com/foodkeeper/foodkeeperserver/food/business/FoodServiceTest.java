@@ -6,7 +6,7 @@ import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.SelectedFoodCatego
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodCategoryRepository;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.SelectedFoodCategoryRepository;
-import com.foodkeeper.foodkeeperserver.food.domain.MyFood;
+import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.domain.response.FoodCursorResult;
@@ -157,7 +157,7 @@ public class FoodServiceTest {
         given(foodRepository.findByIdAndMemberId(1L, FoodFixture.MEMBER_ID)).willReturn(Optional.of(food));
         given(selectedFoodCategoryRepository.findByFoodId(1L)).willReturn(selectedFoodCategories);
         //when
-        MyFood result = foodService.getFood(1L, FoodFixture.MEMBER_ID);
+        RegisteredFood result = foodService.getFood(1L, FoodFixture.MEMBER_ID);
         //then
         assertThat(result.categoryIds()).hasSize(2).containsExactly(1L, 2L);
 

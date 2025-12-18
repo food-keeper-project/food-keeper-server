@@ -16,9 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -50,42 +48,23 @@ public class FoodService {
     @Transactional(readOnly = true)
     public FoodCursorResult getFoodList(FoodCursorFinder finder) {
         List<Food> foods = foodManager.findFoodList(finder);
-
-        boolean hasNext = false;
-        if (foods.size() > finder.limit()) {
-            hasNext = true;
-            foods.remove(finder.limit().intValue()); // 가져온 확인용 다음 페이지 제거
-        }
         // 식재료 카테고리Id 값들 조회
-        List<Long> foodIds = foods.stream().map(Food::id).toList();
-        List<SelectedFoodCategory> mappings = selectedFoodCategoryManager.findByFoodIds(foodIds);
-
-        // key : foodId, value : List<CategoryId>
-        Map<Long, List<Long>> categoryMap = mappings.stream()
-                .collect(Collectors.groupingBy(
-                        SelectedFoodCategory::foodId,
-                        Collectors.mapping(SelectedFoodCategory::foodCategoryId, Collectors.toList())
-                ));
-
-        // 응답 객체 변환
-        List<MyFood> foodResponses = foods.stream()
-                .map(food -> {
-                    List<Long> categoryIds = categoryMap.getOrDefault(food.id(), List.of());
-                    return MyFood.of(food, categoryIds);
-                })
-                .toList();
-        return new FoodCursorResult(foodResponses, hasNext);
+        FoodSlice foodSlice = FoodSlice.from(foods, finder.limit());
+        SelectedFoodCategories categories = new SelectedFoodCategories(selectedFoodCategoryManager.findByFoodIds(
+                foodSlice.foods().getFoodIds()
+        ));
+        return foodSlice.toResult(categories);
     }
 
     // 단일 조회
     @Transactional(readOnly = true)
-    public MyFood getFood(Long id, String memberId) {
+    public RegisteredFood getFood(Long id, String memberId) {
         Food food = foodManager.findFood(id, memberId);
         List<SelectedFoodCategory> mappings = selectedFoodCategoryManager.findByFoodId(id);
         List<Long> categoryIds = mappings.stream()
                 .map(SelectedFoodCategory::foodCategoryId)
                 .toList();
-        return MyFood.of(food, categoryIds);
+        return RegisteredFood.of(food, categoryIds);
     }
 
 
