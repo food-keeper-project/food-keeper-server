@@ -135,7 +135,7 @@ public class FoodServiceTest {
                 SelectedFoodCategoryFixture.createSelectedCategoryEntity(2L, 2L)
         );
         given(foodRepository.findFoodCursorList(finder)).willReturn(foodEntities);
-        given(selectedFoodCategoryRepository.findByFoodIds(List.of(1L, 2L))).willReturn(selectedFoodCategories);
+        given(selectedFoodCategoryRepository.findByFoodIdIn(List.of(1L, 2L))).willReturn(selectedFoodCategories);
         //when
         FoodCursorResult result = foodService.getFoodList(finder);
         //then

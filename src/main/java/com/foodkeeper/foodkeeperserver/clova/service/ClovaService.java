@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import tools.jackson.databind.ObjectMapper;
 
 @Service
 @RequiredArgsConstructor
@@ -13,7 +12,7 @@ public class ClovaService {
 
     @Qualifier("clovaRestClient")
     private final RestClient restClient;
-    private final ObjectMapper objectMapper;
+
 
     @Value("${clova.url}")
     private String url;
