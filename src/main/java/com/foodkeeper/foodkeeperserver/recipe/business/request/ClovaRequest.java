@@ -1,13 +1,14 @@
 package com.foodkeeper.foodkeeperserver.recipe.business.request;
 
-import com.foodkeeper.foodkeeperserver.recipe.domain.ClovaMessage;
 import com.foodkeeper.foodkeeperserver.recipe.domain.AiType;
+import com.foodkeeper.foodkeeperserver.recipe.domain.ClovaMessage;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
 public record ClovaRequest(
-        List<ClovaMessage> messages,
-        Integer maxCompletionTokens
+        @NotNull List<ClovaMessage> messages,
+        @NotNull Integer maxTokens
 ) {
     private static final int DEFAULT_TOKENS = 1000;
 

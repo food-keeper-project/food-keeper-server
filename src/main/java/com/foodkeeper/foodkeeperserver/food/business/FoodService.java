@@ -48,7 +48,6 @@ public class FoodService {
     @Transactional(readOnly = true)
     public FoodCursorResult getFoodList(FoodCursorFinder finder) {
         List<Food> foods = foodManager.findFoodList(finder);
-        // 식재료 카테고리Id 값들 조회
         FoodSlice foodSlice = FoodSlice.from(foods, finder.limit());
         SelectedFoodCategories categories = new SelectedFoodCategories(selectedFoodCategoryManager.findByFoodIds(
                 foodSlice.foods().getFoodIds()

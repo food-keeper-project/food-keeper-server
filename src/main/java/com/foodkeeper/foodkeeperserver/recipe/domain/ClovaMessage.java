@@ -1,7 +1,7 @@
 package com.foodkeeper.foodkeeperserver.recipe.domain;
 
-public record ClovaMessage(AiType aiType, String content) {
-    public static ClovaMessage toRequest(AiType aiType, String content) {
-        return new ClovaMessage(aiType, content);
+public record ClovaMessage(AiType role, String content) {
+    public static ClovaMessage toRequest(AiType role, String content) {
+        return new ClovaMessage(role, content);
     }
 }

@@ -2,6 +2,7 @@ spring:
   config:
     activate:
       on-profile: local
+    import: "optional:file:.env[.properties]"
 
   datasource:
     first:
@@ -42,6 +43,5 @@ custom:
     endpoint: storage-url
 
 clova:
-  url: clova-url
-  api-key: api-key
-  gateway-key: gateway-key
+  url: ${CLOVA_MODEL_URL}
+  api-key: ${CLOVA_API_KEY}
