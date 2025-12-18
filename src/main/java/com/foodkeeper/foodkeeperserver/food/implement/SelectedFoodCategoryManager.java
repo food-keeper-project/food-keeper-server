@@ -20,7 +20,7 @@ public class SelectedFoodCategoryManager {
     }
 
     public List<SelectedFoodCategory> findByFoodIds(List<Long> foodIds) {
-        List<SelectedFoodCategoryEntity> entities = selectedFoodCategoryRepository.findByFoodIds(foodIds);
+        List<SelectedFoodCategoryEntity> entities = selectedFoodCategoryRepository.findByFoodIdIn(foodIds);
         return entities.stream()
                 .map(SelectedFoodCategoryEntity::toDomain)
                 .toList();

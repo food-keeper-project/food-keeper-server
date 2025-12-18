@@ -8,6 +8,6 @@ import java.util.List;
 
 @NullMarked
 public interface SelectedFoodCategoryRepository extends JpaRepository<SelectedFoodCategoryEntity, Long> {
-    List<SelectedFoodCategoryEntity> findByFoodIds(List<Long> foodIds);
+    List<SelectedFoodCategoryEntity> findByFoodIdIn(List<Long> foodIds);
     List<SelectedFoodCategoryEntity> findByFoodId(Long foodId);
 }
