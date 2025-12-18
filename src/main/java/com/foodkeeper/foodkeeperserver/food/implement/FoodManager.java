@@ -28,7 +28,7 @@ public class FoodManager {
         List<FoodEntity> foods = foodRepository.findFoodCursorList(foodFinder);
         return foods.stream()
                 .map(FoodEntity::toDomain)
-                .collect(Collectors.toCollection(ArrayList::new));
+                .collect(Collectors.toList());
     }
 
     public Food findFood(Long id, String memberId) {
