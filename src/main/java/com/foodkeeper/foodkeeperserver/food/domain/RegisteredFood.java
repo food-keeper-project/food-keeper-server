@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record MyFood(
+public record RegisteredFood(
         Long id,
         String name,
         String imageUrl,
@@ -15,8 +15,9 @@ public record MyFood(
         LocalDateTime createdAt,
         List<Long> categoryIds
 ) {
-    public static MyFood of(Food food, List<Long> categoryIds) {
-        return new MyFood(
+
+    public static RegisteredFood of(Food food, List<Long> categoryIds) {
+        return new RegisteredFood(
                 food.id(),
                 food.name(),
                 food.imageUrl(),

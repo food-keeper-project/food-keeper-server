@@ -1,7 +1,6 @@
 package com.foodkeeper.foodkeeperserver.food.controller.v1.response;
 
-import com.foodkeeper.foodkeeperserver.food.domain.Food;
-import com.foodkeeper.foodkeeperserver.food.domain.MyFood;
+import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
 
 import java.time.LocalDate;
@@ -18,7 +17,7 @@ public record FoodResponse(
         LocalDateTime createdAt,
         List<Long> categoryIds
 ) {
-    public static FoodResponse toFoodResponse(MyFood food) {
+    public static FoodResponse toFoodResponse(RegisteredFood food) {
         return new FoodResponse(
                 food.id(),
                 food.name(),
