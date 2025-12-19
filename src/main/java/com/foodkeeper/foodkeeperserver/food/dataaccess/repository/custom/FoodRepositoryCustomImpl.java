@@ -3,15 +3,13 @@ package com.foodkeeper.foodkeeperserver.food.dataaccess.repository.custom;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QFoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QSelectedFoodCategoryEntity;
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
-import com.querydsl.core.types.dsl.BooleanExpression;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -26,7 +24,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
     // 날자 최신순 정렬- 기본 디폴트,
     // 카테고리 분류 조회
     @Override
-    public List<FoodEntity> findFoodCursorList(FoodCursorFinder foodFinder) {
+    public List<FoodEntity> findFoodCursorList(FoodsFinder foodFinder) {
         JPAQuery<FoodEntity> query = queryFactory
                 .selectFrom(foodEntity);
 
@@ -35,7 +33,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
         return query
                 .where(
                         foodEntity.memberId.eq(foodFinder.memberId()),
-                        cursorCondition(foodFinder.lastCreatedAt(), foodFinder.lastId())
+                        foodEntity.createdAt.lt(foodFinder.lastCreatedAt())
                 )
                 .orderBy(foodEntity.createdAt.desc(), foodEntity.id.desc())
                 .limit(foodFinder.limit() + 1)
@@ -83,16 +81,6 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                     .on(foodEntity.id.eq(selectedFoodCategoryEntity.foodId))
                     .where(selectedFoodCategoryEntity.foodCategoryId.eq(categoryId));
         }
-    }
-
-    // 날짜 내림차순
-    private BooleanExpression cursorCondition(LocalDateTime lastCreatedAt, Long lastId) {
-        if (lastCreatedAt == null || lastId == null) {
-            return null;
-        }
-        return foodEntity.createdAt.lt(lastCreatedAt)
-                .or(foodEntity.createdAt.eq(lastCreatedAt)
-                        .and(foodEntity.id.lt(lastId)));
     }
 
 

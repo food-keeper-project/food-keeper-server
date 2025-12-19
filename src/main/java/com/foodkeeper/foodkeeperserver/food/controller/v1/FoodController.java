@@ -4,9 +4,9 @@ import com.foodkeeper.foodkeeperserver.food.business.FoodService;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodCursorRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodRegisterRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.*;
-import com.foodkeeper.foodkeeperserver.food.domain.RecipeFood;
+import com.foodkeeper.foodkeeperserver.food.domain.response.RecipeFood;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.domain.response.FoodCursorResult;
 import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
@@ -44,9 +44,9 @@ public class FoodController {
     @GetMapping
     public ResponseEntity<ApiResponse<FoodListResponse>> getFoods(@ModelAttribute FoodCursorRequest request) {
         String memberId = "memberId"; // todo 로그인 방식 구현 후 리팩토링
-        FoodCursorFinder finder = FoodCursorRequest.toFinder(request, memberId);
+        FoodsFinder finder = FoodCursorRequest.toFinder(request, memberId);
         FoodCursorResult result = foodService.getFoodList(finder);
-        return ResponseEntity.ok(ApiResponse.success(new FoodListResponse(result.foods(), result.hasNext())));
+        return ResponseEntity.ok(ApiResponse.success(new FoodListResponse(result)));
     }
 
     @Operation(summary = "식재료 단일 조회", description = "식재료 단일 조회 API")

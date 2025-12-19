@@ -1,8 +1,6 @@
 package com.foodkeeper.foodkeeperserver.food.controller.v1.response;
 
-import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
+import com.foodkeeper.foodkeeperserver.food.domain.response.FoodCursorResult;
 
-import java.util.List;
-
-public record FoodListResponse(List<RegisteredFood> foodResponses, boolean hasNext) {
+public record FoodListResponse(FoodCursorResult result) {
 }

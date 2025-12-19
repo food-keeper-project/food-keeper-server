@@ -2,16 +2,19 @@ package com.foodkeeper.foodkeeperserver.food.domain.request;
 
 import java.time.LocalDateTime;
 
-public record FoodCursorFinder(
+public record FoodsFinder(
         String memberId,
         Long categoryId,
         LocalDateTime lastCreatedAt,
         Long lastId,
         Integer limit
 ) {
-    public FoodCursorFinder {
+    public FoodsFinder {
         if (limit == null) {
             limit = 10;
+        }
+        if (limit > 100) {
+            limit = 100;
         }
     }
 }

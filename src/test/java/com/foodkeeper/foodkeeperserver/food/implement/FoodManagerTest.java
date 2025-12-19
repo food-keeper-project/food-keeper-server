@@ -3,7 +3,7 @@ package com.foodkeeper.foodkeeperserver.food.implement;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,7 +46,7 @@ public class FoodManagerTest {
     @DisplayName("식재료 커서 요청 시 리포지토리 호출 및 리스트 결과 반환")
     void findFoodList_SUCCESS() throws Exception {
         //given
-        FoodCursorFinder finder = FoodFixture.createFirstPageFinder();
+        FoodsFinder finder = FoodFixture.createFirstPageFinder();
 
         FoodEntity entity1 = FoodFixture.createFoodEntity(1L);
         FoodEntity entity2 = FoodFixture.createFoodEntity(2L);
