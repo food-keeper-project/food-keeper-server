@@ -19,4 +19,8 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
     @Modifying(clearAutomatically = true)
     @Query("UPDATE MemberEntity m SET m.refreshToken = :refreshToken WHERE m.memberKey = :memberKey")
     void updateRefreshToken(@Param("memberKey") String memberKey, @Param("refreshToken") String refreshToken);
+
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE MemberEntity m SET m.refreshToken = null WHERE m.memberKey = :memberKey")
+    void deleteRefreshTokenByMemberKey(@Param("memberKey") String memberKey);
 }

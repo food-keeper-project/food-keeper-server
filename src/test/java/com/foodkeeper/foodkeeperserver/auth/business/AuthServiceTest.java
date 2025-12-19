@@ -36,7 +36,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-class SignInServiceTest {
+class AuthServiceTest {
 
     @Mock MemberRepository memberRepository;
     @Mock OauthRepository oauthRepository;
@@ -44,7 +44,7 @@ class SignInServiceTest {
     @Mock KakaoAuthenticator kakaoAuthenticator;
     @Mock SignInLogRepository signInLogRepository;
     SecretKey secretKey;
-    SignInService signInService;
+    AuthService authService;
 
     @BeforeEach
     void setUp() {
@@ -54,7 +54,7 @@ class SignInServiceTest {
         MemberFinder memberFinder = new MemberFinder(memberRepository, oauthRepository);
         MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, oauthRepository, memberRoleRepository);
         RefreshTokenManager refreshTokenManager = new RefreshTokenManager(memberRepository);
-        signInService = new SignInService(kakaoAuthenticator, memberFinder, memberRegistrar, signInLogAppender,
+        authService = new AuthService(kakaoAuthenticator, memberFinder, memberRegistrar, signInLogAppender,
                 jwtGenerator, refreshTokenManager);
     }
 
@@ -84,7 +84,7 @@ class SignInServiceTest {
         given(signInLogRepository.save(any(SignInLogEntity.class))).willReturn(signInLogEntity);
 
         // when
-        Jwt jwt = signInService.signInByOAuth(register);
+        Jwt jwt = authService.signInByOAuth(register);
 
         // then
         assertThat(jwt.accessToken()).isNotBlank();
@@ -122,7 +122,7 @@ class SignInServiceTest {
         given(signInLogRepository.save(any(SignInLogEntity.class))).willReturn(signInLogEntity);
 
         // when
-        Jwt jwt = signInService.signInByOAuth(register);
+        Jwt jwt = authService.signInByOAuth(register);
 
         // then
         assertThat(jwt.accessToken()).isNotBlank();

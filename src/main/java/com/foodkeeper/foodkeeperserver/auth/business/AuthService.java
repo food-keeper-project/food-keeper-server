@@ -19,7 +19,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class SignInService {
+public class AuthService {
     private final OAuthAuthenticator oauthAuthenticator;
     private final MemberFinder memberFinder;
     private final MemberRegistrar memberRegistrar;
@@ -41,5 +41,9 @@ public class SignInService {
         Jwt jwt = jwtGenerator.generateJwt(memberKey);
         refreshTokenManager.updateRefreshToken(memberKey, jwt.refreshToken());
         return jwt;
+    }
+
+    public void signOut(String memberKey) {
+        refreshTokenManager.remove(memberKey);
     }
 }

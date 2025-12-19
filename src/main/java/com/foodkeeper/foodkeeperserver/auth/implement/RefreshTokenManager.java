@@ -14,12 +14,17 @@ public class RefreshTokenManager {
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
-    public String findByMemberKey(String memberKey) {
+    public String find(String memberKey) {
         return memberRepository.findRefreshToken(memberKey).orElseThrow(() -> new AppException(ErrorType.FAILED_AUTH));
     }
 
     @Transactional
     public void updateRefreshToken(String memberKey, String refreshToken) {
         memberRepository.updateRefreshToken(memberKey, refreshToken);
+    }
+
+    @Transactional
+    public void remove(String memberKey) {
+        memberRepository.deleteRefreshTokenByMemberKey(memberKey);
     }
 }

@@ -20,7 +20,7 @@ public class TokenRefreshService {
     public Jwt refresh(String refreshToken) {
         String subject = jwtValidator.getSubjectIfValid(refreshToken);
 
-        String savedRefreshToken = refreshTokenManager.findByMemberKey(subject);
+        String savedRefreshToken = refreshTokenManager.find(subject);
         if (refreshToken.equals(savedRefreshToken)) {
             Jwt jwt = jwtGenerator.generateJwt(subject);
             refreshTokenManager.updateRefreshToken(subject, jwt.refreshToken());
