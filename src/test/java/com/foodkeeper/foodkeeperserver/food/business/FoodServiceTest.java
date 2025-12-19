@@ -7,10 +7,10 @@ import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodCategoryRe
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.SelectedFoodCategoryRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCursorFinder;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.domain.response.FoodCursorResult;
-import com.foodkeeper.foodkeeperserver.food.domain.RecipeFood;
+import com.foodkeeper.foodkeeperserver.food.domain.response.RecipeFood;
 import com.foodkeeper.foodkeeperserver.food.fixture.CategoryFixture;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import com.foodkeeper.foodkeeperserver.food.fixture.SelectedFoodCategoryFixture;
@@ -123,7 +123,7 @@ public class FoodServiceTest {
     @DisplayName("커서 조회 시 limit 보다 많으면 hasNext 는 true 이고, 초과되면 하나는 제거되고 카테고리 매핑")
     void getFoodList_hasNext_TRUE() throws Exception {
         //given
-        FoodCursorFinder finder = FoodFixture.createFirstPageFinder();
+        FoodsFinder finder = FoodFixture.createFirstPageFinder();
         List<FoodEntity> foodEntities = new ArrayList<>();
         foodEntities.add(FoodFixture.createFoodEntity(1L));
         foodEntities.add(FoodFixture.createFoodEntity(2L));

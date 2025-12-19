@@ -1,10 +1,12 @@
 package com.foodkeeper.foodkeeperserver.food.domain;
 
+import com.foodkeeper.foodkeeperserver.food.domain.response.RecipeFood;
 import lombok.Builder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Builder
 public record Food(
@@ -19,7 +21,29 @@ public record Food(
         String memberId,
         LocalDateTime createdAt
 ) {
-    public long calculateRemainDay(LocalDate today) {
+
+    public RecipeFood toRecipe() {
+        return new RecipeFood(
+                this.id,
+                this.name,
+                this.calculateRemainDay(LocalDate.now())
+        );
+    }
+
+    public RegisteredFood toFood(List<Long> categoryIds) {
+        return new RegisteredFood(
+                this.id,
+                this.name,
+                this.imageUrl,
+                this.storageMethod,
+                this.expiryDate,
+                this.expiryAlarm,
+                this.memo,
+                this.createdAt,
+                categoryIds
+        );
+    }
+    private long calculateRemainDay(LocalDate today) {
         return ChronoUnit.DAYS.between(today, this.expiryDate);
     }
 
