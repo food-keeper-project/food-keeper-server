@@ -42,7 +42,7 @@ public class FoodCategoryEntity extends BaseEntity {
     public static FoodCategoryEntity from(FoodCategory foodCategory) {
         return FoodCategoryEntity.builder()
                 .name(foodCategory.name())
-                .memberKey(foodCategory.memberId())
+                .memberKey(foodCategory.memberKey())
                 .build();
     }
 }

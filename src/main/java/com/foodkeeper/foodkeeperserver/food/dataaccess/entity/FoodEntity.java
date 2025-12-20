@@ -71,7 +71,7 @@ public class FoodEntity extends BaseEntity {
                 .expiryDate(food.expiryDate())
                 .memo(food.memo())
                 .selectedCategoryCount(food.selectedCategoryCount())
-                .memberKey(food.memberId())
+                .memberKey(food.memberKey())
                 .build();
     }
 
