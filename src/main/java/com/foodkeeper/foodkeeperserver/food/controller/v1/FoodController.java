@@ -61,8 +61,8 @@ public class FoodController {
     @GetMapping("/recipes")
     public ResponseEntity<ApiResponse<RecipeFoodResponse>> getFoodNames() {
         String memberId = "memberId"; // todo 로그인 방식 구현 후 리팩토링
-        List<RecipeFood> names = foodService.getAllByMemberId(memberId);
-        return ResponseEntity.ok(ApiResponse.success(new RecipeFoodResponse(names)));
+        List<RecipeFood> recipeFoods = foodService.getAllByMemberId(memberId);
+        return ResponseEntity.ok(ApiResponse.success(new RecipeFoodResponse(recipeFoods)));
     }
 
     @Operation(summary = "유통기한 임박 식재료 리스트 조회", description = "유통기한 임박 식재료 조회 API")
