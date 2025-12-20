@@ -36,5 +36,9 @@ public class SelectedFoodCategoryManager {
                 .toList();
     }
 
+    @Transactional
+    public void removeAllByFoodId(Long foodId) {
+        selectedFoodCategoryRepository.deleteAllByFoodId(foodId);
+    }
 
 }

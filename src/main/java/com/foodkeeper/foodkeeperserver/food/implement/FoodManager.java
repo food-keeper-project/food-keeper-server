@@ -57,5 +57,9 @@ public class FoodManager {
                 .toList();
     }
 
+    @Transactional
+    public void removeFood(Food food) {
+        foodRepository.delete(FoodEntity.from(food));
+    }
 
 }

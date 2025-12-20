@@ -8,6 +8,7 @@ import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -18,6 +19,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class FoodManagerTest {
@@ -92,4 +94,17 @@ public class FoodManagerTest {
         assertThat(foods.getFirst().getId()).isEqualTo(1L);
     }
 
+    @Test
+    @DisplayName("식재료 삭제")
+    void removeFood_SUCCESS() throws Exception {
+        //given
+        Long foodId = 1L;
+        Food food = FoodFixture.createFood(foodId);
+        //when
+        foodManager.removeFood(food);
+        //then
+        ArgumentCaptor<FoodEntity> captor = ArgumentCaptor.forClass(FoodEntity.class);
+        verify(foodRepository).delete(captor.capture());
+        assertThat(captor.getValue().getName()).isEqualTo(food.name());
+    }
 }

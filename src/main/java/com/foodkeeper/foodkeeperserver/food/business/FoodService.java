@@ -83,4 +83,12 @@ public class FoodService {
                 .toList();
     }
 
+    @Transactional
+    public void removeFood(Long foodId, String memberId) {
+        Food food = foodManager.findFood(foodId, memberId);
+        selectedFoodCategoryManager.removeAllByFoodId(foodId);
+        foodManager.removeFood(food);
+
+        imageManager.deleteFile(food.imageUrl());
+    }
 }
