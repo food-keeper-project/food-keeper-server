@@ -10,13 +10,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FoodEntity extends BaseEntity {
-
+    //todo 복합인덱스 생성 필요
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "food_id")
@@ -36,6 +37,9 @@ public class FoodEntity extends BaseEntity {
     private LocalDate expiryDate;
 
     @Column(nullable = false)
+    private Integer expiryAlarm;
+
+    @Column(nullable = false)
     private String memo;
 
     @Column(nullable = false)
@@ -50,6 +54,7 @@ public class FoodEntity extends BaseEntity {
             String imageUrl,
             StorageMethod storageMethod,
             LocalDate expiryDate,
+            Integer expiryAlarm,
             String memo,
             int selectedCategoryCount,
             String memberId) {
@@ -57,6 +62,7 @@ public class FoodEntity extends BaseEntity {
         this.imageUrl = (imageUrl != null) ? imageUrl : "";
         this.storageMethod = storageMethod;
         this.expiryDate = expiryDate;
+        this.expiryAlarm = (expiryAlarm == null) ? 2 : expiryAlarm;
         this.memo = (memo != null) ? memo : "";
         this.selectedCategoryCount = selectedCategoryCount;
         this.memberId = memberId;
@@ -68,6 +74,7 @@ public class FoodEntity extends BaseEntity {
                 .imageUrl(food.imageUrl())
                 .storageMethod(food.storageMethod())
                 .expiryDate(food.expiryDate())
+                .expiryAlarm(food.expiryAlarm())
                 .memo(food.memo())
                 .selectedCategoryCount(food.selectedCategoryCount())
                 .memberId(food.memberId())
@@ -81,9 +88,17 @@ public class FoodEntity extends BaseEntity {
                 this.imageUrl,
                 this.storageMethod,
                 this.expiryDate,
+                this.expiryAlarm,
                 this.memo,
                 this.selectedCategoryCount,
-                this.memberId
+                this.memberId,
+                this.getCreatedAt()
         );
+    }
+
+
+    public boolean isImminent(LocalDate today) {
+        long remainDay =  ChronoUnit.DAYS.between(today, this.expiryDate);
+        return remainDay >= 0 && remainDay <= this.expiryAlarm;
     }
 }
