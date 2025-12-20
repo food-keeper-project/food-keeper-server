@@ -14,10 +14,15 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+        hbm2ddl:
+          auto: validate
 
 logging:
   level:
     com.foodkeeper: debug
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
 
 cloud:
   aws:
