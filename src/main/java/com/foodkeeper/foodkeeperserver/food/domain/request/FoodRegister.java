@@ -12,7 +12,7 @@ public record FoodRegister(String name,
                            LocalDate expiryDate,
                            String memo) {
 
-    public Food toFood(String imageUrl, String memberId) {
+    public Food toFood(String imageUrl, String memberKey) {
         return Food.builder()
                 .name(this.name)
                 .imageUrl(imageUrl)
@@ -20,7 +20,7 @@ public record FoodRegister(String name,
                 .expiryDate(this.expiryDate)
                 .memo(this.memo)
                 .selectedCategoryCount(this.categoryIds.size())
-                .memberId(memberId)
+                .memberKey(memberKey)
                 .build();
     }
 }

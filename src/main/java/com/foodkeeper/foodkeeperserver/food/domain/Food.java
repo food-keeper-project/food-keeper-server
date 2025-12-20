@@ -13,6 +13,6 @@ public record Food(
         LocalDate expiryDate,
         String memo,
         Integer selectedCategoryCount,
-        String memberId
+        String memberKey
 ) {
 }

@@ -30,9 +30,9 @@ public class FoodService {
     private final FoodBookmarker foodBookmarker;
 
     @Transactional
-    public Long registerFood(FoodRegister register, MultipartFile file, String memberId) {
+    public Long registerFood(FoodRegister register, MultipartFile file, String memberKey) {
         CompletableFuture<String> imageUrlFuture = imageManager.fileUpload(file);
-        Food food = register.toFood(imageUrlFuture.join(), memberId);
+        Food food = register.toFood(imageUrlFuture.join(), memberKey);
         try {
             Food savedFood = foodManager.register(food);
             //todo 카테고리 선택 방식에 따라 인자값 수정, 카테고리 선택 시에 매번 모두 조회?

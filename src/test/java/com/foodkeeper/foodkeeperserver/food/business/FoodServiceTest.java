@@ -72,7 +72,7 @@ public class FoodServiceTest {
     @DisplayName("식제품 추가 기능 구현 성공")
     void registerFood_SUCCESS() {
         // given
-        String memberId = "memberId";
+        String memberKey = "memberKey";
         MultipartFile mockFile = new MockMultipartFile("image", "test.jpg", "image/jpeg", "data".getBytes());
         List<Long> categoryIds = List.of(1L, 2L);
         FoodRegister dto = FoodFixture.createRegisterDto(categoryIds);
@@ -85,7 +85,7 @@ public class FoodServiceTest {
         given(foodRepository.save(any(FoodEntity.class))).willReturn(mockFoodEntity);
 
         // when
-        foodService.registerFood(dto, mockFile, memberId);
+        foodService.registerFood(dto, mockFile, memberKey);
 
         // then
         ArgumentCaptor<FoodEntity> foodCaptor = ArgumentCaptor.forClass(FoodEntity.class);

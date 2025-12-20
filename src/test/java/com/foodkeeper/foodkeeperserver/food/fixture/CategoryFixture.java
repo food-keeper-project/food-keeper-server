@@ -9,7 +9,7 @@ import java.util.List;
 
 public class CategoryFixture {
 
-    public static final String MEMBER_ID = "memberId";
+    public static final String MEMBER_ID = "memberKey";
 
     public static List<FoodCategory> createCategory(List<Long> ids) {
         return ids.stream()

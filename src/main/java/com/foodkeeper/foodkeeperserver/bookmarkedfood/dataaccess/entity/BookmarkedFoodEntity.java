@@ -26,6 +26,7 @@ public class BookmarkedFoodEntity extends BaseEntity {
     @Column(nullable = false)
     private String imageUrl;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private StorageMethod storageMethod;
 

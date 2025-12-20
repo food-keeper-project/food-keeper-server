@@ -94,7 +94,7 @@ class JwtValidatorTest {
 
     @Test
     @DisplayName("JWT 검증에 성공하면 subject를 반환한다.")
-    void getMemberIdIfJwtIsInvalid() {
+    void getMemberKeyIfJwtIsInvalid() {
         String memberKey = "memberKey";
         String token =
                 Jwts.builder()
@@ -109,8 +109,8 @@ class JwtValidatorTest {
     }
 
     @Test
-    @DisplayName("JWT 검증에 성공해도 멤버 ID가 JWT에 들어있지 않으면 AppException이 발생한다.")
-    void throwAppExceptionIfNotExistsMemberIdInJwt() {
+    @DisplayName("JWT 검증에 성공해도 멤버 Key가 JWT에 들어있지 않으면 AppException이 발생한다.")
+    void throwAppExceptionIfNotExistsMemberKeyInJwt() {
         String token =
                 Jwts.builder()
                         .expiration(Date.from(Instant.now().plus(1000 * 60 * 60, ChronoUnit.MILLIS)))

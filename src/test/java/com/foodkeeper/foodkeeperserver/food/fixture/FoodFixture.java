@@ -17,7 +17,7 @@ public class FoodFixture {
     public static final StorageMethod STORAGE_METHOD = StorageMethod.FROZEN;
     public static final LocalDate EXPIRY_DATE = LocalDate.now().plusDays(1);
     public static final String IMAGE_URL = "https://s3.aws.com/milk.jpg";
-    public static final String MEMBER_ID = "memberId";
+    public static final String MEMBER_KEY = "memberKey";
 
 
     public static FoodRegister createRegisterDto(List<Long> categoryIds) {
@@ -39,7 +39,7 @@ public class FoodFixture {
                 .expiryDate(EXPIRY_DATE)
                 .memo(MEMO)
                 .selectedCategoryCount(1)
-                .memberId(MEMBER_ID)
+                .memberKey(MEMBER_KEY)
                 .build();
     }
 
