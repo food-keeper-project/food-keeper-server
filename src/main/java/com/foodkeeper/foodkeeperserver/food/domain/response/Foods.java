@@ -16,7 +16,7 @@ public record Foods(List<Food> foodList) {
 
     public List<RegisteredFood> toRegisteredFoods(SelectedFoodCategories categories) {
         return foodList.stream()
-                .map(food -> food.toFood(categories.getCategoryIdsByFoodId(food.id())))
+                .map(food -> food.toRegisteredFood(categories.getCategoryIdsByFoodId(food.id())))
                 .toList();
     }
 }

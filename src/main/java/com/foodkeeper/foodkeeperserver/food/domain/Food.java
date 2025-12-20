@@ -30,7 +30,7 @@ public record Food(
         );
     }
 
-    public RegisteredFood toFood(List<Long> categoryIds) {
+    public RegisteredFood toRegisteredFood(List<Long> categoryIds) {
         return new RegisteredFood(
                 this.id,
                 this.name,

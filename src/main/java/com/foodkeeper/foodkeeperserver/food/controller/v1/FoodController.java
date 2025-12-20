@@ -72,4 +72,5 @@ public class FoodController {
         List<RecipeFood> foods = foodService.getImminentFoods(memberId);
         return ResponseEntity.ok(ApiResponse.success(new FoodImminentResponse(foods)));
     }
+
 }

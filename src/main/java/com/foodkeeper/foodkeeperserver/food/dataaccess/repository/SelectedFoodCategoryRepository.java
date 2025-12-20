@@ -10,4 +10,5 @@ import java.util.List;
 public interface SelectedFoodCategoryRepository extends JpaRepository<SelectedFoodCategoryEntity, Long> {
     List<SelectedFoodCategoryEntity> findByFoodIdIn(List<Long> foodIds);
     List<SelectedFoodCategoryEntity> findByFoodId(Long foodId);
+    void deleteAllByFoodId(Long foodId);
 }

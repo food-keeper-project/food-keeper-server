@@ -1,10 +1,11 @@
 package com.foodkeeper.foodkeeperserver.food.business;
 
+import com.foodkeeper.foodkeeperserver.common.domain.PageObject;
 import com.foodkeeper.foodkeeperserver.food.domain.*;
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
 import com.foodkeeper.foodkeeperserver.food.domain.response.FoodCursorResult;
-import com.foodkeeper.foodkeeperserver.food.domain.response.FoodSlice;
+import com.foodkeeper.foodkeeperserver.food.domain.response.Foods;
 import com.foodkeeper.foodkeeperserver.food.domain.response.RecipeFood;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodCategoryManager;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
@@ -35,7 +36,6 @@ public class FoodService {
         Food food = register.toFood(imageUrlFuture.join(), memberId);
         try {
             Food savedFood = foodManager.register(food);
-            //todo 카테고리 선택 방식에 따라 인자값 수정, 카테고리 선택 시에 매번 모두 조회?
             List<FoodCategory> foodCategories = foodCategoryManager.findAll(register.categoryIds());
             foodCategories.forEach(category ->
                     selectedFoodCategoryManager.save(SelectedFoodCategory.create(savedFood.id(), category.id())));
@@ -49,11 +49,12 @@ public class FoodService {
     // 커서 리스트 조회
     public FoodCursorResult getFoodList(FoodsFinder finder) {
         List<Food> foods = foodManager.findFoodList(finder);
-        FoodSlice foodSlice = FoodSlice.from(foods, finder.limit());
+        PageObject<Food> page = new PageObject<>(foods, finder.limit());
+        Foods pagedFoods = new Foods(page.getContent());
         SelectedFoodCategories categories = new SelectedFoodCategories(selectedFoodCategoryManager.findByFoodIds(
-                foodSlice.foods().getFoodIds()
+                pagedFoods.getFoodIds()
         ));
-        return foodSlice.toResult(categories);
+        return new FoodCursorResult(pagedFoods.toRegisteredFoods(categories), page.hasNext());
     }
 
     // 단일 조회
@@ -63,7 +64,7 @@ public class FoodService {
         List<Long> categoryIds = mappings.stream()
                 .map(SelectedFoodCategory::foodCategoryId)
                 .toList();
-        return food.toFood(categoryIds);
+        return food.toRegisteredFood(categoryIds);
     }
 
 
