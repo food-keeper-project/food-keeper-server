@@ -18,8 +18,22 @@ public class FoodCategoryManager {
 
     // 카테고리 먼저 조회
     @Transactional(readOnly = true)
-    public List<FoodCategory> findAll(List<Long> categoryIds) {
+    public List<FoodCategory> findAllByIds(List<Long> categoryIds) {
         List<FoodCategoryEntity> foodCategories = ListUtil.getOrElseThrowList(foodCategoryRepository.findAllById(categoryIds));
+        return foodCategories.stream()
+                .map(FoodCategoryEntity::toDomain)
+                .toList();
+    }
+
+    @Transactional
+    public void addCategory(String name, String memberId) {
+        FoodCategory foodCategory = FoodCategory.create(name, memberId);
+        foodCategoryRepository.save(FoodCategoryEntity.from(foodCategory));
+    }
+
+    @Transactional(readOnly = true)
+    public List<FoodCategory> findAllByMemberId(String memberId) {
+        List<FoodCategoryEntity> foodCategories = ListUtil.getOrElseThrowList(foodCategoryRepository.findAllByMemberId(memberId));
         return foodCategories.stream()
                 .map(FoodCategoryEntity::toDomain)
                 .toList();

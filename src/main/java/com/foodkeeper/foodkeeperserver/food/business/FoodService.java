@@ -36,7 +36,7 @@ public class FoodService {
         Food food = register.toFood(imageUrlFuture.join(), memberId);
         try {
             Food savedFood = foodManager.register(food);
-            List<FoodCategory> foodCategories = foodCategoryManager.findAll(register.categoryIds());
+            List<FoodCategory> foodCategories = foodCategoryManager.findAllByIds(register.categoryIds());
             foodCategories.forEach(category ->
                     selectedFoodCategoryManager.save(SelectedFoodCategory.create(savedFood.id(), category.id())));
             return savedFood.id();
