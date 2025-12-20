@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Table(name = "food_category")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FoodCategoryEntity extends BaseEntity {
 
@@ -22,26 +23,26 @@ public class FoodCategoryEntity extends BaseEntity {
     private String name;
 
     @Column(nullable = false)
-    private String memberId;
+    private String memberKey;
 
     @Builder
-    private FoodCategoryEntity(String name, String memberId) {
+    private FoodCategoryEntity(String name, String memberKey) {
         this.name = name;
-        this.memberId = memberId;
+        this.memberKey = memberKey;
     }
 
     public FoodCategory toDomain() {
         return new FoodCategory(
                 this.id,
                 this.name,
-                this.memberId
+                this.memberKey
         );
     }
 
     public static FoodCategoryEntity from(FoodCategory foodCategory) {
         return FoodCategoryEntity.builder()
                 .name(foodCategory.name())
-                .memberId(foodCategory.memberId())
+                .memberKey(foodCategory.memberId())
                 .build();
     }
 }

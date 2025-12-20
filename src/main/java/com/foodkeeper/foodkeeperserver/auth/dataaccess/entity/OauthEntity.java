@@ -18,6 +18,7 @@ public class OauthEntity extends BaseEntity {
     @Column(name = "oauth_id")
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private OAuthProvider provider;
 
