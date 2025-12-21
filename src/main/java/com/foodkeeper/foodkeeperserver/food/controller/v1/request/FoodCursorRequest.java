@@ -11,9 +11,9 @@ public record FoodCursorRequest(
         Long lastId,
         Integer limit
 ) {
-    public static FoodsFinder toFinder(FoodCursorRequest request, String memberId) {
+    public static FoodsFinder toFinder(FoodCursorRequest request, String memberKey) {
         return new FoodsFinder(
-                memberId,
+                memberKey,
                 request.categoryId(),
                 request.lastCreatedAt,
                 request.lastId,

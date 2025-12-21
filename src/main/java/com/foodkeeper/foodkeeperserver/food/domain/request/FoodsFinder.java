@@ -3,7 +3,7 @@ package com.foodkeeper.foodkeeperserver.food.domain.request;
 import java.time.LocalDateTime;
 
 public record FoodsFinder(
-        String memberId,
+        String memberKey,
         Long categoryId,
         LocalDateTime lastCreatedAt,
         Long lastId,

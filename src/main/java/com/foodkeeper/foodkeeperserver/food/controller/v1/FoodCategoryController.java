@@ -30,8 +30,8 @@ public class FoodCategoryController {
     @NullMarked
     @Operation(summary = "카테고리 추가", description = "카테고리 추가 API")
     public ResponseEntity<ApiResponse<Void>> createCategory(@RequestBody FoodCategoryRegisterRequest request) {
-        String memberId = "memberId"; // todo 로그인 방식 구현 후 리팩토링
-        FoodCategoryRegister register = new FoodCategoryRegister(request.name(), memberId);
+        String memberKey = "memberKey"; // todo 로그인 방식 구현 후 리팩토링
+        FoodCategoryRegister register = new FoodCategoryRegister(request.name(), memberKey);
         foodCategoryService.registerFoodCategory(register);
         return ResponseEntity.created(URI.create("/api/v1/categories")).build();
     }
@@ -39,8 +39,8 @@ public class FoodCategoryController {
 //    @NullMarked
 //    @Operation(summary = "카테고리 전체 조회", description = "카테고리 전체 조회 API")
 //    public ResponseEntity<ApiResponse<List<FoodCategoryResponse>>> getCategories() {
-//        String memberId = "memberId"; // todo 로그인 방식 구현 후 리팩토링
-//        List<FoodCategory> foodCategories = foodCategoryService.findAllByMemberId(memberId);
+//        String memberKey = "memberKey"; // todo 로그인 방식 구현 후 리팩토링
+//        List<FoodCategory> foodCategories = foodCategoryService.findAllByMemberKey(memberKey);
 //        return ResponseEntity.ok(ApiResponse.success(fo))
 //    }
 }

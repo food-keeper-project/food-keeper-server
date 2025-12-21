@@ -68,27 +68,27 @@ public class FoodManagerTest {
     void findFoodById_SUCCESS() throws Exception {
         //given
         Long foodId = FoodFixture.ID;
-        String memberId = FoodFixture.MEMBER_KEY;
+        String memberKey = FoodFixture.MEMBER_KEY;
 
         FoodEntity foodEntity = FoodFixture.createFoodEntity(foodId);
-        given(foodRepository.findByIdAndMemberId(foodId, memberId)).willReturn(Optional.of(foodEntity));
+        given(foodRepository.findByIdAndMemberKey(foodId, memberKey)).willReturn(Optional.of(foodEntity));
         //when
-        Food food = foodManager.findFood(foodId, memberId);
+        Food food = foodManager.findFood(foodId, memberKey);
         //then
         assertThat(food.name()).isEqualTo(FoodFixture.NAME);
-        assertThat(food.memberKey()).isEqualTo(memberId);
+        assertThat(food.memberKey()).isEqualTo(memberKey);
     }
 
     @Test
     @DisplayName("선택된 식재료들의 이름 조회 시 이름 리스트 반환")
     void findFoodNames_SUCCESS() throws Exception {
         //given
-        String memberId = FoodFixture.MEMBER_KEY;
+        String memberKey = FoodFixture.MEMBER_KEY;
         FoodEntity entity1 = FoodFixture.createFoodEntity(1L);
         FoodEntity entity2 = FoodFixture.createFoodEntity(2L);
-        given(foodRepository.findAllByMemberId(memberId)).willReturn(List.of(entity1, entity2));
+        given(foodRepository.findAllByMemberKey(memberKey)).willReturn(List.of(entity1, entity2));
         //when
-        List<FoodEntity> foods = foodRepository.findAllByMemberId(memberId);
+        List<FoodEntity> foods = foodRepository.findAllByMemberKey(memberKey);
         //then
         assertThat(foods).hasSize(2);
         assertThat(foods.getFirst().getId()).isEqualTo(1L);

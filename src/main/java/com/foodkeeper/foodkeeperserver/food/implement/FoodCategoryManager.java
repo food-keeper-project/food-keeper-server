@@ -26,14 +26,14 @@ public class FoodCategoryManager {
     }
 
     @Transactional
-    public void addCategory(String name, String memberId) {
-        FoodCategory foodCategory = FoodCategory.create(name, memberId);
+    public void addCategory(String name, String memberKey) {
+        FoodCategory foodCategory = FoodCategory.create(name, memberKey);
         foodCategoryRepository.save(FoodCategoryEntity.from(foodCategory));
     }
 
     @Transactional(readOnly = true)
-    public List<FoodCategory> findAllByMemberId(String memberId) {
-        List<FoodCategoryEntity> foodCategories = ListUtil.getOrElseThrowList(foodCategoryRepository.findAllByMemberId(memberId));
+    public List<FoodCategory> findAllBymemberKey(String memberKey) {
+        List<FoodCategoryEntity> foodCategories = ListUtil.getOrElseThrowList(foodCategoryRepository.findAllByMemberKey(memberKey));
         return foodCategories.stream()
                 .map(FoodCategoryEntity::toDomain)
                 .toList();

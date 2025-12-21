@@ -32,7 +32,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
 
         return query
                 .where(
-                        foodEntity.memberId.eq(foodFinder.memberId()),
+                        foodEntity.memberKey.eq(foodFinder.memberKey()),
                         foodEntity.createdAt.lt(foodFinder.lastCreatedAt())
                 )
                 .orderBy(foodEntity.createdAt.desc(), foodEntity.id.desc())
@@ -41,13 +41,13 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
     }
 
     @Override
-    public List<FoodEntity> findAllByMemberId(String memberId) {
+    public List<FoodEntity> findAllByMemberKey(String memberKey) {
 
         return queryFactory
                 .select(foodEntity)
                 .from(foodEntity)
                 .where(
-                        foodEntity.memberId.eq(memberId)
+                        foodEntity.memberKey.eq(memberKey)
                 )
                 .orderBy(
                         foodEntity.name.asc(),
@@ -59,10 +59,10 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
 
     // 유통기한 임박한 식재료 조회
     @Override
-    public List<FoodEntity> findImminentFoods(String memberId) {
+    public List<FoodEntity> findImminentFoods(String memberKey) {
         List<FoodEntity> foods = queryFactory
                 .selectFrom(foodEntity)
-                .where(foodEntity.memberId.eq(memberId))
+                .where(foodEntity.memberKey.eq(memberKey))
                 .fetch();
 
         LocalDate today = LocalDate.now();

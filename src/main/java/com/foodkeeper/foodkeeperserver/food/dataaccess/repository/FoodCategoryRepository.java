@@ -8,5 +8,5 @@ import java.util.List;
 
 @NullMarked
 public interface FoodCategoryRepository extends JpaRepository<FoodCategoryEntity, Long> {
-    List<FoodCategoryEntity> findAllByMemberId(String memberId);
+    List<FoodCategoryEntity> findAllByMemberKey(String memberKey);
 }

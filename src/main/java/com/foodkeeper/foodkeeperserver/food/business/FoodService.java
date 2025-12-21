@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.food.business;
 
+import com.foodkeeper.foodkeeperserver.bookmarkedfood.implement.FoodBookmarker;
 import com.foodkeeper.foodkeeperserver.common.domain.PageObject;
 import com.foodkeeper.foodkeeperserver.food.domain.*;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
@@ -59,8 +60,8 @@ public class FoodService {
     }
 
     // 단일 조회
-    public RegisteredFood getFood(Long id, String memberId) {
-        Food food = foodManager.findFood(id, memberId);
+    public RegisteredFood getFood(Long id, String memberKey) {
+        Food food = foodManager.findFood(id, memberKey);
         List<SelectedFoodCategory> mappings = selectedFoodCategoryManager.findByFoodId(id);
         List<Long> categoryIds = mappings.stream()
                 .map(SelectedFoodCategory::foodCategoryId)
@@ -69,29 +70,30 @@ public class FoodService {
     }
 
 
-    public List<RecipeFood> getAllByMemberId(String memberId) {
-        List<Food> foods = foodManager.findAllByMemberId(memberId);
+    public List<RecipeFood> getAllBymemberKey(String memberKey) {
+        List<Food> foods = foodManager.findAllBymemberKey(memberKey);
         return foods.stream()
                 .map(Food::toRecipe)
                 .toList();
     }
 
     // 유통기한 임박 재료 리스트 조회
-    public List<RecipeFood> getImminentFoods(String memberId) {
-        List<Food> foods = foodManager.findImminentFoods(memberId);
+    public List<RecipeFood> getImminentFoods(String memberKey) {
+        List<Food> foods = foodManager.findImminentFoods(memberKey);
         return foods.stream()
                 .map(Food::toRecipe)
                 .toList();
     }
 
     @Transactional
-    public void removeFood(Long foodId, String memberId) {
-        Food food = foodManager.findFood(foodId, memberId);
+    public void removeFood(Long foodId, String memberKey) {
+        Food food = foodManager.findFood(foodId, memberKey);
         selectedFoodCategoryManager.removeAllByFoodId(foodId);
         foodManager.removeFood(food);
 
         imageManager.deleteFile(food.imageUrl());
     }
+
     public Long bookmarkFood(Long foodId, String memberKey) {
         return foodBookmarker.bookmark(foodManager.find(foodId), memberKey);
     }

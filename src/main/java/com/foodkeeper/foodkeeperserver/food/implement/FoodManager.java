@@ -34,15 +34,15 @@ public class FoodManager {
     }
 
     @Transactional(readOnly = true)
-    public Food findFood(Long id, String memberId) {
-        return foodRepository.findByIdAndMemberId(id, memberId).orElseThrow(() -> new AppException(ErrorType.FOOD_DATA_NOT_FOUND))
+    public Food findFood(Long id, String memberKey) {
+        return foodRepository.findByIdAndMemberKey(id, memberKey).orElseThrow(() -> new AppException(ErrorType.FOOD_DATA_NOT_FOUND))
                 .toDomain();
     }
 
     // 1) 이름 정렬 2) 최신순
     @Transactional(readOnly = true)
-    public List<Food> findAllByMemberId(String memberId) {
-        List<FoodEntity> foods = foodRepository.findAllByMemberId(memberId);
+    public List<Food> findAllBymemberKey(String memberKey) {
+        List<FoodEntity> foods = foodRepository.findAllByMemberKey(memberKey);
         return foods.stream()
                 .map(FoodEntity::toDomain)
                 .toList();
@@ -50,8 +50,8 @@ public class FoodManager {
 
     // 알림 설정 리스트 조회
     @Transactional(readOnly = true)
-    public List<Food> findImminentFoods(String memberId) {
-        List<FoodEntity> foods = foodRepository.findImminentFoods(memberId);
+    public List<Food> findImminentFoods(String memberKey) {
+        List<FoodEntity> foods = foodRepository.findImminentFoods(memberKey);
         return foods.stream()
                 .map(FoodEntity::toDomain)
                 .toList();

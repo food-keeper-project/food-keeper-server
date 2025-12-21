@@ -15,10 +15,10 @@ public class FoodCategoryService {
     private final FoodCategoryManager foodCategoryManager;
 
     public void registerFoodCategory(FoodCategoryRegister foodCategoryRegister) {
-        foodCategoryManager.addCategory(foodCategoryRegister.name(), foodCategoryRegister.memberId());
+        foodCategoryManager.addCategory(foodCategoryRegister.name(), foodCategoryRegister.memberKey());
     }
 
-    public List<FoodCategory> findAllByMemberId(String memberId) {
-        return foodCategoryManager.findAllByMemberId(memberId);
+    public List<FoodCategory> findAllBymemberKey(String memberKey) {
+        return foodCategoryManager.findAllBymemberKey(memberKey);
     }
 }

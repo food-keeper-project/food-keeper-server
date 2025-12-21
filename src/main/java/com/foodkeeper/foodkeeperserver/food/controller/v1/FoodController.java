@@ -53,8 +53,8 @@ public class FoodController {
     @Operation(summary = "식재료 전체 조회", description = "식재료 전체 조회 API")
     @GetMapping
     public ResponseEntity<ApiResponse<FoodListResponse>> getFoods(@ModelAttribute FoodCursorRequest request) {
-        String memberId = "memberId"; // todo 로그인 방식 구현 후 리팩토링
-        FoodsFinder finder = FoodCursorRequest.toFinder(request, memberId);
+        String memberKey = "memberKey"; // todo 로그인 방식 구현 후 리팩토링
+        FoodsFinder finder = FoodCursorRequest.toFinder(request, memberKey);
         FoodCursorResult result = foodService.getFoodList(finder);
         return ResponseEntity.ok(ApiResponse.success(new FoodListResponse(result)));
     }
@@ -62,27 +62,27 @@ public class FoodController {
     @Operation(summary = "식재료 단일 조회", description = "식재료 단일 조회 API")
     @GetMapping("/{foodId}")
     public ResponseEntity<ApiResponse<FoodResponse>> getFood(@PathVariable Long foodId) {
-        String memberId = "memberId"; // todo 로그인 방식 구현 후 리팩토링
-        RegisteredFood RegisteredFood = foodService.getFood(foodId, memberId);
+        String memberKey = "memberKey"; // todo 로그인 방식 구현 후 리팩토링
+        RegisteredFood RegisteredFood = foodService.getFood(foodId, memberKey);
         return ResponseEntity.ok(ApiResponse.success(FoodResponse.toFoodResponse(RegisteredFood)));
     }
 
     @Operation(summary = "레시피 추천용 식재료 전체 조회", description = "레시피 추천용 식재료 전체 조회 API")
     @GetMapping("/recipes")
     public ResponseEntity<ApiResponse<RecipeFoodResponse>> getFoodNames() {
-        String memberId = "memberId"; // todo 로그인 방식 구현 후 리팩토링
-        List<RecipeFood> recipeFoods = foodService.getAllByMemberId(memberId);
+        String memberKey = "memberKey"; // todo 로그인 방식 구현 후 리팩토링
+        List<RecipeFood> recipeFoods = foodService.getAllBymemberKey(memberKey);
         return ResponseEntity.ok(ApiResponse.success(new RecipeFoodResponse(recipeFoods)));
     }
 
     @Operation(summary = "유통기한 임박 식재료 리스트 조회", description = "유통기한 임박 식재료 조회 API")
     @GetMapping("/imminent")
     public ResponseEntity<ApiResponse<FoodImminentResponse>> getImminentFoods() {
-        String memberId = "memberId"; // todo 로그인 방식 구현 후 리팩토링
-        List<RecipeFood> foods = foodService.getImminentFoods(memberId);
+        String memberKey = "memberKey"; // todo 로그인 방식 구현 후 리팩토링
+        List<RecipeFood> foods = foodService.getImminentFoods(memberKey);
         return ResponseEntity.ok(ApiResponse.success(new FoodImminentResponse(foods)));
     }
 
 
 }
-}
+
