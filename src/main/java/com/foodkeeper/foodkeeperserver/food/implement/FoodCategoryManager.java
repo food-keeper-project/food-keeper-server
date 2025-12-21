@@ -32,7 +32,7 @@ public class FoodCategoryManager {
     }
 
     @Transactional(readOnly = true)
-    public List<FoodCategory> findAllBymemberKey(String memberKey) {
+    public List<FoodCategory> findAllByMemberKey(String memberKey) {
         List<FoodCategoryEntity> foodCategories = ListUtil.getOrElseThrowList(foodCategoryRepository.findAllByMemberKey(memberKey));
         return foodCategories.stream()
                 .map(FoodCategoryEntity::toDomain)

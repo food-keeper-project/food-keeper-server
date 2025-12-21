@@ -18,7 +18,7 @@ public class FoodCategoryService {
         foodCategoryManager.addCategory(foodCategoryRegister.name(), foodCategoryRegister.memberKey());
     }
 
-    public List<FoodCategory> findAllBymemberKey(String memberKey) {
-        return foodCategoryManager.findAllBymemberKey(memberKey);
+    public List<FoodCategory> findAllByMemberKey(String memberKey) {
+        return foodCategoryManager.findAllByMemberKey(memberKey);
     }
 }

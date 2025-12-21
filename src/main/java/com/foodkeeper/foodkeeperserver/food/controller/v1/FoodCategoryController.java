@@ -12,9 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
@@ -29,6 +27,7 @@ public class FoodCategoryController {
 
     @NullMarked
     @Operation(summary = "카테고리 추가", description = "카테고리 추가 API")
+    @PostMapping
     public ResponseEntity<ApiResponse<Void>> createCategory(@RequestBody FoodCategoryRegisterRequest request) {
         String memberKey = "memberKey"; // todo 로그인 방식 구현 후 리팩토링
         FoodCategoryRegister register = new FoodCategoryRegister(request.name(), memberKey);
@@ -36,11 +35,15 @@ public class FoodCategoryController {
         return ResponseEntity.created(URI.create("/api/v1/categories")).build();
     }
 
-//    @NullMarked
-//    @Operation(summary = "카테고리 전체 조회", description = "카테고리 전체 조회 API")
-//    public ResponseEntity<ApiResponse<List<FoodCategoryResponse>>> getCategories() {
-//        String memberKey = "memberKey"; // todo 로그인 방식 구현 후 리팩토링
-//        List<FoodCategory> foodCategories = foodCategoryService.findAllByMemberKey(memberKey);
-//        return ResponseEntity.ok(ApiResponse.success(fo))
-//    }
+    @NullMarked
+    @Operation(summary = "카테고리 전체 조회", description = "카테고리 전체 조회 API")
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<FoodCategoryResponse>>> getCategories() {
+        String memberKey = "memberKey"; // todo 로그인 방식 구현 후 리팩토링
+        List<FoodCategory> foodCategories = foodCategoryService.findAllByMemberKey(memberKey);
+        List<FoodCategoryResponse> responses = foodCategories.stream()
+                .map(FoodCategoryResponse::from)
+                .toList();
+        return ResponseEntity.ok(ApiResponse.success(responses));
+    }
 }
