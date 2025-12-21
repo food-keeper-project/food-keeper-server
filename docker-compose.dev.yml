@@ -73,6 +73,16 @@ services:
     ]
     networks:
       - food-keeper
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    volumes:
+      - ./promtail-config.dev.yml:/etc/promtail/config.yml
+      - /var/log/food-keeper:/var/log/app
+      - /var/lib/promtail:/var/lib/promtail
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - food-keeper
 
 networks:
   food-keeper:
