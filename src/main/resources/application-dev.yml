@@ -25,7 +25,8 @@ management:
 
 logging:
   level:
-    com.foodkeeper: debug
+    root: debug
+  config: classpath:logback-dev.xml
 
 jwt:
   secret-key: ${JWT_SECRET_KEY}
