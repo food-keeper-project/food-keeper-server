@@ -17,7 +17,7 @@ public class RestClientConfig {
     private static final int CLOVA_CONNECT_TIMEOUT = 5;
     private static final int CLOVA_READ_TIMEOUT = 20;
 
-    @Bean("APIRestClient")
+    @Bean("commonRestClient")
     @Primary
     public RestClient commonRestClient() {
         return RestClient.builder()

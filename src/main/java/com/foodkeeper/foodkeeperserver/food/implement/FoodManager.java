@@ -62,4 +62,8 @@ public class FoodManager {
         foodRepository.delete(FoodEntity.from(food));
     }
 
+
+    public Food find(Long foodId) {
+        return foodRepository.findById(foodId).orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_DATA)).toDomain();
+    }
 }

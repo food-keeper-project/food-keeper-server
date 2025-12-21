@@ -20,7 +20,7 @@ public class FoodFixture {
     public static final LocalDate EXPIRY_DATE = LocalDate.now().plusDays(1);
     public static final Integer EXPIRY_ALARM = 3;
     public static final String IMAGE_URL = "https://s3.aws.com/milk.jpg";
-    public static final String MEMBER_ID = "memberId";
+    public static final String MEMBER_KEY = "memberKey";
 
 
     public static FoodRegister createRegisterDto(List<Long> categoryIds) {
@@ -36,7 +36,7 @@ public class FoodFixture {
 
     public static FoodsFinder createFirstPageFinder() {
         return new FoodsFinder(
-                MEMBER_ID,
+                MEMBER_KEY,
                 null,
                 null,
                 null,
@@ -46,14 +46,14 @@ public class FoodFixture {
 
     public static Food createFood(Long id) {
         return Food.builder()
-                .id(id)
+                .id(ID)
                 .name(NAME)
                 .imageUrl(IMAGE_URL)
                 .storageMethod(STORAGE_METHOD)
                 .expiryDate(EXPIRY_DATE)
                 .memo(MEMO)
                 .selectedCategoryCount(1)
-                .memberId(MEMBER_ID)
+                .memberKey(MEMBER_KEY)
                 .createdAt(LocalDateTime.now())
                 .build();
     }
@@ -63,5 +63,4 @@ public class FoodFixture {
         ReflectionTestUtils.setField(foodEntity, "id", id);
         return foodEntity;
     }
-
 }

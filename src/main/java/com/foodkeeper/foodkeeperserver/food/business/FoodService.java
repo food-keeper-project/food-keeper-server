@@ -29,11 +29,12 @@ public class FoodService {
     private final FoodManager foodManager;
     private final FoodCategoryManager foodCategoryManager;
     private final SelectedFoodCategoryManager selectedFoodCategoryManager;
+    private final FoodBookmarker foodBookmarker;
 
     @Transactional
-    public Long registerFood(FoodRegister register, MultipartFile file, String memberId) {
+    public Long registerFood(FoodRegister register, MultipartFile file, String memberKey) {
         CompletableFuture<String> imageUrlFuture = imageManager.fileUpload(file);
-        Food food = register.toFood(imageUrlFuture.join(), memberId);
+        Food food = register.toFood(imageUrlFuture.join(), memberKey);
         try {
             Food savedFood = foodManager.register(food);
             List<FoodCategory> foodCategories = foodCategoryManager.findAllByIds(register.categoryIds());
@@ -90,5 +91,8 @@ public class FoodService {
         foodManager.removeFood(food);
 
         imageManager.deleteFile(food.imageUrl());
+    }
+    public Long bookmarkFood(Long foodId, String memberKey) {
+        return foodBookmarker.bookmark(foodManager.find(foodId), memberKey);
     }
 }

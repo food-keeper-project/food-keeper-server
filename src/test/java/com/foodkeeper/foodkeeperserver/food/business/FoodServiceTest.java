@@ -1,5 +1,8 @@
 package com.foodkeeper.foodkeeperserver.food.business;
 
+import com.foodkeeper.foodkeeperserver.bookmarkedfood.dataaccess.entity.BookmarkedFoodEntity;
+import com.foodkeeper.foodkeeperserver.bookmarkedfood.dataaccess.repository.BookmarkedFoodRepository;
+import com.foodkeeper.foodkeeperserver.bookmarkedfood.implement.FoodBookmarker;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.SelectedFoodCategoryEntity;
@@ -7,6 +10,7 @@ import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodCategoryRe
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.SelectedFoodCategoryRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
+import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
 import com.foodkeeper.foodkeeperserver.food.domain.response.FoodCursorResult;
@@ -20,6 +24,7 @@ import com.foodkeeper.foodkeeperserver.food.implement.ImageManager;
 import com.foodkeeper.foodkeeperserver.food.implement.SelectedFoodCategoryManager;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,39 +44,37 @@ import java.util.concurrent.CompletableFuture;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class FoodServiceTest {
 
-    @InjectMocks
-    FoodService foodService;
-
-    @Mock
-    ImageManager imageManager;
-
-    @Mock
-    FoodRepository foodRepository;
-
-    @Mock
-    FoodCategoryRepository foodCategoryRepository;
-
-    @Mock
-    SelectedFoodCategoryRepository selectedFoodCategoryRepository;
+    @InjectMocks FoodService foodService;
+    @Mock ImageManager imageManager;
+    @Mock FoodRepository foodRepository;
+    @Mock FoodCategoryRepository foodCategoryRepository;
+    @Mock SelectedFoodCategoryRepository selectedFoodCategoryRepository;
+    @Mock BookmarkedFoodRepository bookmarkedFoodRepository;
 
     @BeforeEach
     void setUp() {
         FoodManager foodManager = new FoodManager(foodRepository);
         FoodCategoryManager foodCategoryManager = new FoodCategoryManager(foodCategoryRepository);
         SelectedFoodCategoryManager selectedFoodCategoryManager = new SelectedFoodCategoryManager(selectedFoodCategoryRepository);
+        SelectedFoodCategoryManager selectedFoodCategoryManager =
+                new SelectedFoodCategoryManager(selectedFoodCategoryRepository);
+        FoodBookmarker foodBookmarker = new FoodBookmarker(bookmarkedFoodRepository);
 
         foodService = new FoodService(
                 imageManager,
                 foodManager,
                 foodCategoryManager,
-                selectedFoodCategoryManager
+                selectedFoodCategoryManager,
+                foodBookmarker
         );
     }
 
@@ -79,7 +82,7 @@ public class FoodServiceTest {
     @DisplayName("식제품 추가 기능 구현 성공")
     void registerFood_SUCCESS() throws Exception {
         // given
-        String memberId = FoodFixture.MEMBER_ID;
+        String memberKey = "memberKey";
         MultipartFile mockFile = new MockMultipartFile("image", "test.jpg", "image/jpeg", "data".getBytes());
         List<Long> categoryIds = List.of(1L, 2L);
         FoodRegister dto = FoodFixture.createRegisterDto(categoryIds);
@@ -91,9 +94,8 @@ public class FoodServiceTest {
         given(foodCategoryRepository.findAllById(categoryIds)).willReturn(mockCategories);
         given(foodRepository.save(any(FoodEntity.class))).willReturn(mockFoodEntity);
 
-
         // when
-        foodService.registerFood(dto, mockFile, memberId);
+        foodService.registerFood(dto, mockFile, memberKey);
         // then
         ArgumentCaptor<FoodEntity> foodCaptor = ArgumentCaptor.forClass(FoodEntity.class);
         verify(foodRepository).save(foodCaptor.capture());
@@ -154,7 +156,6 @@ public class FoodServiceTest {
                 SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 1L),
                 SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 2L)
         );
-
         given(foodRepository.findByIdAndMemberId(1L, FoodFixture.MEMBER_ID)).willReturn(Optional.of(food));
         given(selectedFoodCategoryRepository.findByFoodId(1L)).willReturn(selectedFoodCategories);
         //when
@@ -165,11 +166,41 @@ public class FoodServiceTest {
     }
 
     @Test
+    @DisplayName("식재료를 즐겨찾기에 추가한다.")
+    void bookmarkFood() {
+        // given
+        long bookmarkedFoodId = 2L;
+        Food food = FoodFixture.createFood();
+        FoodEntity foodEntity = FoodEntity.from(food);
+        BookmarkedFoodEntity bookmarkedFoodEntity = mock(BookmarkedFoodEntity.class);
+        given(bookmarkedFoodEntity.getId()).willReturn(bookmarkedFoodId);
+        given(foodRepository.findById(eq(1L))).willReturn(Optional.of(foodEntity));
+        given(bookmarkedFoodRepository.save(any(BookmarkedFoodEntity.class))).willReturn(bookmarkedFoodEntity);
+
+        // when
+        Long savedFoodId = foodService.bookmarkFood(1L, "memberKey");
+
+        // then
+        assertThat(savedFoodId).isEqualTo(bookmarkedFoodId);
+    }
+
+    @Test
+    @DisplayName("즐겨찾기에 추가할 식재료 데이터가 없으면 AppException이 발생한다.")
+    void throwAppExceptionIfOriginFoodNotExists() {
+        // given
+        given(foodRepository.findById(eq(1L))).willReturn(Optional.empty());
+
+        // then
+        Assertions.assertThatThrownBy(() -> foodService.bookmarkFood(1L, "memberKey"))
+                .isInstanceOf(AppException.class)
+                .extracting("errorType")
+                .isEqualTo(ErrorType.NOT_FOUND_DATA);
+    }
     @DisplayName("foodId 리스트와 memberId 으로 foodName을 List<String>로 결과 반환")
     void getFoodNames_SUCCESS() throws Exception {
         //given
         List<Long> ids = List.of(1L, 2L);
-        String memberId = FoodFixture.MEMBER_ID;
+        String memberId = FoodFixture.MEMBER_KEY;
         String foodName = FoodFixture.NAME;
         FoodEntity food1 = FoodFixture.createFoodEntity(ids.get(0));
         FoodEntity food2 = FoodFixture.createFoodEntity(ids.get(1));
@@ -185,7 +216,7 @@ public class FoodServiceTest {
     @DisplayName("임박한 재료 리스트를 조회했을 때 foodName, remainDays 반환")
     void getImminentFood_SUCCESS() throws Exception {
         //given
-        String memberId = FoodFixture.MEMBER_ID;
+        String memberId = FoodFixture.MEMBER_KEY;
         FoodEntity food1 = FoodFixture.createFoodEntity(1L);
         FoodEntity food2 = FoodFixture.createFoodEntity(2L);
 
@@ -203,7 +234,7 @@ public class FoodServiceTest {
     void removeFood_SUCCESS() throws Exception {
         //given
         Long foodId = 1L;
-        String memberId = FoodFixture.MEMBER_ID;
+        String memberId = FoodFixture.MEMBER_KEY;
 
         FoodEntity food = FoodFixture.createFoodEntity(foodId);
 

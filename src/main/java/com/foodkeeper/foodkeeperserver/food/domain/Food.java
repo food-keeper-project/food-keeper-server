@@ -18,7 +18,7 @@ public record Food(
         Integer expiryAlarm,
         String memo,
         Integer selectedCategoryCount,
-        String memberId,
+        String memberKey,
         LocalDateTime createdAt
 ) {
 
