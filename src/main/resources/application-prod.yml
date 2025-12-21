@@ -17,6 +17,12 @@ spring:
         hbm2ddl:
           auto: validate
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+
 logging:
   level:
     com.foodkeeper: info
