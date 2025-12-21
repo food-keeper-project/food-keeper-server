@@ -1,7 +1,5 @@
 package com.foodkeeper.foodkeeperserver.common.domain;
 
-import org.springframework.data.domain.Page;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,13 +13,13 @@ public class PageObject<T> {
     public PageObject(List<T> objects, int limit) {
         if (objects.size() > limit) {
             this.hasNext = true;
-            this.contents = new ArrayList<>(objects.subList(0,limit));
-        }
-        else {
+            this.contents = new ArrayList<>(objects.subList(0, limit));
+        } else {
             this.hasNext = false;
             this.contents = objects;
         }
     }
+
     public List<T> getContent() {
         return Collections.unmodifiableList(contents);
     }

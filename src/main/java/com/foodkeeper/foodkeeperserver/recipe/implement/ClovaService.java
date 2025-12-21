@@ -2,19 +2,16 @@ package com.foodkeeper.foodkeeperserver.recipe.implement;
 
 import com.foodkeeper.foodkeeperserver.recipe.business.request.ClovaRequest;
 import com.foodkeeper.foodkeeperserver.recipe.business.response.ClovaResponse;
+import com.foodkeeper.foodkeeperserver.recipe.controller.v1.ClovaClient;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
-import org.springframework.web.client.RestClient;
-import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -25,12 +22,6 @@ import java.util.List;
 @Slf4j
 public class ClovaService {
 
-    @Qualifier("clovaRestClient")
-    private final RestClient restClient;
-
-    @Value("${clova.url}")
-    private String url;
-
     @Value("${clova.api-key}")
     private String apiKey;
 
@@ -38,7 +29,7 @@ public class ClovaService {
     private Resource systemPromptResource;
 
     private String systemPrompt;
-    private final ObjectMapper objectMapper;
+    private final ClovaClient clovaClient;
 
     // 텍스트 파일 빈 생성 시 메모리에 저장
     @PostConstruct
@@ -57,16 +48,7 @@ public class ClovaService {
 
         ClovaRequest request = ClovaRequest.createPrompt(systemPrompt, userPrompt);
 
-        String json = restClient.post()
-                .uri(url)
-                .header("Authorization", "Bearer " + apiKey)
-                .header("Accept", MediaType.APPLICATION_JSON_VALUE) //
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(request)
-                .retrieve()
-                .body(String.class);
-
-        ClovaResponse clovaResponse = objectMapper.readValue(json, ClovaResponse.class);
+        ClovaResponse clovaResponse = clovaClient.getRecipe( "Bearer " + apiKey, request);
         return clovaResponse.getContent();
     }
 
