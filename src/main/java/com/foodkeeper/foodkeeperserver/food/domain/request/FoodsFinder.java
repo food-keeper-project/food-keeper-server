@@ -1,20 +1,13 @@
 package com.foodkeeper.foodkeeperserver.food.domain.request;
 
+import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
+
 import java.time.LocalDateTime;
 
 public record FoodsFinder(
         String memberId,
         Long categoryId,
         LocalDateTime lastCreatedAt,
-        Long lastId,
-        Integer limit
+        Cursorable cursorable
 ) {
-    public FoodsFinder {
-        if (limit == null) {
-            limit = 10;
-        }
-        if (limit > 100) {
-            limit = 100;
-        }
-    }
 }

@@ -1,12 +1,10 @@
 package com.foodkeeper.foodkeeperserver.food.business;
 
-import com.foodkeeper.foodkeeperserver.common.domain.PageObject;
+import com.foodkeeper.foodkeeperserver.bookmarkedfood.implement.FoodBookmarker;
+import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.domain.*;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
-import com.foodkeeper.foodkeeperserver.food.domain.response.FoodCursorResult;
-import com.foodkeeper.foodkeeperserver.food.domain.response.Foods;
-import com.foodkeeper.foodkeeperserver.food.domain.response.RecipeFood;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodCategoryManager;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
 import com.foodkeeper.foodkeeperserver.food.implement.ImageManager;
@@ -29,14 +27,15 @@ public class FoodService {
     private final FoodManager foodManager;
     private final FoodCategoryManager foodCategoryManager;
     private final SelectedFoodCategoryManager selectedFoodCategoryManager;
+    private final FoodBookmarker foodBookmarker;
 
     @Transactional
-    public Long registerFood(FoodRegister register, MultipartFile file, String memberId) {
+    public Long registerFood(FoodRegister register, MultipartFile file, String memberKey) {
         CompletableFuture<String> imageUrlFuture = imageManager.fileUpload(file);
-        Food food = register.toFood(imageUrlFuture.join(), memberId);
+        Food food = register.toFood(imageUrlFuture.join(), memberKey);
         try {
             Food savedFood = foodManager.register(food);
-            List<FoodCategory> foodCategories = foodCategoryManager.findAll(register.categoryIds());
+            List<FoodCategory> foodCategories = foodCategoryManager.findAllByIds(register.categoryIds());
             foodCategories.forEach(category ->
                     selectedFoodCategoryManager.save(SelectedFoodCategory.create(savedFood.id(), category.id())));
             return savedFood.id();
@@ -47,19 +46,18 @@ public class FoodService {
     }
 
     // 커서 리스트 조회
-    public FoodCursorResult getFoodList(FoodsFinder finder) {
+    public SliceObject<RegisteredFood> getFoodList(FoodsFinder finder) {
         List<Food> foods = foodManager.findFoodList(finder);
-        PageObject<Food> page = new PageObject<>(foods, finder.limit());
-        Foods pagedFoods = new Foods(page.getContent());
+        Foods foodList = new Foods(foods);
         SelectedFoodCategories categories = new SelectedFoodCategories(selectedFoodCategoryManager.findByFoodIds(
-                pagedFoods.getFoodIds()
+                foodList.getFoodIds()
         ));
-        return new FoodCursorResult(pagedFoods.toRegisteredFoods(categories), page.hasNext());
+        return new SliceObject<>(foodList.toRegisteredFoods(categories),finder.cursorable());
     }
 
     // 단일 조회
-    public RegisteredFood getFood(Long id, String memberId) {
-        Food food = foodManager.findFood(id, memberId);
+    public RegisteredFood getFood(Long id, String memberKey) {
+        Food food = foodManager.findFood(id, memberKey);
         List<SelectedFoodCategory> mappings = selectedFoodCategoryManager.findByFoodId(id);
         List<Long> categoryIds = mappings.stream()
                 .map(SelectedFoodCategory::foodCategoryId)
@@ -68,19 +66,31 @@ public class FoodService {
     }
 
 
-    public List<RecipeFood> getAllByMemberId(String memberId) {
-        List<Food> foods = foodManager.findAllByMemberId(memberId);
+    public List<RecipeFood> getAllByMemberKey(String memberKey) {
+        List<Food> foods = foodManager.findAllByMemberKey(memberKey);
         return foods.stream()
                 .map(Food::toRecipe)
                 .toList();
     }
 
     // 유통기한 임박 재료 리스트 조회
-    public List<RecipeFood> getImminentFoods(String memberId) {
-        List<Food> foods = foodManager.findImminentFoods(memberId);
+    public List<RecipeFood> getImminentFoods(String memberKey) {
+        List<Food> foods = foodManager.findImminentFoods(memberKey);
         return foods.stream()
                 .map(Food::toRecipe)
                 .toList();
     }
 
+    @Transactional
+    public void removeFood(Long foodId, String memberKey) {
+        Food food = foodManager.findFood(foodId, memberKey);
+        selectedFoodCategoryManager.removeAllByFoodId(foodId);
+        foodManager.removeFood(food);
+
+        imageManager.deleteFile(food.imageUrl());
+    }
+
+    public Long bookmarkFood(Long foodId, String memberKey) {
+        return foodBookmarker.bookmark(foodManager.find(foodId), memberKey);
+    }
 }

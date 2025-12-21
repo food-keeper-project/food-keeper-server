@@ -1,8 +1,4 @@
-package com.foodkeeper.foodkeeperserver.food.domain.response;
-
-import com.foodkeeper.foodkeeperserver.food.domain.Food;
-import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
-import com.foodkeeper.foodkeeperserver.food.domain.SelectedFoodCategories;
+package com.foodkeeper.foodkeeperserver.food.domain;
 
 import java.util.List;
 
