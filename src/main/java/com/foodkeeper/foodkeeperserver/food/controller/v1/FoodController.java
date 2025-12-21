@@ -1,14 +1,14 @@
 package com.foodkeeper.foodkeeperserver.food.controller.v1;
 
 import com.foodkeeper.foodkeeperserver.food.business.FoodService;
-import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodCursorRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodRegisterRequest;
+import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodsRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.*;
-import com.foodkeeper.foodkeeperserver.food.domain.response.RecipeFood;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
 import com.foodkeeper.foodkeeperserver.food.domain.response.FoodCursorResult;
+import com.foodkeeper.foodkeeperserver.food.domain.response.RecipeFood;
 import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -42,9 +42,9 @@ public class FoodController {
 
     @Operation(summary = "식재료 전체 조회", description = "식재료 전체 조회 API")
     @GetMapping
-    public ResponseEntity<ApiResponse<FoodListResponse>> getFoods(@ModelAttribute FoodCursorRequest request) {
+    public ResponseEntity<ApiResponse<FoodListResponse>> getFoods(@ModelAttribute FoodsRequest request) {
         String memberId = "memberId"; // todo 로그인 방식 구현 후 리팩토링
-        FoodsFinder finder = FoodCursorRequest.toFinder(request, memberId);
+        FoodsFinder finder = FoodsRequest.toFinder(request, memberId);
         FoodCursorResult result = foodService.getFoodList(finder);
         return ResponseEntity.ok(ApiResponse.success(new FoodListResponse(result)));
     }

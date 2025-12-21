@@ -7,6 +7,7 @@ import java.util.List;
 public class PageObject<T> {
 
     private final List<T> contents;
+
     private final boolean hasNext;
 
     // 전체 size() 는 항상 limit+1
