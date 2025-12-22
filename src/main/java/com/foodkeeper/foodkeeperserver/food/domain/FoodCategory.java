@@ -6,6 +6,12 @@ import lombok.Builder;
 public record FoodCategory(
         Long id,
         String name,
-        String memberId
+        String memberKey
 ) {
+    public static FoodCategory create(String name, String memberKey) {
+        return FoodCategory.builder()
+                .name(name)
+                .memberKey(memberKey)
+                .build();
+    }
 }

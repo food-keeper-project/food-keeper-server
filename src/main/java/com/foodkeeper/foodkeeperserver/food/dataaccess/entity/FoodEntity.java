@@ -15,9 +15,10 @@ import java.time.temporal.ChronoUnit;
 
 @Entity
 @Getter
+@Table(name = "food")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FoodEntity extends BaseEntity {
-    //todo 복합인덱스 생성 필요
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "food_id")
@@ -33,7 +34,7 @@ public class FoodEntity extends BaseEntity {
     @Column(length = 20, nullable = false)
     private StorageMethod storageMethod;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TIMESTAMP")
     private LocalDate expiryDate;
 
     @Column(nullable = false)
@@ -46,7 +47,7 @@ public class FoodEntity extends BaseEntity {
     private int selectedCategoryCount;
 
     @Column(nullable = false)
-    private String memberId;
+    private String memberKey;
 
     @Builder
     private FoodEntity(
@@ -57,7 +58,7 @@ public class FoodEntity extends BaseEntity {
             Integer expiryAlarm,
             String memo,
             int selectedCategoryCount,
-            String memberId) {
+            String memberKey) {
         this.name = name;
         this.imageUrl = (imageUrl != null) ? imageUrl : "";
         this.storageMethod = storageMethod;
@@ -65,7 +66,7 @@ public class FoodEntity extends BaseEntity {
         this.expiryAlarm = (expiryAlarm == null) ? 2 : expiryAlarm;
         this.memo = (memo != null) ? memo : "";
         this.selectedCategoryCount = selectedCategoryCount;
-        this.memberId = memberId;
+        this.memberKey = memberKey;
     }
 
     public static FoodEntity from(Food food) {
@@ -77,7 +78,7 @@ public class FoodEntity extends BaseEntity {
                 .expiryAlarm(food.expiryAlarm())
                 .memo(food.memo())
                 .selectedCategoryCount(food.selectedCategoryCount())
-                .memberId(food.memberId())
+                .memberKey(food.memberKey())
                 .build();
     }
 
@@ -91,7 +92,7 @@ public class FoodEntity extends BaseEntity {
                 this.expiryAlarm,
                 this.memo,
                 this.selectedCategoryCount,
-                this.memberId,
+                this.memberKey,
                 this.getCreatedAt()
         );
     }

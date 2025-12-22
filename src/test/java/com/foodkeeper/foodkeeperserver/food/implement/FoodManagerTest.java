@@ -66,7 +66,7 @@ public class FoodManagerTest {
     void findFoodById_SUCCESS() throws Exception {
         //given
         Long foodId = FoodFixture.ID;
-        String memberId = FoodFixture.MEMBER_ID;
+        String memberId = FoodFixture.MEMBER_KEY;
 
         FoodEntity foodEntity = FoodFixture.createFoodEntity(foodId);
         given(foodRepository.findByIdAndMemberId(foodId, memberId)).willReturn(Optional.of(foodEntity));
@@ -74,14 +74,14 @@ public class FoodManagerTest {
         Food food = foodManager.findFood(foodId, memberId);
         //then
         assertThat(food.name()).isEqualTo(FoodFixture.NAME);
-        assertThat(food.memberId()).isEqualTo(memberId);
+        assertThat(food.memberKey()).isEqualTo(memberId);
     }
 
     @Test
     @DisplayName("선택된 식재료들의 이름 조회 시 이름 리스트 반환")
     void findFoodNames_SUCCESS() throws Exception {
         //given
-        String memberId = FoodFixture.MEMBER_ID;
+        String memberId = FoodFixture.MEMBER_KEY;
         FoodEntity entity1 = FoodFixture.createFoodEntity(1L);
         FoodEntity entity2 = FoodFixture.createFoodEntity(2L);
         given(foodRepository.findAllByMemberId(memberId)).willReturn(List.of(entity1, entity2));
