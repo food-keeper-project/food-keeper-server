@@ -29,6 +29,7 @@ public class SliceObject<T> {
         }
         this.hasNext = hasNext;
     }
+
     public <U> SliceObject<U> map(Function<T, U> converter) {
         List<U> mapped = this.content.stream()
                 .map(converter)
