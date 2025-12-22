@@ -3,18 +3,18 @@ package com.foodkeeper.foodkeeperserver.food.business;
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.dataaccess.entity.BookmarkedFoodEntity;
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.dataaccess.repository.BookmarkedFoodRepository;
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.implement.FoodBookmarker;
+import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.SelectedFoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodCategoryRepository;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.SelectedFoodCategoryRepository;
-import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
+import com.foodkeeper.foodkeeperserver.food.domain.RecipeFood;
+import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
-import com.foodkeeper.foodkeeperserver.food.domain.response.FoodCursorResult;
-import com.foodkeeper.foodkeeperserver.food.domain.RecipeFood;
 import com.foodkeeper.foodkeeperserver.food.fixture.CategoryFixture;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import com.foodkeeper.foodkeeperserver.food.fixture.SelectedFoodCategoryFixture;
@@ -43,22 +43,26 @@ import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class FoodServiceTest {
 
-    @InjectMocks FoodService foodService;
-    @Mock ImageManager imageManager;
-    @Mock FoodRepository foodRepository;
-    @Mock FoodCategoryRepository foodCategoryRepository;
-    @Mock SelectedFoodCategoryRepository selectedFoodCategoryRepository;
-    @Mock BookmarkedFoodRepository bookmarkedFoodRepository;
+    @InjectMocks
+    FoodService foodService;
+    @Mock
+    ImageManager imageManager;
+    @Mock
+    FoodRepository foodRepository;
+    @Mock
+    FoodCategoryRepository foodCategoryRepository;
+    @Mock
+    SelectedFoodCategoryRepository selectedFoodCategoryRepository;
+    @Mock
+    BookmarkedFoodRepository bookmarkedFoodRepository;
 
     @BeforeEach
     void setUp() {
@@ -136,13 +140,13 @@ public class FoodServiceTest {
                 SelectedFoodCategoryFixture.createSelectedCategoryEntity(2L, 2L)
         );
         given(foodRepository.findFoodCursorList(finder)).willReturn(foodEntities);
-        given(selectedFoodCategoryRepository.findByFoodIdIn(List.of(1L, 2L))).willReturn(selectedFoodCategories);
+        given(selectedFoodCategoryRepository.findByFoodIdIn(anyList())).willReturn(selectedFoodCategories);
         //when
-        FoodCursorResult result = foodService.getFoodList(finder);
+        SliceObject<RegisteredFood> result = foodService.getFoodList(finder);
         //then
-        assertThat(result.hasNext()).isTrue();
-        assertThat(result.foods()).hasSize(2);
-        assertThat(result.foods().getFirst().categoryIds().getFirst()).isEqualTo(1L);
+        assertThat(result.isHasNext()).isTrue();
+        assertThat(result.getContent()).hasSize(2);
+        assertThat(result.getContent().getFirst().categoryIds().getFirst()).isEqualTo(1L);
     }
 
     @Test
@@ -168,7 +172,6 @@ public class FoodServiceTest {
     void bookmarkFood() {
         // given
         long bookmarkedFoodId = 2L;
-        Food food = FoodFixture.createFood(1L);
         Food food = FoodFixture.createFood();
         FoodEntity foodEntity = FoodEntity.from(food);
         BookmarkedFoodEntity bookmarkedFoodEntity = mock(BookmarkedFoodEntity.class);
@@ -195,6 +198,7 @@ public class FoodServiceTest {
                 .extracting("errorType")
                 .isEqualTo(ErrorType.NOT_FOUND_DATA);
     }
+
     @DisplayName("foodId 리스트와 memberKey 으로 foodName을 List<String>로 결과 반환")
     void getFoodNames_SUCCESS() throws Exception {
         //given
@@ -205,7 +209,7 @@ public class FoodServiceTest {
         FoodEntity food2 = FoodFixture.createFoodEntity(ids.get(1));
         given(foodRepository.findAllByMemberKey(memberKey)).willReturn(List.of(food1, food2));
         //when
-        List<RecipeFood> foods = foodService.getAllBymemberKey(memberKey);
+        List<RecipeFood> foods = foodService.getAllByMemberKey(memberKey);
         //then
         assertThat(foods).hasSize(2);
         assertThat(foods.getFirst().name()).isEqualTo(foodName);
@@ -228,23 +232,5 @@ public class FoodServiceTest {
         assertThat(results.getFirst().remainDay()).isEqualTo(1L); // FoodFixture.EXPIRY_DATE = 내일
     }
 
-    @Test
-    @DisplayName("식재료 삭제 시 식재료와 매핑된 카테고리, 저장된 사진 삭제")
-    void removeFood_SUCCESS() throws Exception {
-        //given
-        Long foodId = 1L;
-        String memberKey = FoodFixture.MEMBER_KEY;
 
-        FoodEntity food = FoodFixture.createFoodEntity(foodId);
-
-        given(foodRepository.findByIdAndMemberKey(foodId, memberKey)).willReturn((Optional.of(food)));
-        willDoNothing().given(selectedFoodCategoryRepository).deleteAllByFoodId(foodId);
-        willDoNothing().given(foodRepository).delete(any(FoodEntity.class));
-        //when
-        foodService.removeFood(foodId, memberKey);
-        //then
-        ArgumentCaptor<FoodEntity> captor = ArgumentCaptor.forClass(FoodEntity.class);
-        verify(foodRepository).delete(captor.capture());
-        assertThat(captor.getValue().getName()).isEqualTo(food.getName());
-    }
 }

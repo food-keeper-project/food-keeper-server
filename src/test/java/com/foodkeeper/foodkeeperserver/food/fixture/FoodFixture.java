@@ -1,10 +1,11 @@
 package com.foodkeeper.foodkeeperserver.food.fixture;
 
+import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
@@ -36,11 +37,10 @@ public class FoodFixture {
 
     public static FoodsFinder createFirstPageFinder() {
         return new FoodsFinder(
-                MEMBER_ID,
+                MEMBER_KEY,
                 null,
                 null,
-                null,
-                2
+                new Cursorable(null, 2)
         );
     }
 
@@ -59,7 +59,7 @@ public class FoodFixture {
     }
 
     public static FoodEntity createFoodEntity(Long id) {
-        FoodEntity foodEntity = FoodEntity.from(createFood(id));
+        FoodEntity foodEntity = FoodEntity.from(createFood());
         ReflectionTestUtils.setField(foodEntity, "id", id);
         return foodEntity;
     }

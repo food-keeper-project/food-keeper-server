@@ -4,6 +4,8 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+
 @Getter
 public class SliceObject<T> {
     private final List<T> content;
@@ -26,6 +28,12 @@ public class SliceObject<T> {
             this.content.removeLast();
         }
         this.hasNext = hasNext;
+    }
+    public <U> SliceObject<U> map(Function<T, U> converter) {
+        List<U> mapped = this.content.stream()
+                .map(converter)
+                .toList();
+        return new SliceObject<>(mapped, this.cursorable, this.hasNext);
     }
 
 }

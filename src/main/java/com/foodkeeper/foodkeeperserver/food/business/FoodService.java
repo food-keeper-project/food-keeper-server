@@ -35,7 +35,7 @@ public class FoodService {
         Food food = register.toFood(imageUrlFuture.join(), memberKey);
         try {
             Food savedFood = foodManager.register(food);
-            List<FoodCategory> foodCategories = foodCategoryManager.findAllByIds(register.categoryIds());
+            List<FoodCategory> foodCategories = foodCategoryManager.findAll(register.categoryIds());
             foodCategories.forEach(category ->
                     selectedFoodCategoryManager.save(SelectedFoodCategory.create(savedFood.id(), category.id())));
             return savedFood.id();
@@ -47,12 +47,11 @@ public class FoodService {
 
     // 커서 리스트 조회
     public SliceObject<RegisteredFood> getFoodList(FoodsFinder finder) {
-        List<Food> foods = foodManager.findFoodList(finder);
-        Foods foodList = new Foods(foods);
+        SliceObject<Food> foods = foodManager.findFoodList(finder);
         SelectedFoodCategories categories = new SelectedFoodCategories(selectedFoodCategoryManager.findByFoodIds(
-                foodList.getFoodIds()
+                foods.getContent().stream().map(Food::id).toList()
         ));
-        return new SliceObject<>(foodList.toRegisteredFoods(categories),finder.cursorable());
+        return foods.map(food -> food.toRegisteredFood(categories.getCategoryIdsByFoodId(food.id())));
     }
 
     // 단일 조회
@@ -81,14 +80,6 @@ public class FoodService {
                 .toList();
     }
 
-    @Transactional
-    public void removeFood(Long foodId, String memberKey) {
-        Food food = foodManager.findFood(foodId, memberKey);
-        selectedFoodCategoryManager.removeAllByFoodId(foodId);
-        foodManager.removeFood(food);
-
-        imageManager.deleteFile(food.imageUrl());
-    }
 
     public Long bookmarkFood(Long foodId, String memberKey) {
         return foodBookmarker.bookmark(foodManager.find(foodId), memberKey);

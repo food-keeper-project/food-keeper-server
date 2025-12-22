@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.food.implement;
 
+import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -26,11 +26,10 @@ public class FoodManager {
     }
 
     @Transactional(readOnly = true)
-    public List<Food> findFoodList(FoodsFinder foodFinder) {
-        List<FoodEntity> foods = foodRepository.findFoodCursorList(foodFinder);
-        return foods.stream()
-                .map(FoodEntity::toDomain)
-                .collect(Collectors.toList());
+    public SliceObject<Food> findFoodList(FoodsFinder foodFinder) {
+        List<FoodEntity> entities = foodRepository.findFoodCursorList(foodFinder);
+        List<Food> foods = entities.stream().map(FoodEntity::toDomain).toList();
+        return new SliceObject<>(foods, foodFinder.cursorable());
     }
 
     @Transactional(readOnly = true)

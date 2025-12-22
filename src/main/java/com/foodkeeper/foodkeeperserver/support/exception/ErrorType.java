@@ -12,7 +12,7 @@ public enum ErrorType {
     REQUIRED_AUTH(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "리소스에 접근하기 위한 인증이 필요합니다.", LogLevel.ERROR),
     FAILED_AUTH(HttpStatus.BAD_REQUEST, ErrorCode.E400, "인증에 실패했습니다.", LogLevel.ERROR),
     INVALID_ACCESS_PATH(HttpStatus.BAD_REQUEST, ErrorCode.E400, "잘못된 접근 경로입니다.", LogLevel.ERROR),
-    NOT_FOUND_DATA(HttpStatus.BAD_REQUEST, ErrorCode.E400, "해당 데이터를 찾을 수 없습니다.", LogLevel.ERROR),
+
 
     INVALID_OAUTH_USER(HttpStatus.BAD_REQUEST, ErrorCode.E3000, "존재하지 않는 OAuth 유저입니다.", LogLevel.ERROR),
     MALFORMED_JWT(HttpStatus.BAD_REQUEST, ErrorCode.E3001, "JWT가 손상되었습니다.", LogLevel.ERROR),

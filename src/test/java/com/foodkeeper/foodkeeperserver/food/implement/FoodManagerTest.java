@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.food.implement;
 
+import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
@@ -32,7 +33,7 @@ public class FoodManagerTest {
     @DisplayName("식재료 저장 요청 시 리포지토리 호출 및 결과 반환")
     void register_SUCCESS() throws Exception {
         //given
-        Food food = FoodFixture.createFood(1L);
+        Food food = FoodFixture.createFood();
         FoodEntity foodEntity = FoodFixture.createFoodEntity(1L);
 
         given(foodRepository.save(any(FoodEntity.class))).willReturn(foodEntity);
@@ -54,11 +55,11 @@ public class FoodManagerTest {
 
         given(foodRepository.findFoodCursorList(finder)).willReturn(foodEntities);
         //when
-        List<Food> results = foodManager.findFoodList(finder);
+        SliceObject<Food> results = foodManager.findFoodList(finder);
         //then
-        assertThat(results).hasSize(2);
-        assertThat(results.getFirst().name()).isEqualTo(FoodFixture.NAME);
-        assertThat(results.get(0)).isInstanceOf(Food.class);
+        assertThat(results.getContent()).hasSize(2);
+        assertThat(results.getContent().getFirst().name()).isEqualTo(FoodFixture.NAME);
+        assertThat(results.getContent().get(0)).isInstanceOf(Food.class);
     }
 
     @Test
@@ -69,7 +70,7 @@ public class FoodManagerTest {
         String memberId = FoodFixture.MEMBER_KEY;
 
         FoodEntity foodEntity = FoodFixture.createFoodEntity(foodId);
-        given(foodRepository.findByIdAndMemberId(foodId, memberId)).willReturn(Optional.of(foodEntity));
+        given(foodRepository.findByIdAndMemberKey(foodId, memberId)).willReturn(Optional.of(foodEntity));
         //when
         Food food = foodManager.findFood(foodId, memberId);
         //then
@@ -84,9 +85,9 @@ public class FoodManagerTest {
         String memberId = FoodFixture.MEMBER_KEY;
         FoodEntity entity1 = FoodFixture.createFoodEntity(1L);
         FoodEntity entity2 = FoodFixture.createFoodEntity(2L);
-        given(foodRepository.findAllByMemberId(memberId)).willReturn(List.of(entity1, entity2));
+        given(foodRepository.findAllByMemberKey(memberId)).willReturn(List.of(entity1, entity2));
         //when
-        List<FoodEntity> foods = foodRepository.findAllByMemberId(memberId);
+        List<FoodEntity> foods = foodRepository.findAllByMemberKey(memberId);
         //then
         assertThat(foods).hasSize(2);
         assertThat(foods.getFirst().getId()).isEqualTo(1L);

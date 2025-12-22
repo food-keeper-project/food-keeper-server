@@ -1,5 +1,7 @@
 package com.foodkeeper.foodkeeperserver.config.infra;
 
+import com.foodkeeper.foodkeeperserver.recipe.controller.v1.ClovaClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
