@@ -48,3 +48,6 @@ clova:
   url: clova-url
   api-key: api-key
   gateway-key: gateway-key
+
+client:
+  url: http://localhost
