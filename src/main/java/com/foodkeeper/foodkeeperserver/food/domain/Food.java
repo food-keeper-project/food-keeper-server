@@ -19,7 +19,8 @@ public record Food(
         String memo,
         Integer selectedCategoryCount,
         String memberId,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        Boolean isDeleted
 ) {
 
     public RecipeFood toRecipe() {

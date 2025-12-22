@@ -209,12 +209,15 @@ public class FoodServiceTest {
 
         given(foodRepository.findByIdAndMemberId(foodId, memberId)).willReturn((Optional.of(food)));
         willDoNothing().given(selectedFoodCategoryRepository).deleteAllByFoodId(foodId);
-        willDoNothing().given(foodRepository).delete(any(FoodEntity.class));
+
         //when
-        foodService.removeFood(foodId, memberId);
+        Long resultId = foodService.removeFood(foodId, memberId);
         //then
-        ArgumentCaptor<FoodEntity> captor = ArgumentCaptor.forClass(FoodEntity.class);
-        verify(foodRepository).delete(captor.capture());
-        assertThat(captor.getValue().getName()).isEqualTo(food.getName());
+        ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
+        verify(selectedFoodCategoryRepository).deleteAllByFoodId(captor.capture());
+
+        assertThat(captor.getValue()).isEqualTo(foodId);
+        assertThat(food.isDeleted()).isTrue();
+        assertThat(food.getId()).isEqualTo(resultId);
     }
 }

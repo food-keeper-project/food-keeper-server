@@ -58,8 +58,10 @@ public class FoodManager {
     }
 
     @Transactional
-    public void removeFood(Food food) {
-        foodRepository.delete(FoodEntity.from(food));
+    public Food removeFood(Long id, String memberId) {
+        FoodEntity foodEntity = foodRepository.findByIdAndMemberId(id, memberId).orElseThrow(() -> new AppException(ErrorType.FOOD_DATA_NOT_FOUND));
+        foodEntity.delete();
+        return foodEntity.toDomain();
     }
 
 }

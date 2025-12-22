@@ -95,16 +95,16 @@ public class FoodManagerTest {
     }
 
     @Test
-    @DisplayName("식재료 삭제")
+    @DisplayName("식재료 삭제 시 update isDeleted == true")
     void removeFood_SUCCESS() throws Exception {
         //given
         Long foodId = 1L;
-        Food food = FoodFixture.createFood(foodId);
+        String memberId = FoodFixture.MEMBER_ID;
+        FoodEntity entity = FoodFixture.createFoodEntity(1L);
+        given(foodRepository.findByIdAndMemberId(foodId, memberId)).willReturn(Optional.of(entity));
         //when
-        foodManager.removeFood(food);
+        Food food = foodManager.removeFood(foodId, memberId);
         //then
-        ArgumentCaptor<FoodEntity> captor = ArgumentCaptor.forClass(FoodEntity.class);
-        verify(foodRepository).delete(captor.capture());
-        assertThat(captor.getValue().getName()).isEqualTo(food.name());
+        assertThat(food.isDeleted()).isTrue();
     }
 }

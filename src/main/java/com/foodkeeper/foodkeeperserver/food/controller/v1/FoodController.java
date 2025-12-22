@@ -32,12 +32,12 @@ public class FoodController {
     @NullMarked
     @Operation(summary = "식재료 추가", description = "식재료 추가 API")
     @PostMapping
-    public ResponseEntity<ApiResponse<FoodRegisterResponse>> createFood(@RequestPart @Valid FoodRegisterRequest request,
-                                                                        @RequestPart(required = false) MultipartFile image) {
+    public ResponseEntity<ApiResponse<FoodIdResponse>> createFood(@RequestPart @Valid FoodRegisterRequest request,
+                                                                  @RequestPart(required = false) MultipartFile image) {
         String memberId = "memberId"; // todo 로그인 방식 구현 후 리팩토링
         FoodRegister register = FoodRegisterRequest.toRegister(request);
         Long foodId = foodService.registerFood(register, image, memberId);
-        return ResponseEntity.ok(ApiResponse.success(new FoodRegisterResponse(foodId)));
+        return ResponseEntity.ok(ApiResponse.success(new FoodIdResponse(foodId)));
     }
 
     @Operation(summary = "식재료 전체 조회", description = "식재료 전체 조회 API")
@@ -73,4 +73,11 @@ public class FoodController {
         return ResponseEntity.ok(ApiResponse.success(new FoodImminentResponse(foods)));
     }
 
+    @Operation(summary = "식재료 삭제", description = "식재료 삭제 API")
+    @DeleteMapping("/{foodId}")
+    public ResponseEntity<ApiResponse<FoodIdResponse>> remove(@PathVariable Long foodId) {
+        String memberId = "memberId"; // todo 로그인 방식 구현 후 리팩토링
+        Long resultId = foodService.removeFood(foodId, memberId);
+        return ResponseEntity.ok(ApiResponse.success(new FoodIdResponse(resultId)));
+    }
 }

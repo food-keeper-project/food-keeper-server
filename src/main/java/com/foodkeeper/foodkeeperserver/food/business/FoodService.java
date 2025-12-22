@@ -84,11 +84,11 @@ public class FoodService {
     }
 
     @Transactional
-    public void removeFood(Long foodId, String memberId) {
-        Food food = foodManager.findFood(foodId, memberId);
+    public Long removeFood(Long foodId, String memberId) {
+        Food food = foodManager.removeFood(foodId, memberId);
         selectedFoodCategoryManager.removeAllByFoodId(foodId);
-        foodManager.removeFood(food);
 
         imageManager.deleteFile(food.imageUrl());
+        return food.id();
     }
 }
