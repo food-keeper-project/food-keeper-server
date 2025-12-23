@@ -44,7 +44,7 @@ public class AuthenticationExceptionHandler {
 
     private void writeUnauthorizedResponse(HttpServletResponse response, ApiResponse<Void> body)
             throws IOException {
-        log.info("Authentication Exception: {} {}", body.error().errorCode(), body.error().message());
+        log.warn("[Authentication Exception]: {} {}", body.error().errorCode(), body.error().message());
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -56,7 +56,6 @@ public class AuthenticationExceptionHandler {
     }
 
     private ErrorType resolveErrorCode(AuthenticationException e) {
-        log.debug("Implementation of AuthenticationException is {}", e.getClass().getSimpleName());
         if (e instanceof AuthenticationCredentialsNotFoundException
                 || e instanceof InsufficientAuthenticationException) {
             return ErrorType.REQUIRED_AUTH;
