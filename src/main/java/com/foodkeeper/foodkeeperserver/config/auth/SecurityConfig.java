@@ -43,6 +43,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(mvc.matcher(HttpMethod.POST, "/api/v1/sign-in/**")).permitAll()
+                        .requestMatchers(mvc.matcher("/actuator")).permitAll()
                         .requestMatchers(mvc.matcher("/actuator/**")).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(configurer ->
