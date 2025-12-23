@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.food.implement;
 
+import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.enums.EntityStatus;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
@@ -95,7 +96,7 @@ public class FoodManagerTest {
     }
 
     @Test
-    @DisplayName("식재료 삭제 시 update isDeleted == true")
+    @DisplayName("식재료 삭제 시 update status == DELETED")
     void removeFood_SUCCESS() throws Exception {
         //given
         Long foodId = 1L;
@@ -105,6 +106,6 @@ public class FoodManagerTest {
         //when
         Food food = foodManager.removeFood(foodId, memberId);
         //then
-        assertThat(food.isDeleted()).isTrue();
+        assertThat(food.status()).isEqualTo(EntityStatus.DELETED);
     }
 }
