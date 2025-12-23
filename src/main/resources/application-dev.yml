@@ -3,6 +3,7 @@ spring:
     activate:
       on-profile: dev
 
+
   datasource:
     first:
       driver-class-name: com.mysql.cj.jdbc.Driver
@@ -16,6 +17,7 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         hbm2ddl:
           auto: validate
+
 
 logging:
   level:
@@ -43,7 +45,4 @@ custom:
 clova:
   url: ${CLOVA_MODEL_URL}
   api-key: ${CLOVA_API_KEY}
-  gateway-key: ${CLOVA_GATEWAY_KEY}
 
-server:
-  url: ${CLIENT_URL}

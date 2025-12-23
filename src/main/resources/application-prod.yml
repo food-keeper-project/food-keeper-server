@@ -45,5 +45,3 @@ clova:
   api-key: ${CLOVA_API_KEY}
   gateway-key: ${CLOVA_GATEWAY_KEY}
 
-client:
-  url: ${CLIENT_URL}
