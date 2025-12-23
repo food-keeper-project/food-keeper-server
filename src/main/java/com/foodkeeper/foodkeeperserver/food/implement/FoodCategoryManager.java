@@ -4,6 +4,8 @@ import com.foodkeeper.foodkeeperserver.common.utils.ListUtil;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodCategoryRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
+import com.foodkeeper.foodkeeperserver.support.exception.AppException;
+import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +39,11 @@ public class FoodCategoryManager {
         return foodCategories.stream()
                 .map(FoodCategoryEntity::toDomain)
                 .toList();
+    }
+
+    @Transactional
+    public void updateCategory(Long id, String name, String memberKey) {
+        foodCategoryRepository.findByIdAndMemberKey(id, memberKey).orElseThrow(() -> new AppException(ErrorType.CATEGORY_DATA_NOT_FOUND)).update(name);
     }
 
 }

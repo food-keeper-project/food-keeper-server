@@ -5,6 +5,7 @@ import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity
 import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class CategoryFixture {
@@ -25,7 +26,7 @@ public class CategoryFixture {
 
     // 단일 도메인 생성
     public static FoodCategory createCategory(Long id) {
-        return new FoodCategory(id, "카테고리" + id, MEMBER_ID);
+        return new FoodCategory(id, "카테고리" + id, MEMBER_ID, LocalDateTime.now());
     }
 
     // 단일 엔티티 생성

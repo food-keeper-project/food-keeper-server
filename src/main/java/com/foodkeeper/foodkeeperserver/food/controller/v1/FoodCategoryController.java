@@ -3,12 +3,15 @@ package com.foodkeeper.foodkeeperserver.food.controller.v1;
 
 import com.foodkeeper.foodkeeperserver.food.business.FoodCategoryService;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodCategoryRegisterRequest;
+import com.foodkeeper.foodkeeperserver.food.controller.v1.request.UpdateCategoryRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodCategoryResponse;
 import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCategoryRegister;
 import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.http.ResponseEntity;
@@ -45,5 +48,14 @@ public class FoodCategoryController {
                 .map(FoodCategoryResponse::from)
                 .toList();
         return ResponseEntity.ok(ApiResponse.success(responses));
+    }
+
+    @NullMarked
+    @Operation(summary = "카테고리 이름 수정", description = "카테고리 이름 수정 API")
+    @PatchMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> update(@PathVariable Long id, @RequestBody @Valid UpdateCategoryRequest request) {
+        String memberKey = "memberKey"; // todo 로그인 방식 구현 후 리팩토링
+        foodCategoryService.updateCategory(id, request.name(), memberKey);
+        return ResponseEntity.ok(ApiResponse.success());
     }
 }

@@ -21,4 +21,8 @@ public class FoodCategoryService {
     public List<FoodCategory> findAllByMemberKey(String memberKey) {
         return foodCategoryManager.findAllByMemberKey(memberKey);
     }
+
+    public void updateCategory(Long id, String name, String memberKey) {
+        foodCategoryManager.updateCategory(id, name, memberKey);
+    }
 }
