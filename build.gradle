@@ -88,3 +88,7 @@ tasks.withType(JavaCompile) {
 sourceSets {
     main.java.srcDirs += [ generated ]
 }
+
+clean {
+    delete file('src/main/generated')
+}
