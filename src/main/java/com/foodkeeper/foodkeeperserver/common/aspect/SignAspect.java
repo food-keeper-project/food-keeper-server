@@ -25,12 +25,8 @@ public class SignAspect {
     };
     private static final String UNKNOWN = "unknown";
 
-    @Pointcut("execution(* com.foodkeeper.foodkeeperserver.auth.SignInApi)")
-    private void signTarget() {
-    }
-
-    @Around("signTarget()")
-    public Object measure(ProceedingJoinPoint joinPoint) throws Throwable {
+    @Around("@annotation(com.foodkeeper.foodkeeperserver.common.aspect.annotation.SignInLog)")
+    public Object signInLog(ProceedingJoinPoint joinPoint) throws Throwable {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 
         if (attributes != null) {
