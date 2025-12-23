@@ -44,6 +44,7 @@ services:
       CLOVA_MODEL_URL: ${CLOVA_MODEL_URL}
       CLOVA_API_KEY: ${CLOVA_API_KEY}
       CLOVA_GATEWAY_KEY: ${CLOVA_GATEWAY_KEY}
+      CLIENT_URL: ${CLIENT_URL}
     networks:
       - food-keeper
     volumes:
@@ -66,6 +67,7 @@ services:
       CLOVA_MODEL_URL: ${CLOVA_MODEL_URL}
       CLOVA_API_KEY: ${CLOVA_API_KEY}
       CLOVA_GATEWAY_KEY: ${CLOVA_GATEWAY_KEY}
+      CLIENT_URL: ${CLIENT_URL}
     networks:
       - food-keeper
     volumes:
