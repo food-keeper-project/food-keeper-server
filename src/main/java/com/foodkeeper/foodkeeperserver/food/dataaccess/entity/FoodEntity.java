@@ -93,7 +93,7 @@ public class FoodEntity extends BaseEntity {
                 this.selectedCategoryCount,
                 this.memberId,
                 this.getCreatedAt(),
-                this.isDeleted()
+                this.getStatus()
         );
     }
 

@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.food.domain;
 
+import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.enums.EntityStatus;
 import com.foodkeeper.foodkeeperserver.food.domain.response.RecipeFood;
 import lombok.Builder;
 
@@ -20,7 +21,7 @@ public record Food(
         Integer selectedCategoryCount,
         String memberId,
         LocalDateTime createdAt,
-        Boolean isDeleted
+        EntityStatus status
 ) {
 
     public RecipeFood toRecipe() {
