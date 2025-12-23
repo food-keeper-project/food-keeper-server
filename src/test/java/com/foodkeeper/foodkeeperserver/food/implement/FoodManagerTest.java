@@ -1,10 +1,10 @@
 package com.foodkeeper.foodkeeperserver.food.implement;
 
+import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,15 +48,18 @@ public class FoodManagerTest {
     @DisplayName("식재료 커서 요청 시 리포지토리 호출 및 리스트 결과 반환")
     void findFoodList_SUCCESS() throws Exception {
         //given
-        FoodsFinder finder = FoodFixture.createFirstPageFinder();
+        Long categoryId = 1L;
+        String memberKey = FoodFixture.MEMBER_KEY;
+        LocalDateTime lastCreatedAt = LocalDateTime.now();
+        Cursorable cursorable = new Cursorable(1L,2);
 
         FoodEntity entity1 = FoodFixture.createFoodEntity(1L);
         FoodEntity entity2 = FoodFixture.createFoodEntity(2L);
         List<FoodEntity> foodEntities = List.of(entity1, entity2);
 
-        given(foodRepository.findFoodCursorList(finder)).willReturn(foodEntities);
+        given(foodRepository.findFoodCursorList(cursorable,categoryId,lastCreatedAt,memberKey)).willReturn(foodEntities);
         //when
-        SliceObject<Food> results = foodManager.findFoodList(finder);
+        SliceObject<Food> results = foodManager.findFoodList(cursorable,categoryId,lastCreatedAt,memberKey);
         //then
         assertThat(results.getContent()).hasSize(2);
         assertThat(results.getContent().getFirst().name()).isEqualTo(FoodFixture.NAME);

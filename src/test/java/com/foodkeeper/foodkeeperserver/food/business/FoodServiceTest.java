@@ -3,6 +3,7 @@ package com.foodkeeper.foodkeeperserver.food.business;
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.dataaccess.entity.BookmarkedFoodEntity;
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.dataaccess.repository.BookmarkedFoodRepository;
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.implement.FoodBookmarker;
+import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
@@ -14,7 +15,6 @@ import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.domain.RecipeFood;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
 import com.foodkeeper.foodkeeperserver.food.fixture.CategoryFixture;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import com.foodkeeper.foodkeeperserver.food.fixture.SelectedFoodCategoryFixture;
@@ -36,6 +36,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -128,7 +129,12 @@ public class FoodServiceTest {
     @DisplayName("커서 조회 시 limit 보다 많으면 hasNext 는 true 이고, 초과되면 하나는 제거되고 카테고리 매핑")
     void getFoodList_hasNext_TRUE() throws Exception {
         //given
-        FoodsFinder finder = FoodFixture.createFirstPageFinder();
+        Long categoryId = 1L;
+        String memberKey = FoodFixture.MEMBER_KEY;
+        LocalDateTime lastCreatedAt = LocalDateTime.now();
+        Cursorable cursorable = new Cursorable(1L,2);
+
+
         List<FoodEntity> foodEntities = new ArrayList<>();
         foodEntities.add(FoodFixture.createFoodEntity(1L));
         foodEntities.add(FoodFixture.createFoodEntity(2L));
@@ -139,10 +145,10 @@ public class FoodServiceTest {
                 SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 1L),
                 SelectedFoodCategoryFixture.createSelectedCategoryEntity(2L, 2L)
         );
-        given(foodRepository.findFoodCursorList(finder)).willReturn(foodEntities);
+        given(foodRepository.findFoodCursorList(cursorable,categoryId,lastCreatedAt,memberKey)).willReturn(foodEntities);
         given(selectedFoodCategoryRepository.findByFoodIdIn(anyList())).willReturn(selectedFoodCategories);
         //when
-        SliceObject<RegisteredFood> result = foodService.getFoodList(finder);
+        SliceObject<RegisteredFood> result = foodService.getFoodList(cursorable,categoryId,lastCreatedAt,memberKey);
         //then
         assertThat(result.isHasNext()).isTrue();
         assertThat(result.getContent()).hasSize(2);

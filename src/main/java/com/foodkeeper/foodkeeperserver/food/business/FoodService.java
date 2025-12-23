@@ -1,10 +1,10 @@
 package com.foodkeeper.foodkeeperserver.food.business;
 
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.implement.FoodBookmarker;
+import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.domain.*;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodCategoryManager;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
 import com.foodkeeper.foodkeeperserver.food.implement.ImageManager;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -46,8 +47,8 @@ public class FoodService {
     }
 
     // 커서 리스트 조회
-    public SliceObject<RegisteredFood> getFoodList(FoodsFinder finder) {
-        SliceObject<Food> foods = foodManager.findFoodList(finder);
+    public SliceObject<RegisteredFood> getFoodList(Cursorable cursorable, Long categoryId, LocalDateTime lastCreatedAt, String memberKey) {
+        SliceObject<Food> foods = foodManager.findFoodList(cursorable, categoryId, lastCreatedAt, memberKey);
         SelectedFoodCategories categories = new SelectedFoodCategories(selectedFoodCategoryManager.findByFoodIds(
                 foods.getContent().stream().map(Food::id).toList()
         ));

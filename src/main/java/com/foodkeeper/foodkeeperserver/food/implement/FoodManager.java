@@ -1,16 +1,17 @@
 package com.foodkeeper.foodkeeperserver.food.implement;
 
+import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -26,10 +27,10 @@ public class FoodManager {
     }
 
     @Transactional(readOnly = true)
-    public SliceObject<Food> findFoodList(FoodsFinder foodFinder) {
-        List<FoodEntity> entities = foodRepository.findFoodCursorList(foodFinder);
+    public SliceObject<Food> findFoodList(Cursorable cursorable, Long categoryId, LocalDateTime lastCreatedAt, String memberKey) {
+        List<FoodEntity> entities = foodRepository.findFoodCursorList(cursorable, categoryId, lastCreatedAt, memberKey);
         List<Food> foods = entities.stream().map(FoodEntity::toDomain).toList();
-        return new SliceObject<>(foods, foodFinder.cursorable());
+        return new SliceObject<>(foods, cursorable);
     }
 
     @Transactional(readOnly = true)

@@ -60,7 +60,7 @@ public class FoodController {
     public ResponseEntity<ApiResponse<PageResponse<FoodResponse>>> getFoods(@ModelAttribute FoodsRequest request,
                                                                             @CursorDefault(defaultLimit = 10) Cursorable cursorable) {
         String memberKey = "memberKey"; // todo 로그인 방식 구현 후 리팩토링
-        SliceObject<RegisteredFood> foods = foodService.getFoodList(FoodsRequest.toFinder(request, cursorable, memberKey));
+        SliceObject<RegisteredFood> foods = foodService.getFoodList(cursorable, request.categoryId(), request.lastCreatedAt(), memberKey);
         List<FoodResponse> foodResponses = foods.getContent().stream().map(FoodResponse::toFoodResponse).toList();
         return ResponseEntity.ok(ApiResponse.success(new PageResponse<>(foodResponses, foods.isHasNext())));
     }
