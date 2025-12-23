@@ -11,7 +11,6 @@ import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.http.ResponseEntity;
@@ -56,6 +55,15 @@ public class FoodCategoryController {
     public ResponseEntity<ApiResponse<Void>> update(@PathVariable Long id, @RequestBody @Valid UpdateCategoryRequest request) {
         String memberKey = "memberKey"; // todo 로그인 방식 구현 후 리팩토링
         foodCategoryService.updateCategory(id, request.name(), memberKey);
+        return ResponseEntity.ok(ApiResponse.success());
+    }
+
+    @NullMarked
+    @Operation(summary = "카테고리 삭제", description = "카테고리 삭제 API")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> remove(@PathVariable Long id) {
+        String memberKey = "memberKey"; // todo 로그인 방식 구현 후 리팩토링
+        foodCategoryService.removeCategory(id, memberKey);
         return ResponseEntity.ok(ApiResponse.success());
     }
 }

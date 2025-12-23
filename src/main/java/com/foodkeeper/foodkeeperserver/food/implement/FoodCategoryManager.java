@@ -46,4 +46,10 @@ public class FoodCategoryManager {
         foodCategoryRepository.findByIdAndMemberKey(id, memberKey).orElseThrow(() -> new AppException(ErrorType.CATEGORY_DATA_NOT_FOUND)).update(name);
     }
 
+    @Transactional
+    public void removeCategory(Long id, String memberKey) {
+        FoodCategoryEntity foodCategoryEntity = foodCategoryRepository.findByIdAndMemberKey(id, memberKey).orElseThrow(() -> new AppException(ErrorType.CATEGORY_DATA_NOT_FOUND));
+        foodCategoryEntity.delete();
+    }
+
 }

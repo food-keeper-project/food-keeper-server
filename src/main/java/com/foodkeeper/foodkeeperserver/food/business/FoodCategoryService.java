@@ -25,4 +25,8 @@ public class FoodCategoryService {
     public void updateCategory(Long id, String name, String memberKey) {
         foodCategoryManager.updateCategory(id, name, memberKey);
     }
+
+    public void removeCategory(Long id, String memberKey) {
+        foodCategoryManager.removeCategory(id, memberKey);
+    }
 }
