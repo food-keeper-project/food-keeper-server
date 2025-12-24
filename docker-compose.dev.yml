@@ -50,7 +50,7 @@ services:
       - food-keeper
     volumes:
       - ./:/app/local
-      - ./logs:/var/log/spring
+      - /var/log/food-keeper:/var/log/food-keeper
 
   mysql:
     image: mysql:8.0.44-debian

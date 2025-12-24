@@ -50,7 +50,7 @@ services:
       - food-keeper
     volumes:
       - ./:/app/local
-      - ./logs:/var/log/spring
+      - /var/log/food-keeper:/var/log/food-keeper
 
   spring_green:
     image: seoarc/food-keeper-server:latest
