@@ -35,11 +35,11 @@ public class MemberEntity extends BaseEntity {
     private String imageUrl;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "CHAR", length = 2)
+    @Column(nullable = false, length = 2)
     private Gender gender;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "VARCHAR", length = 20)
+    @Column(nullable = false, length = 20)
     private SignUpType signUpType;
 
     @Column(nullable = false, length = 20)
