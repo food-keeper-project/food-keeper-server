@@ -42,7 +42,9 @@ custom:
   s3:
     endpoint: ${NAVER_STORAGE_URL}
 
+
 clova:
   url: ${CLOVA_MODEL_URL}
   api-key: ${CLOVA_API_KEY}
+
 
