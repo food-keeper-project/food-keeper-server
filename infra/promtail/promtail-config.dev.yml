@@ -18,3 +18,12 @@ scrape_configs:
           host: food-keeper-dev
           env: dev
           __path__: /var/log/app/*.log
+    pipeline_stages:
+      - regex:
+          expression: '^(?P<date>\d{4}-\d{2}-\d{2}) (?P<time>\d{2}:\d{2}:\d{2}\.\d{3}) \[(?P<thread>[^\]]+)\] \[(?P<level>[A-Z]+)\s*\] TraceID\[(?P<trace_id>[^\]]+)\] (?P<logger>[^ ]+) - (?P<msg>.*)$'
+      - labels:
+          thread:
+          level:
+          logger:
+      - output:
+          source: msg
