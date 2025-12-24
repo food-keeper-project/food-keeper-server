@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -19,12 +20,13 @@ public class AuthExceptionTranslationFilter extends OncePerRequestFilter {
     private final AuthenticationExceptionHandler exceptionHandler;
 
     @Override
+    @NullMarked
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
             doFilter(request, response, filterChain);
         } catch (AppException e) {
-            exceptionHandler.handle(response, e);
+            exceptionHandler.handle(request, response, e);
         }
     }
 }
