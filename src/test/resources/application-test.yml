@@ -1,26 +1,18 @@
 spring:
   config:
     activate:
-      on-profile: local
-
+      on-profile: test
 
   datasource:
-    first:
-      jdbc-url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
-      username: sa
-      password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
+    hibernate:
+      ddl-auto: create-drop
     properties:
       hibernate:
-        show_sql: true
-        format_sql: true
-        hbm2ddl:
-          auto: create
-        dialect: org.hibernate.dialect.H2Dialect
-  h2:
-    console:
-      enabled: true
+        dialect: org.hibernate.dialect.MySQLDialect
+    show-sql: true
 
 logging:
   level:
