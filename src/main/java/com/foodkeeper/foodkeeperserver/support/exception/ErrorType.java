@@ -23,9 +23,9 @@ public enum ErrorType {
     FCM_TOKEN_IS_NULL(HttpStatus.BAD_REQUEST, ErrorCode.E3008, "FCM 토큰은 null일 수 없습니다.", LogLevel.WARN),
 
     // 식재료
-    CATEGORY_SELECT_ERROR(HttpStatus.BAD_REQUEST, ErrorCode.E2000, "카테고리 선택 개수가 옳바르지 않습니다.", LogLevel.WARN),
     FOOD_DATA_NOT_FOUND(HttpStatus.BAD_REQUEST, ErrorCode.E1000, "해당 식재료가 존재하지 않습니다.", LogLevel.WARN),
-  
+    CATEGORY_SELECT_ERROR(HttpStatus.BAD_REQUEST, ErrorCode.E1001, "카테고리 선택 개수가 옳바르지 않습니다.", LogLevel.WARN),
+
     S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E5000, "이미지 업로드에 실패했습니다.", LogLevel.ERROR),
 
     // 네이버
