@@ -8,6 +8,8 @@ group = 'com.foodkeeper'
 version = '0.0.1-SNAPSHOT'
 description = 'FoodKeeperServer'
 
+def queryDslVersion = "7.0"
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
@@ -36,9 +38,12 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
     implementation 'org.springframework.boot:spring-boot-h2console'
     runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation("io.github.openfeign.querydsl:querydsl-core:${queryDslVersion}")
+    implementation("io.github.openfeign.querydsl:querydsl-jpa:$queryDslVersion")
+    annotationProcessor("io.github.openfeign.querydsl:querydsl-apt:$queryDslVersion:jpa")
 
     // infra
-    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.360'
 
     // lombok
     compileOnly 'org.projectlombok:lombok'
@@ -76,4 +81,18 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
     jvmArgs += "-javaagent:${configurations.mockitoAgent.asPath}"
+}
+
+def generated = 'src/main/generated'
+
+tasks.withType(JavaCompile) {
+    options.getGeneratedSourceOutputDirectory().set(file(generated))
+}
+
+sourceSets {
+    main.java.srcDirs += [ generated ]
+}
+
+clean {
+    delete file('src/main/generated')
 }

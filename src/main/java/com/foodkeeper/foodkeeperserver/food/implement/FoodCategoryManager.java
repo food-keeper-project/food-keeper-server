@@ -24,4 +24,5 @@ public class FoodCategoryManager {
                 .map(FoodCategoryEntity::toDomain)
                 .toList();
     }
+
 }

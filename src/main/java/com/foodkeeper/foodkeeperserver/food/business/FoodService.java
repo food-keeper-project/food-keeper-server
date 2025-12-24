@@ -1,9 +1,9 @@
 package com.foodkeeper.foodkeeperserver.food.business;
 
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.implement.FoodBookmarker;
-import com.foodkeeper.foodkeeperserver.food.domain.Food;
-import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
-import com.foodkeeper.foodkeeperserver.food.domain.SelectedFoodCategory;
+import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
+import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
+import com.foodkeeper.foodkeeperserver.food.domain.*;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodCategoryManager;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -35,7 +36,6 @@ public class FoodService {
         Food food = register.toFood(imageUrlFuture.join(), memberKey);
         try {
             Food savedFood = foodManager.register(food);
-            //todo 카테고리 선택 방식에 따라 인자값 수정, 카테고리 선택 시에 매번 모두 조회?
             List<FoodCategory> foodCategories = foodCategoryManager.findAll(register.categoryIds());
             foodCategories.forEach(category ->
                     selectedFoodCategoryManager.save(SelectedFoodCategory.create(savedFood.id(), category.id())));
@@ -45,6 +45,42 @@ public class FoodService {
             throw new AppException(ErrorType.DEFAULT_ERROR, e);
         }
     }
+
+    // 커서 리스트 조회
+    public SliceObject<RegisteredFood> getFoodList(Cursorable cursorable, Long categoryId, LocalDateTime lastCreatedAt, String memberKey) {
+        SliceObject<Food> foods = foodManager.findFoodList(cursorable, categoryId, lastCreatedAt, memberKey);
+        SelectedFoodCategories categories = new SelectedFoodCategories(selectedFoodCategoryManager.findByFoodIds(
+                foods.getContent().stream().map(Food::id).toList()
+        ));
+        return foods.map(food -> food.toRegisteredFood(categories.getCategoryIdsByFoodId(food.id())));
+    }
+
+    // 단일 조회
+    public RegisteredFood getFood(Long id, String memberKey) {
+        Food food = foodManager.findFood(id, memberKey);
+        List<SelectedFoodCategory> mappings = selectedFoodCategoryManager.findByFoodId(id);
+        List<Long> categoryIds = mappings.stream()
+                .map(SelectedFoodCategory::foodCategoryId)
+                .toList();
+        return food.toRegisteredFood(categoryIds);
+    }
+
+
+    public List<RecipeFood> getAllByMemberKey(String memberKey) {
+        List<Food> foods = foodManager.findAllByMemberKey(memberKey);
+        return foods.stream()
+                .map(Food::toRecipe)
+                .toList();
+    }
+
+    // 유통기한 임박 재료 리스트 조회
+    public List<RecipeFood> getImminentFoods(String memberKey) {
+        List<Food> foods = foodManager.findImminentFoods(memberKey);
+        return foods.stream()
+                .map(Food::toRecipe)
+                .toList();
+    }
+
 
     public Long bookmarkFood(Long foodId, String memberKey) {
         return foodBookmarker.bookmark(foodManager.find(foodId), memberKey);

@@ -20,23 +20,21 @@ import static org.mockito.BDDMockito.given;
 public class FoodCategoryManagerTest {
 
     @InjectMocks
-    private FoodCategoryManager foodCategoryManager;
+    FoodCategoryManager foodCategoryManager;
 
     @Mock
-    private FoodCategoryRepository foodCategoryRepository;
+    FoodCategoryRepository foodCategoryRepository;
 
     @Test
     @DisplayName("식재료 카테고리Id 리스트를 받아서 조회")
-    void findFoodCategories_SUCCESS() {
+    void findFoodCategories_SUCCESS() throws Exception {
         //given
         List<Long> categoryIds = List.of(1L, 2L);
         List<FoodCategoryEntity> foodCategoryEntities = CategoryFixture.createCategoryEntity(categoryIds);
 
         given(foodCategoryRepository.findAllById(categoryIds)).willReturn(foodCategoryEntities);
-
         //when
         List<FoodCategory> foodCategoryList = foodCategoryManager.findAll(categoryIds);
-
         //then
         List<FoodCategory> expectedDomains = foodCategoryEntities.stream()
                 .map(FoodCategoryEntity::toDomain)

@@ -10,6 +10,7 @@ public record FoodRegister(String name,
                            List<Long> categoryIds,
                            StorageMethod storageMethod,
                            LocalDate expiryDate,
+                           Integer expiryAlarm,
                            String memo) {
 
     public Food toFood(String imageUrl, String memberKey) {
@@ -18,6 +19,7 @@ public record FoodRegister(String name,
                 .imageUrl(imageUrl)
                 .storageMethod(this.storageMethod)
                 .expiryDate(this.expiryDate)
+                .expiryAlarm(this.expiryAlarm)
                 .memo(this.memo)
                 .selectedCategoryCount(this.categoryIds.size())
                 .memberKey(memberKey)

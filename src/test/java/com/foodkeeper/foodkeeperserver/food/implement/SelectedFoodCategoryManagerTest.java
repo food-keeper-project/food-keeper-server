@@ -21,23 +21,21 @@ import static org.mockito.Mockito.verify;
 public class SelectedFoodCategoryManagerTest {
 
     @InjectMocks
-    private SelectedFoodCategoryManager selectedFoodCategoryManager;
+    SelectedFoodCategoryManager selectedFoodCategoryManager;
 
     @Mock
-    private SelectedFoodCategoryRepository selectedFoodCategoryRepository;
+    SelectedFoodCategoryRepository selectedFoodCategoryRepository;
 
     @Test
     @DisplayName("카테고리 생성 시 리포지토리 호출 및 결과 반환")
-    void save_SUCCESS() {
+    void save_SUCCESS() throws Exception {
         //given
         SelectedFoodCategory selectedCategory = SelectedFoodCategoryFixture.createSelectedCategory(1L, 1L);
         SelectedFoodCategoryEntity selectedFoodCategoryEntity = SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 1L);
 
         given(selectedFoodCategoryRepository.save(any(SelectedFoodCategoryEntity.class))).willReturn(selectedFoodCategoryEntity);
-
         //when
         selectedFoodCategoryManager.save(selectedCategory);
-
         //then
         ArgumentCaptor<SelectedFoodCategoryEntity> captor = ArgumentCaptor.forClass(SelectedFoodCategoryEntity.class);
         verify(selectedFoodCategoryRepository).save(captor.capture());

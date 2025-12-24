@@ -3,6 +3,7 @@ spring:
     activate:
       on-profile: local
 
+
   datasource:
     first:
       jdbc-url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
@@ -39,8 +40,8 @@ cloud:
     s3:
       bucket: food-keeper
     credentials:
-      access-key: access-key
-      secret-key: secret-key
+      access-key: naver-access-key
+      secret-key: naver-secret-key
     region:
       static: kr-standard
     stack:
@@ -48,9 +49,9 @@ cloud:
 
 custom:
   s3:
-    endpoint: storage-url
+    endpoint: naver-storage-url
 
 clova:
   url: clova-url
   api-key: api-key
-  gateway-key: gateway-key
+
