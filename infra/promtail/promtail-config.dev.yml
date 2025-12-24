@@ -1,0 +1,20 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /var/lib/promtail/positions.yaml
+
+clients:
+  - url: http://10.0.4.7:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: food-keeper-dev-log
+    static_configs:
+      - targets:
+          - food-keeper-dev
+        labels:
+          job: food-keeper-app
+          host: food-keeper-dev
+          env: dev
+          __path__: /var/log/app/*.log

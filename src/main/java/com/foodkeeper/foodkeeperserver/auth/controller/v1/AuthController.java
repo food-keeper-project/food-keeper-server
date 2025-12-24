@@ -5,6 +5,7 @@ import com.foodkeeper.foodkeeperserver.auth.business.TokenRefreshService;
 import com.foodkeeper.foodkeeperserver.auth.controller.v1.request.SignInRequest;
 import com.foodkeeper.foodkeeperserver.auth.controller.v1.response.AuthTokenResponse;
 import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
+import com.foodkeeper.foodkeeperserver.common.aspect.annotation.SignInLog;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.security.auth.AuthMember;
@@ -14,11 +15,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Auth", description = "인증 관련 API")
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -29,6 +32,7 @@ public class AuthController {
 
     @Operation(summary = "카카오 로그인", description = "카카오 로그인 API")
     @NullMarked
+    @SignInLog
     @PostMapping("/sign-in/kakao")
     public ResponseEntity<ApiResponse<AuthTokenResponse>> signInWithKakao(
             @Valid @RequestBody SignInRequest signInRequest, HttpServletRequest request) {

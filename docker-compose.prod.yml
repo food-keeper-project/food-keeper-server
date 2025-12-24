@@ -16,6 +16,7 @@ services:
       - certbot
     networks:
       - food-keeper
+
   certbot:
     image: certbot/certbot
     container_name: certbot
@@ -27,6 +28,7 @@ services:
       /bin/sh -c 'trap exit TERM; while :; do certbot renew --deploy-hook "nginx -s reload"; sleep 12h & wait $${!}; done;'
     networks:
       - food-keeper
+
   spring_blue:
     image: seoarc/food-keeper-server:latest
     container_name: food-keeper-api-blue
@@ -49,6 +51,7 @@ services:
     volumes:
       - ./:/app/local
       - ./logs:/var/log/spring
+
   spring_green:
     image: seoarc/food-keeper-server:latest
     container_name: food-keeper-api-green
@@ -72,6 +75,17 @@ services:
     volumes:
       - ./:/app/local
       - ./logs:/var/log/spring
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    volumes:
+      - ./promtail-config.prod.yml:/etc/promtail/config.yml
+      - /var/log/food-keeper:/var/log/app
+      - /var/lib/promtail:/var/lib/promtail
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - food-keeper
 
 networks:
   food-keeper:

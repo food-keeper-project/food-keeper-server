@@ -22,6 +22,12 @@ spring:
     console:
       enabled: true
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+
 logging:
   level:
     com.foodkeeper: debug
