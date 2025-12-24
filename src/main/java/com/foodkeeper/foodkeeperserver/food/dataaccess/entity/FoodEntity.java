@@ -34,7 +34,7 @@ public class FoodEntity extends BaseEntity {
     @Column(length = 20, nullable = false)
     private StorageMethod storageMethod;
 
-    @Column(nullable = false, columnDefinition = "TIMESTAMP")
+    @Column(nullable = false)
     private LocalDate expiryDate;
 
     @Column(nullable = false)

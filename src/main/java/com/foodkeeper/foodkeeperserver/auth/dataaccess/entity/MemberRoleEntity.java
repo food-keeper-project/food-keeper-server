@@ -18,7 +18,7 @@ public class MemberRoleEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "VARCHAR")
+    @Column(nullable = false)
     private MemberRole role;
 
     @Column(nullable = false)
