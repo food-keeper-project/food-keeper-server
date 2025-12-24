@@ -18,10 +18,16 @@ spring:
         hbm2ddl:
           auto: validate
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
 
 logging:
   level:
-    com.foodkeeper: debug
+    root: debug
+  config: classpath:logback-dev.xml
 
 jwt:
   secret-key: ${JWT_SECRET_KEY}
@@ -42,7 +48,9 @@ custom:
   s3:
     endpoint: ${NAVER_STORAGE_URL}
 
+
 clova:
   url: ${CLOVA_MODEL_URL}
   api-key: ${CLOVA_API_KEY}
+
 
