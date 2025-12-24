@@ -51,4 +51,5 @@ clova:
   url: ${CLOVA_MODEL_URL}
   api-key: ${CLOVA_API_KEY}
 
-
+client:
+  url: ${CLIENT_URL}
