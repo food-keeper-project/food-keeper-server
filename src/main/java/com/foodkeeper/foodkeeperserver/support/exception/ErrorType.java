@@ -31,13 +31,15 @@ public enum ErrorType {
     // 네이버
     NAVER_CLOVA_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E6000, "네이버 클로바 AI 서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.", LogLevel.ERROR),
     NAVER_CLOVA_PROMPT_ERROR(HttpStatus.NOT_FOUND, ErrorCode.E6001, "실행할 프롬프트 업로드에 오류가 발생했습니다.", LogLevel.ERROR),
-      
-    
+
+
     INVALID_MEMBER_KEY(HttpStatus.BAD_REQUEST, ErrorCode.E9000, "멤버 key가 유효하지 않습니다.", LogLevel.WARN),
     INVALID_NICKNAME_LENGTH(HttpStatus.BAD_REQUEST, ErrorCode.E9001, "멤버 닉네임은 20자를 넘을 수 없습니다.", LogLevel.WARN),
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, ErrorCode.E9002, "이메일이 유효하지 않습니다.", LogLevel.WARN),
-    INVALID_IMAGE_URL(HttpStatus.BAD_REQUEST, ErrorCode.E9003, "이미지 URL이 유효하지 않습니다.", LogLevel.WARN)
-    ;
+    INVALID_IMAGE_URL(HttpStatus.BAD_REQUEST, ErrorCode.E9003, "이미지 URL이 유효하지 않습니다.", LogLevel.WARN),
+
+    FCM_TOKEN_INITIALIZE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E7000, "Firebase 초기화 중 오류가 발생하였습니다.", LogLevel.ERROR),
+    FCM_TOKEN_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E7001, "알림 메시지 전송에 실패했습니다.", LogLevel.ERROR);
 
     private final HttpStatus status;
     private final ErrorCode errorCode;

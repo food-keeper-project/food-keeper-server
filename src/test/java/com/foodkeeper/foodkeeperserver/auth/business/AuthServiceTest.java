@@ -68,7 +68,7 @@ class AuthServiceTest {
         SignInContext register = SignInContext.builder()
                 .accessToken(accessToken)
                 .ipAddress("127.0.0.1")
-                .fcmToken("fcmToken")
+                .fcmToken("token")
                 .oAuthProvider(OAuthProvider.KAKAO)
                 .build();
         OAuthUser oauthUser = OAuthUser.builder()
@@ -102,7 +102,7 @@ class AuthServiceTest {
         SignInContext register = SignInContext.builder()
                 .accessToken(accessToken)
                 .ipAddress("127.0.0.1")
-                .fcmToken("fcmToken")
+                .fcmToken("token")
                 .oAuthProvider(OAuthProvider.KAKAO)
                 .build();
         OAuthUser oauthUser = OAuthUser.builder()

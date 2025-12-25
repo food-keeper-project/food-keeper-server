@@ -8,8 +8,7 @@ public enum ErrorCode {
     E500,
 
     // Food
-    E1000,
-    E1001,
+    E1000, E1001,
 
     // Recipe
     E2000,
@@ -21,6 +20,9 @@ public enum ErrorCode {
     E5000,
 
     E6000, E6001,
+
+    // fcm
+    E7000,E7001,
 
     // Member
     E9000, E9001, E9002, E9003,

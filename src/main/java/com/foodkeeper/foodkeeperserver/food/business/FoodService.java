@@ -85,4 +85,5 @@ public class FoodService {
     public Long bookmarkFood(Long foodId, String memberKey) {
         return foodBookmarker.bookmark(foodManager.find(foodId), memberKey);
     }
+
 }
