@@ -1,5 +1,7 @@
 package com.foodkeeper.foodkeeperserver.food.implement;
 
+import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
+import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
@@ -10,8 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -26,11 +28,10 @@ public class FoodManager {
     }
 
     @Transactional(readOnly = true)
-    public List<Food> findFoodList(FoodsFinder foodFinder) {
-        List<FoodEntity> foods = foodRepository.findFoodCursorList(foodFinder);
-        return foods.stream()
-                .map(FoodEntity::toDomain)
-                .collect(Collectors.toList());
+    public SliceObject<Food> findFoodList(Cursorable cursorable, Long categoryId, LocalDateTime lastCreatedAt, String memberKey) {
+        List<FoodEntity> entities = foodRepository.findFoodCursorList(cursorable, categoryId, lastCreatedAt, memberKey);
+        List<Food> foods = entities.stream().map(FoodEntity::toDomain).toList();
+        return new SliceObject<>(foods, cursorable);
     }
 
     @Transactional(readOnly = true)
@@ -41,7 +42,7 @@ public class FoodManager {
 
     // 1) 이름 정렬 2) 최신순
     @Transactional(readOnly = true)
-    public List<Food> findAllBymemberKey(String memberKey) {
+    public List<Food> findAllByMemberKey(String memberKey) {
         List<FoodEntity> foods = foodRepository.findAllByMemberKey(memberKey);
         return foods.stream()
                 .map(FoodEntity::toDomain)

@@ -39,7 +39,7 @@ public class FoodCategoryManagerTest {
 
         given(foodCategoryRepository.findAllById(categoryIds)).willReturn(foodCategoryEntities);
         //when
-        List<FoodCategory> foodCategoryList = foodCategoryManager.findAllByIds(categoryIds);
+        List<FoodCategory> foodCategoryList = foodCategoryManager.findAll(categoryIds);
         //then
         List<FoodCategory> expectedDomains = foodCategoryEntities.stream()
                 .map(FoodCategoryEntity::toDomain)

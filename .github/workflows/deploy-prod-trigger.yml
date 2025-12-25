@@ -38,6 +38,16 @@ jobs:
           docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKERHUB_REPOSITORY }}:latest
           docker push ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKERHUB_REPOSITORY }}:${GITHUB_SHA::8}
 
+      - name: Copy promtail-config to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "infra/promtail/promtail-config.prod.yml"
+          target: "/root/"
+          strip_components: 2
+
       - name: Copy docker-compose to server
         uses: appleboy/scp-action@master
         with:

@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.food.fixture;
 
+import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
@@ -34,17 +35,8 @@ public class FoodFixture {
         );
     }
 
-    public static FoodsFinder createFirstPageFinder() {
-        return new FoodsFinder(
-                MEMBER_KEY,
-                null,
-                null,
-                null,
-                2
-        );
-    }
 
-    public static Food createFood(Long id) {
+    public static Food createFood() {
         return Food.builder()
                 .id(ID)
                 .name(NAME)
@@ -59,7 +51,7 @@ public class FoodFixture {
     }
 
     public static FoodEntity createFoodEntity(Long id) {
-        FoodEntity foodEntity = FoodEntity.from(createFood(id));
+        FoodEntity foodEntity = FoodEntity.from(createFood());
         ReflectionTestUtils.setField(foodEntity, "id", id);
         return foodEntity;
     }

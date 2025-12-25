@@ -1,6 +1,7 @@
 package com.foodkeeper.foodkeeperserver.recipe.business.response;
 
 public record ClovaResponse(ClovaResponseStatus status, ClovaResult result) {
+    private static final String EMPTY_JSON = "{}";
     public String getContent() {
         if (result != null && result.message() != null) {
             return cleanJsonContent(result.message().content());
@@ -10,7 +11,7 @@ public record ClovaResponse(ClovaResponseStatus status, ClovaResult result) {
 
     // 마크다운 형식 제거 -> JSON 형식으로
     private String cleanJsonContent(String rawContent) {
-        if (rawContent == null) return "{}";
+        if (rawContent == null) return EMPTY_JSON;
 
         String cleanedJson = rawContent.trim();
 

@@ -3,6 +3,8 @@ package com.foodkeeper.foodkeeperserver.food.business;
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.dataaccess.entity.BookmarkedFoodEntity;
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.dataaccess.repository.BookmarkedFoodRepository;
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.implement.FoodBookmarker;
+import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
+import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.SelectedFoodCategoryEntity;
@@ -11,6 +13,8 @@ import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.SelectedFoodCategoryRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
+import com.foodkeeper.foodkeeperserver.food.domain.RecipeFood;
+import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
 import com.foodkeeper.foodkeeperserver.food.domain.response.FoodCursorResult;
@@ -36,6 +40,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,8 +48,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mock;
@@ -53,12 +57,18 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 public class FoodServiceTest {
 
-    @InjectMocks FoodService foodService;
-    @Mock ImageManager imageManager;
-    @Mock FoodRepository foodRepository;
-    @Mock FoodCategoryRepository foodCategoryRepository;
-    @Mock SelectedFoodCategoryRepository selectedFoodCategoryRepository;
-    @Mock BookmarkedFoodRepository bookmarkedFoodRepository;
+    @InjectMocks
+    FoodService foodService;
+    @Mock
+    ImageManager imageManager;
+    @Mock
+    FoodRepository foodRepository;
+    @Mock
+    FoodCategoryRepository foodCategoryRepository;
+    @Mock
+    SelectedFoodCategoryRepository selectedFoodCategoryRepository;
+    @Mock
+    BookmarkedFoodRepository bookmarkedFoodRepository;
 
     @BeforeEach
     void setUp() {
@@ -124,7 +134,12 @@ public class FoodServiceTest {
     @DisplayName("커서 조회 시 limit 보다 많으면 hasNext 는 true 이고, 초과되면 하나는 제거되고 카테고리 매핑")
     void getFoodList_hasNext_TRUE() throws Exception {
         //given
-        FoodsFinder finder = FoodFixture.createFirstPageFinder();
+        Long categoryId = 1L;
+        String memberKey = FoodFixture.MEMBER_KEY;
+        LocalDateTime lastCreatedAt = LocalDateTime.now();
+        Cursorable cursorable = new Cursorable(1L,2);
+
+
         List<FoodEntity> foodEntities = new ArrayList<>();
         foodEntities.add(FoodFixture.createFoodEntity(1L));
         foodEntities.add(FoodFixture.createFoodEntity(2L));
@@ -135,14 +150,14 @@ public class FoodServiceTest {
                 SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 1L),
                 SelectedFoodCategoryFixture.createSelectedCategoryEntity(2L, 2L)
         );
-        given(foodRepository.findFoodCursorList(finder)).willReturn(foodEntities);
-        given(selectedFoodCategoryRepository.findByFoodIdIn(List.of(1L, 2L))).willReturn(selectedFoodCategories);
+        given(foodRepository.findFoodCursorList(cursorable,categoryId,lastCreatedAt,memberKey)).willReturn(foodEntities);
+        given(selectedFoodCategoryRepository.findByFoodIdIn(anyList())).willReturn(selectedFoodCategories);
         //when
-        FoodCursorResult result = foodService.getFoodList(finder);
+        SliceObject<RegisteredFood> result = foodService.getFoodList(cursorable,categoryId,lastCreatedAt,memberKey);
         //then
-        assertThat(result.hasNext()).isTrue();
-        assertThat(result.foods()).hasSize(2);
-        assertThat(result.foods().getFirst().categoryIds().getFirst()).isEqualTo(1L);
+        assertThat(result.isHasNext()).isTrue();
+        assertThat(result.getContent()).hasSize(2);
+        assertThat(result.getContent().getFirst().categoryIds().getFirst()).isEqualTo(1L);
     }
 
     @Test
@@ -194,6 +209,7 @@ public class FoodServiceTest {
                 .extracting("errorType")
                 .isEqualTo(ErrorType.NOT_FOUND_DATA);
     }
+
     @DisplayName("foodId 리스트와 memberKey 으로 foodName을 List<String>로 결과 반환")
     void getFoodNames_SUCCESS() throws Exception {
         //given
@@ -204,7 +220,7 @@ public class FoodServiceTest {
         FoodEntity food2 = FoodFixture.createFoodEntity(ids.get(1));
         given(foodRepository.findAllByMemberKey(memberKey)).willReturn(List.of(food1, food2));
         //when
-        List<RecipeFood> foods = foodService.getAllBymemberKey(memberKey);
+        List<RecipeFood> foods = foodService.getAllByMemberKey(memberKey);
         //then
         assertThat(foods).hasSize(2);
         assertThat(foods.getFirst().name()).isEqualTo(foodName);

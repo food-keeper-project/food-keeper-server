@@ -43,14 +43,14 @@ services:
       NAVER_STORAGE_URL: ${NAVER_STORAGE_URL}
       CLOVA_MODEL_URL: ${CLOVA_MODEL_URL}
       CLOVA_API_KEY: ${CLOVA_API_KEY}
-      CLOVA_GATEWAY_KEY: ${CLOVA_GATEWAY_KEY}
+      CLIENT_URL: ${CLIENT_URL}
     ports:
       - "8080:8080"
     networks:
       - food-keeper
     volumes:
       - ./:/app/local
-      - ./logs:/var/log/spring
+      - /var/log/food-keeper:/var/log/food-keeper
 
   mysql:
     image: mysql:8.0.44-debian
@@ -71,6 +71,16 @@ services:
        "--character-set-server=utf8mb4",
        "--collation-server=utf8mb4_unicode_ci"
     ]
+    networks:
+      - food-keeper
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    volumes:
+      - ./promtail-config.dev.yml:/etc/promtail/config.yml
+      - /var/log/food-keeper:/var/log/app
+      - /var/lib/promtail:/var/lib/promtail
+    command: -config.file=/etc/promtail/config.yml
     networks:
       - food-keeper
 

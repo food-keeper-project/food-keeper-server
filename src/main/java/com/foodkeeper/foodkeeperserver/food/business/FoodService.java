@@ -1,7 +1,8 @@
 package com.foodkeeper.foodkeeperserver.food.business;
 
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.implement.FoodBookmarker;
-import com.foodkeeper.foodkeeperserver.common.domain.PageObject;
+import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
+import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.domain.*;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -38,7 +40,7 @@ public class FoodService {
         Food food = register.toFood(imageUrlFuture.join(), memberKey);
         try {
             Food savedFood = foodManager.register(food);
-            List<FoodCategory> foodCategories = foodCategoryManager.findAllByIds(register.categoryIds());
+            List<FoodCategory> foodCategories = foodCategoryManager.findAll(register.categoryIds());
             foodCategories.forEach(category ->
                     selectedFoodCategoryManager.save(SelectedFoodCategory.create(savedFood.id(), category.id())));
             return savedFood.id();
@@ -49,14 +51,12 @@ public class FoodService {
     }
 
     // 커서 리스트 조회
-    public FoodCursorResult getFoodList(FoodsFinder finder) {
-        List<Food> foods = foodManager.findFoodList(finder);
-        PageObject<Food> page = new PageObject<>(foods, finder.limit());
-        Foods pagedFoods = new Foods(page.getContent());
+    public SliceObject<RegisteredFood> getFoodList(Cursorable cursorable, Long categoryId, LocalDateTime lastCreatedAt, String memberKey) {
+        SliceObject<Food> foods = foodManager.findFoodList(cursorable, categoryId, lastCreatedAt, memberKey);
         SelectedFoodCategories categories = new SelectedFoodCategories(selectedFoodCategoryManager.findByFoodIds(
-                pagedFoods.getFoodIds()
+                foods.getContent().stream().map(Food::id).toList()
         ));
-        return new FoodCursorResult(pagedFoods.toRegisteredFoods(categories), page.hasNext());
+        return foods.map(food -> food.toRegisteredFood(categories.getCategoryIdsByFoodId(food.id())));
     }
 
     // 단일 조회
@@ -70,8 +70,8 @@ public class FoodService {
     }
 
 
-    public List<RecipeFood> getAllBymemberKey(String memberKey) {
-        List<Food> foods = foodManager.findAllBymemberKey(memberKey);
+    public List<RecipeFood> getAllByMemberKey(String memberKey) {
+        List<Food> foods = foodManager.findAllByMemberKey(memberKey);
         return foods.stream()
                 .map(Food::toRecipe)
                 .toList();

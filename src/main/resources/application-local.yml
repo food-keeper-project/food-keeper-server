@@ -4,6 +4,7 @@ spring:
       on-profile: local
     import: "optional:file:.env[.properties]"
 
+
   datasource:
     first:
       jdbc-url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
@@ -22,6 +23,12 @@ spring:
     console:
       enabled: true
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+
 logging:
   level:
     com.foodkeeper: debug
@@ -34,8 +41,8 @@ cloud:
     s3:
       bucket: food-keeper
     credentials:
-      access-key: access-key
-      secret-key: secret-key
+      access-key: naver-access-key
+      secret-key: naver-secret-key
     region:
       static: kr-standard
     stack:
@@ -43,8 +50,11 @@ cloud:
 
 custom:
   s3:
-    endpoint: storage-url
+    endpoint: naver-storage-url
 
 clova:
-  url: ${CLOVA_MODEL_URL}
-  api-key: ${CLOVA_API_KEY}
+  url: clova-url
+  api-key: api-key
+
+client:
+  url: http://localhost:8080

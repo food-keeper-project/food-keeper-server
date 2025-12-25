@@ -24,8 +24,11 @@ public class BaseEntity {
     private LocalDateTime deletedAt;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR")
     private EntityStatus status;
+
+    public BaseEntity() {
+        this.status = EntityStatus.ACTIVE;
+    }
 
     public void delete() {
         status = EntityStatus.DELETED;

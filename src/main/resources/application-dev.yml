@@ -18,10 +18,24 @@ spring:
         hbm2ddl:
           auto: validate
 
+springdoc:
+  swagger-ui:
+    config-url: /v3/api-docs
+  api-docs:
+    enabled: true
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
 
 logging:
   level:
-    com.foodkeeper: debug
+    root: debug
+  config: classpath:logback-dev.xml
 
 jwt:
   secret-key: ${JWT_SECRET_KEY}
@@ -42,7 +56,10 @@ custom:
   s3:
     endpoint: ${NAVER_STORAGE_URL}
 
+
 clova:
   url: ${CLOVA_MODEL_URL}
   api-key: ${CLOVA_API_KEY}
 
+client:
+  url: ${CLIENT_URL}
