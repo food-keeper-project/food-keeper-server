@@ -17,6 +17,8 @@ import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberReposi
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
+import com.foodkeeper.foodkeeperserver.notification.dataaccess.repository.FcmRepository;
+import com.foodkeeper.foodkeeperserver.notification.implement.FcmManager;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,11 +40,18 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
-    @Mock MemberRepository memberRepository;
-    @Mock OauthRepository oauthRepository;
-    @Mock MemberRoleRepository memberRoleRepository;
-    @Mock KakaoAuthenticator kakaoAuthenticator;
-    @Mock SignInLogRepository signInLogRepository;
+    @Mock
+    MemberRepository memberRepository;
+    @Mock
+    OauthRepository oauthRepository;
+    @Mock
+    MemberRoleRepository memberRoleRepository;
+    @Mock
+    KakaoAuthenticator kakaoAuthenticator;
+    @Mock
+    SignInLogRepository signInLogRepository;
+    @Mock
+    FcmRepository fcmRepository;
     SecretKey secretKey;
     AuthService authService;
 
@@ -54,8 +63,9 @@ class AuthServiceTest {
         MemberFinder memberFinder = new MemberFinder(memberRepository, oauthRepository);
         MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, oauthRepository, memberRoleRepository);
         RefreshTokenManager refreshTokenManager = new RefreshTokenManager(memberRepository);
+        FcmManager fcmManager = new FcmManager(fcmRepository);
         authService = new AuthService(kakaoAuthenticator, memberFinder, memberRegistrar, signInLogAppender,
-                jwtGenerator, refreshTokenManager);
+                jwtGenerator, refreshTokenManager, fcmManager);
     }
 
     @Test
@@ -68,7 +78,7 @@ class AuthServiceTest {
         SignInContext register = SignInContext.builder()
                 .accessToken(accessToken)
                 .ipAddress("127.0.0.1")
-                .fcmToken("token")
+                .fcmToken("fcmToken")
                 .oAuthProvider(OAuthProvider.KAKAO)
                 .build();
         OAuthUser oauthUser = OAuthUser.builder()
@@ -102,7 +112,7 @@ class AuthServiceTest {
         SignInContext register = SignInContext.builder()
                 .accessToken(accessToken)
                 .ipAddress("127.0.0.1")
-                .fcmToken("token")
+                .fcmToken("fcmToken")
                 .oAuthProvider(OAuthProvider.KAKAO)
                 .build();
         OAuthUser oauthUser = OAuthUser.builder()

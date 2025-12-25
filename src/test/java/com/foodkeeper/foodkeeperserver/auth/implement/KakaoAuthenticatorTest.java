@@ -91,7 +91,7 @@ class KakaoAuthenticatorTest {
                 .andRespond(withStatus(HttpStatus.UNAUTHORIZED));
 
         // then
-        assertThatThrownBy(() -> kakaoAuthenticator.authenticate("invalid-token"))
+        assertThatThrownBy(() -> kakaoAuthenticator.authenticate("invalid-fcmToken"))
                 .isInstanceOf(RestClientResponseException.class);
     }
 }

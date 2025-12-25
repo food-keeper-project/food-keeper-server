@@ -19,18 +19,18 @@ public class FcmManager {
     private final FcmRepository fcmRepository;
 
     public Map<String, List<String>> findTokens(List<String> memberKeys) {
-        List<FcmTokenEntity> tokens = ListUtil.getOrElseThrowList(fcmRepository.findAllByMemberKeyIn(memberKeys));
+        List<FcmTokenEntity> tokens = fcmRepository.findAllByMemberKeyIn(memberKeys);
         return tokens.stream()
                 .map(FcmTokenEntity::toDomain)
                 .collect(Collectors.groupingBy(
                         FcmToken::memberKey,
-                        Collectors.mapping(FcmToken::token, Collectors.toList())
+                        Collectors.mapping(FcmToken::fcmToken, Collectors.toList())
                 ));
     }
 
     @Transactional
-    public void addTokenOrUpdate(String token, String memberKey) {
-        fcmRepository.findByToken(token)
+    public void addTokenOrUpdate(String fcmToken, String memberKey) {
+        fcmRepository.findByToken(fcmToken)
                 .ifPresentOrElse(
                         fcmTokenEntity -> {
                             if (!fcmTokenEntity.getMemberKey().equals(memberKey)) {
@@ -38,14 +38,14 @@ public class FcmManager {
                             }
                             fcmTokenEntity.update();
                         }, () -> {
-                            FcmToken newToken = FcmToken.create(token, memberKey);
+                            FcmToken newToken = FcmToken.create(fcmToken, memberKey);
                             fcmRepository.save(FcmTokenEntity.from(newToken));
                         }
                 );
     }
 
     @Transactional
-    public void remove(String token) {
-        fcmRepository.deleteByToken(token);
+    public void remove(String fcmToken) {
+        fcmRepository.deleteByToken(fcmToken);
     }
 }

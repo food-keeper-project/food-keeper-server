@@ -115,7 +115,7 @@ class JwtAuthenticationFilterTest {
         MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
         MockHttpServletResponse httpServletResponse = new MockHttpServletResponse();
         FilterChain mockFilterChain = mock(FilterChain.class);
-        String token = "Bearer token";
+        String token = "Bearer fcmToken";
         httpServletRequest.addHeader(HttpHeaders.AUTHORIZATION, token);
 
         assertThatThrownBy(

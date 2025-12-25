@@ -25,8 +25,8 @@ public class FcmTokenEntity extends BaseEntity {
     private String memberKey;
 
     @Builder
-    private FcmTokenEntity(String token, String memberKey) {
-        this.token = token;
+    private FcmTokenEntity(String fcmToken, String memberKey) {
+        this.token = fcmToken;
         this.memberKey = memberKey;
     }
 
@@ -42,7 +42,7 @@ public class FcmTokenEntity extends BaseEntity {
 
     public static FcmTokenEntity from(FcmToken fcmToken) {
         return FcmTokenEntity.builder()
-                .token(fcmToken.token())
+                .fcmToken(fcmToken.fcmToken())
                 .memberKey(fcmToken.memberKey())
                 .build();
     }
