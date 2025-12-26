@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.food.domain;
 
+import com.foodkeeper.foodkeeperserver.food.domain.response.RecipeFood;
 import lombok.Builder;
 
 import java.time.LocalDate;

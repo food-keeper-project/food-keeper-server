@@ -35,7 +35,8 @@ public class FoodCategoryEntity extends BaseEntity {
         return new FoodCategory(
                 this.id,
                 this.name,
-                this.memberKey
+                this.memberKey,
+                this.getCreatedAt()
         );
     }
 
@@ -44,5 +45,9 @@ public class FoodCategoryEntity extends BaseEntity {
                 .name(foodCategory.name())
                 .memberKey(foodCategory.memberKey())
                 .build();
+    }
+
+    public void update(String name) {
+        this.name = name;
     }
 }

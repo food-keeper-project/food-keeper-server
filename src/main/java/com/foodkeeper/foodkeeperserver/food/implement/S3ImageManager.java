@@ -52,6 +52,7 @@ public class S3ImageManager implements ImageManager {
         return amazonS3.getUrl(bucket, fileName).toString();
     }
 
+    @Async
     @Override
     public void deleteFile(String fileName) {
         try {
