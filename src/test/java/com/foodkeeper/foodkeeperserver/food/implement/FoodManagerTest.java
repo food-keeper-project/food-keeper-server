@@ -37,7 +37,7 @@ public class FoodManagerTest {
     @DisplayName("식재료 저장 요청 시 리포지토리 호출 및 결과 반환")
     void register_SUCCESS() throws Exception {
         //given
-        Food food = FoodFixture.createFood();
+        Food food = FoodFixture.createFood(1L);
         FoodEntity foodEntity = FoodFixture.createFoodEntity(1L);
 
         given(foodRepository.save(any(FoodEntity.class))).willReturn(foodEntity);

@@ -17,7 +17,7 @@ public class Notifier {
     private final FoodManager foodManager;
     private final FcmManager fcmManager;
 
-    public List<FcmSender> addFoodNotification(LocalDate today) {
+    public List<FcmSender> sendFoodNotification(LocalDate today) {
         List<Food> foods = foodManager.findFoodsToNotify(today);
         List<String> memberKeys = foods.stream()
                 .map(Food::memberKey)
