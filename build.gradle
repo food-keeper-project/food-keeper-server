@@ -46,6 +46,7 @@ dependencies {
     implementation 'com.amazonaws:aws-java-sdk-s3:1.12.360'
     implementation 'com.google.firebase:firebase-admin:9.7.0'
 
+
     // lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

@@ -22,7 +22,7 @@ public class FcmController {
     private final FcmService fcmService;
 
     @NullMarked
-    @Operation(summary = "FcmToken 재발급", description = "FcmToken 재발급 API")
+    @Operation(summary = "FcmToken 재발급 (앱 켜질때마다 호출)", description = "FcmToken 재발급 API")
     @PatchMapping
     public ResponseEntity<ApiResponse<Void>> refreshFcmToken(@AuthMember Member authMember, @RequestBody RefreshFcmTokenRequest request
     ) {
@@ -30,3 +30,4 @@ public class FcmController {
         return ResponseEntity.ok(ApiResponse.success());
     }
 }
+// 추후에 updatedAt 으로 오랫동안 사용하지 않은 토큰 삭제 구현

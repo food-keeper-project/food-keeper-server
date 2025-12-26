@@ -35,7 +35,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
@@ -51,7 +53,7 @@ class AuthServiceTest {
     @Mock
     SignInLogRepository signInLogRepository;
     @Mock
-    FcmRepository fcmRepository;
+    FcmManager fcmManager;
     SecretKey secretKey;
     AuthService authService;
 
@@ -63,7 +65,6 @@ class AuthServiceTest {
         MemberFinder memberFinder = new MemberFinder(memberRepository, oauthRepository);
         MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, oauthRepository, memberRoleRepository);
         RefreshTokenManager refreshTokenManager = new RefreshTokenManager(memberRepository);
-        FcmManager fcmManager = new FcmManager(fcmRepository);
         authService = new AuthService(kakaoAuthenticator, memberFinder, memberRegistrar, signInLogAppender,
                 jwtGenerator, refreshTokenManager, fcmManager);
     }
@@ -92,6 +93,7 @@ class AuthServiceTest {
         given(kakaoAuthenticator.authenticate(eq(accessToken))).willReturn(oauthUser);
         given(oauthRepository.findByAccount(eq(account))).willReturn(Optional.of(oauthEntity));
         given(signInLogRepository.save(any(SignInLogEntity.class))).willReturn(signInLogEntity);
+
 
         // when
         Jwt jwt = authService.signInByOAuth(register);
@@ -140,3 +142,7 @@ class AuthServiceTest {
         assertThat(jwt.accessToken()).isNotEqualTo(jwt.refreshToken());
     }
 }
+/**
+ * fcmRepository 를 주입하게 되면 모든 경우의 수를 다 해봐야 하고,,
+ * fcmManager 를 주입하면 호출 검증말고는 검증을 못하고,,, 해서 어떻게 해야될지 원호님 의견이 궁금합니다,,
+ */
