@@ -1,7 +1,6 @@
 package com.foodkeeper.foodkeeperserver.member.fixture;
 
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
-import com.foodkeeper.foodkeeperserver.member.domain.Member;
 import com.foodkeeper.foodkeeperserver.member.domain.NewMember;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.Gender;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.SignUpType;
