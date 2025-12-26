@@ -5,7 +5,6 @@ import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +22,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -104,13 +105,25 @@ public class FoodManagerTest {
     @DisplayName("식재료 삭제")
     void removeFood_SUCCESS() throws Exception {
         //given
-        Long foodId = 1L;
-        Food food = FoodFixture.createFood(foodId);
+        Food food = FoodFixture.createFood();
         //when
         foodManager.removeFood(food);
         //then
         ArgumentCaptor<FoodEntity> captor = ArgumentCaptor.forClass(FoodEntity.class);
         verify(foodRepository).delete(captor.capture());
         assertThat(captor.getValue().getName()).isEqualTo(food.name());
+    }
+
+    @Test
+    @DisplayName("오늘 날짜를 기준으로 알림 날짜에 부합하는 foods 조회")
+    void findFoodsToNotify_SUCCESS() throws Exception {
+        //given
+        LocalDate today = LocalDate.of(2025,12,26);
+        List<FoodEntity> foods = List.of(mock(FoodEntity.class));
+        given(foodRepository.findFoodsToNotify(today)).willReturn(foods);
+        //when
+        List<Food> results = foodManager.findFoodsToNotify(today);
+        //then
+        verify(foodRepository).findFoodsToNotify(today);
     }
 }

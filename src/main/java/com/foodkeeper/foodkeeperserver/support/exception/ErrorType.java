@@ -24,7 +24,8 @@ public enum ErrorType {
 
     // 식재료
     FOOD_DATA_NOT_FOUND(HttpStatus.BAD_REQUEST, ErrorCode.E1000, "해당 식재료가 존재하지 않습니다.", LogLevel.WARN),
-    CATEGORY_SELECT_ERROR(HttpStatus.BAD_REQUEST, ErrorCode.E1001, "카테고리 선택 개수가 옳바르지 않습니다.", LogLevel.WARN),
+
+    CATEGORY_DATA_NOT_FOUND(HttpStatus.BAD_REQUEST, ErrorCode.E8000, "존재하지 않는 카테고리 입니다.",LogLevel.WARN),
 
     S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E5000, "이미지 업로드에 실패했습니다.", LogLevel.ERROR),
 
@@ -40,12 +41,6 @@ public enum ErrorType {
 
     FCM_TOKEN_INITIALIZE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E7000, "Firebase 초기화 중 오류가 발생하였습니다.", LogLevel.ERROR),
     FCM_TOKEN_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E7001, "알림 메시지 전송에 실패했습니다.", LogLevel.ERROR);
-
-    // 네이버
-    NAVER_CLOVA_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E6000, "네이버 클로바 AI 서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",LogLevel.ERROR),
-    NAVER_CLOVA_PROMPT_ERROR(HttpStatus.NOT_FOUND, ErrorCode.E6001, "실행할 프롬프트 업로드에 오류가 발생했습니다.",LogLevel.ERROR),
-
-    S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,ErrorCode.E500,"이미지 업로드에 실패했습니다.", LogLevel.ERROR);
     private final HttpStatus status;
     private final ErrorCode errorCode;
     private final String message;
