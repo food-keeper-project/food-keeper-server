@@ -1,6 +1,5 @@
 package com.foodkeeper.foodkeeperserver.notification.implement;
 
-import com.foodkeeper.foodkeeperserver.common.utils.ListUtil;
 import com.foodkeeper.foodkeeperserver.notification.dataaccess.entity.FcmTokenEntity;
 import com.foodkeeper.foodkeeperserver.notification.dataaccess.repository.FcmRepository;
 import com.foodkeeper.foodkeeperserver.notification.domain.FcmToken;
@@ -43,7 +42,7 @@ public class FcmManager {
                         }
                 );
     }
-
+    // hard delete : firebase 에서 만료된 토큰은 굳이 soft delete 필요없을 것 같음
     @Transactional
     public void remove(String fcmToken) {
         fcmRepository.deleteByToken(fcmToken);

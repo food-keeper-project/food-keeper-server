@@ -1,23 +1,24 @@
 package com.foodkeeper.foodkeeperserver.notification.fixture;
 
+import com.foodkeeper.foodkeeperserver.notification.dataaccess.entity.FcmTokenEntity;
 import com.foodkeeper.foodkeeperserver.notification.domain.FcmToken;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class FcmFixture {
 
-    public static FcmToken createMock(Long id, String token, String createdAt, String updatedAt) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
+    public static FcmToken createMock(Long id, String token, String memberKey) {
         return new FcmToken(
                 id,
                 token,
-                LocalDateTime.parse(createdAt, formatter),
-                LocalDateTime.parse(updatedAt, formatter),
-                "default-member-key"
+                null,
+                null,
+                memberKey
         );
     }
-
+    public static FcmTokenEntity createEntity(Long id,String token, String memberKey) {
+        FcmTokenEntity fcmToken = FcmTokenEntity.from(createMock(id, token, memberKey));
+        ReflectionTestUtils.setField(fcmToken,"id",id);
+        return fcmToken;
+    }
 
 }
