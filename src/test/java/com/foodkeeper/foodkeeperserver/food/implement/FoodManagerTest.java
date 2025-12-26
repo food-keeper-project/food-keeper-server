@@ -105,7 +105,7 @@ public class FoodManagerTest {
     @DisplayName("식재료 삭제")
     void removeFood_SUCCESS() throws Exception {
         //given
-        Food food = FoodFixture.createFood();
+        Food food = FoodFixture.createFood(1L);
         //when
         foodManager.removeFood(food);
         //then
@@ -122,7 +122,7 @@ public class FoodManagerTest {
         List<FoodEntity> foods = List.of(mock(FoodEntity.class));
         given(foodRepository.findFoodsToNotify(today)).willReturn(foods);
         //when
-        List<Food> results = foodManager.findFoodsToNotify(today);
+        foodManager.findFoodsToNotify(today);
         //then
         verify(foodRepository).findFoodsToNotify(today);
     }

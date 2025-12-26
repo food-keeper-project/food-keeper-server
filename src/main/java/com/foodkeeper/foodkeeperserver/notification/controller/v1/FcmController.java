@@ -23,7 +23,7 @@ public class FcmController {
 
     @NullMarked
     @Operation(summary = "FcmToken 재발급", description = "FcmToken 재발급 API")
-    @PatchMapping("/fcmToken")
+    @PatchMapping
     public ResponseEntity<ApiResponse<Void>> refreshFcmToken(@AuthMember Member authMember, @RequestBody RefreshFcmTokenRequest request
     ) {
         fcmService.update(request.fcmToken(), authMember.memberKey());

@@ -179,7 +179,7 @@ public class FoodServiceTest {
     void bookmarkFood() {
         // given
         long bookmarkedFoodId = 2L;
-        Food food = FoodFixture.createFood();
+        Food food = FoodFixture.createFood(1L);
         FoodEntity foodEntity = FoodEntity.from(food);
         BookmarkedFoodEntity bookmarkedFoodEntity = mock(BookmarkedFoodEntity.class);
         given(bookmarkedFoodEntity.getId()).willReturn(bookmarkedFoodId);
