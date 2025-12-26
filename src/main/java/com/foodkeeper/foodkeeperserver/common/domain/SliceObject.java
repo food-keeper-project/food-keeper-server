@@ -9,16 +9,16 @@ import java.util.function.Function;
 @Getter
 public class SliceObject<T> {
     private final List<T> content;
-    private final Cursorable cursorable;
+    private final Cursorable<?> cursorable;
     private final boolean hasNext;
 
-    public SliceObject(List<T> content, Cursorable cursorable, boolean hasNext) {
+    public SliceObject(List<T> content, Cursorable<?> cursorable, boolean hasNext) {
         this.content = new ArrayList<>(content);
         this.cursorable = cursorable;
         this.hasNext = hasNext;
     }
 
-    public SliceObject(List<T> content, Cursorable cursorable) {
+    public SliceObject(List<T> content, Cursorable<?> cursorable) {
         this.content = new ArrayList<>(content);
         this.cursorable = cursorable;
 

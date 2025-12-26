@@ -36,9 +36,9 @@ public class BookmarkedFoodEntity extends BaseEntity {
 
     @Builder
     private BookmarkedFoodEntity(String name,
-                                String imageUrl,
-                                StorageMethod storageMethod,
-                                String memberKey) {
+                                 String imageUrl,
+                                 StorageMethod storageMethod,
+                                 String memberKey) {
         this.name = name;
         this.imageUrl = imageUrl;
         this.storageMethod = storageMethod;

@@ -5,5 +5,5 @@ import org.jspecify.annotations.NullMarked;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 @NullMarked
-public interface FoodCategoryRepository extends JpaRepository<FoodCategoryEntity,Long> {
+public interface FoodCategoryRepository extends JpaRepository<FoodCategoryEntity, Long> {
 }

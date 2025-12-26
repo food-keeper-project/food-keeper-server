@@ -14,5 +14,5 @@ public interface ClovaClient {
     ClovaResponse getRecipe(
             @RequestHeader("Authorization") String apiKey,
             @RequestBody ClovaRequest request
-            );
+    );
 }

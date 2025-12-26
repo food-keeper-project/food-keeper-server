@@ -48,7 +48,7 @@ public class ClovaService {
 
         ClovaRequest request = ClovaRequest.createPrompt(systemPrompt, userPrompt);
 
-        ClovaResponse clovaResponse = clovaClient.getRecipe( "Bearer " + apiKey, request);
+        ClovaResponse clovaResponse = clovaClient.getRecipe("Bearer " + apiKey, request);
         return clovaResponse.getContent();
     }
 
