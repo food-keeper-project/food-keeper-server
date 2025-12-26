@@ -37,7 +37,7 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
                         // todo isDeleted == false 인 데이터만 조건 추가
                 )
                 .orderBy(foodEntity.createdAt.desc(), foodEntity.id.desc())
-                .limit(cursorable.getLimit() + 1)
+                .limit(cursorable.limit() + 1)
                 .fetch();
     }
 

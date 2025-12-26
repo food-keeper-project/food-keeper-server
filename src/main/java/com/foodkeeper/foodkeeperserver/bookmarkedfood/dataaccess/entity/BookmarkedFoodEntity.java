@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.bookmarkedfood.dataaccess.entity;
 
+import com.foodkeeper.foodkeeperserver.bookmarkedfood.domain.BookmarkedFood;
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.BaseEntity;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
@@ -51,5 +52,9 @@ public class BookmarkedFoodEntity extends BaseEntity {
                 .storageMethod(food.storageMethod())
                 .memberKey(memberKey)
                 .build();
+    }
+
+    public BookmarkedFood toBookmarkedFood() {
+        return new BookmarkedFood(this.name, this.imageUrl, this.storageMethod);
     }
 }

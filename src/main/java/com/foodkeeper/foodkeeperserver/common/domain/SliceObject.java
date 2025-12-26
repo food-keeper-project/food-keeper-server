@@ -23,7 +23,7 @@ public class SliceObject<T> {
         this.cursorable = cursorable;
 
         boolean hasNext = false;
-        if (this.content.size() > cursorable.getLimit()) {
+        if (this.content.size() > cursorable.limit()) {
             hasNext = true;
             this.content.removeLast();
         }
