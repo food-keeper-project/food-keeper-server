@@ -132,7 +132,7 @@ public class FoodServiceTest {
         Long categoryId = 1L;
         String memberKey = FoodFixture.MEMBER_KEY;
         LocalDateTime lastCreatedAt = LocalDateTime.now();
-        Cursorable cursorable = new Cursorable(1L,2);
+        Cursorable<LocalDateTime> cursorable = new Cursorable<>(lastCreatedAt, 2);
 
 
         List<FoodEntity> foodEntities = new ArrayList<>();
@@ -145,10 +145,10 @@ public class FoodServiceTest {
                 SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 1L),
                 SelectedFoodCategoryFixture.createSelectedCategoryEntity(2L, 2L)
         );
-        given(foodRepository.findFoodCursorList(cursorable,categoryId,lastCreatedAt,memberKey)).willReturn(foodEntities);
+        given(foodRepository.findFoodCursorList(cursorable, categoryId, memberKey)).willReturn(foodEntities);
         given(selectedFoodCategoryRepository.findByFoodIdIn(anyList())).willReturn(selectedFoodCategories);
         //when
-        SliceObject<RegisteredFood> result = foodService.getFoodList(cursorable,categoryId,lastCreatedAt,memberKey);
+        SliceObject<RegisteredFood> result = foodService.getFoodList(cursorable, categoryId, memberKey);
         //then
         assertThat(result.isHasNext()).isTrue();
         assertThat(result.getContent()).hasSize(2);

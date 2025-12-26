@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface FoodRepositoryCustom {
-    List<FoodEntity> findFoodCursorList(Cursorable cursorable, Long categoryId, LocalDateTime lastCreatedAt, String memberKey);
+    List<FoodEntity> findFoodCursorList(Cursorable<LocalDateTime> cursorable, Long categoryId, String memberKey);
 
     List<FoodEntity> findAllByMemberKey(String memberKey);
 
