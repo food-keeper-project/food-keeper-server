@@ -135,20 +135,21 @@ public class FoodServiceTest {
         Cursorable<LocalDateTime> cursorable = new Cursorable<>(lastCreatedAt, 2);
 
 
-        List<FoodEntity> foodEntities = new ArrayList<>();
-        foodEntities.add(FoodFixture.createFoodEntity(1L));
-        foodEntities.add(FoodFixture.createFoodEntity(2L));
-        foodEntities.add(FoodFixture.createFoodEntity(3L));
+        List<FoodEntity> foodEntities = List.of(FoodFixture.createFoodEntity(1L),
+                FoodFixture.createFoodEntity(2L));
+        SliceObject<FoodEntity> foodSlice = new SliceObject<>(foodEntities, cursorable, true);
 
 
         List<SelectedFoodCategoryEntity> selectedFoodCategories = List.of(
                 SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 1L),
                 SelectedFoodCategoryFixture.createSelectedCategoryEntity(2L, 2L)
         );
-        given(foodRepository.findFoodCursorList(cursorable, categoryId, memberKey)).willReturn(foodEntities);
+        given(foodRepository.findFoodCursorList(cursorable, categoryId, memberKey)).willReturn(foodSlice);
         given(selectedFoodCategoryRepository.findByFoodIdIn(anyList())).willReturn(selectedFoodCategories);
+
         //when
         SliceObject<RegisteredFood> result = foodService.getFoodList(cursorable, categoryId, memberKey);
+
         //then
         assertThat(result.hasNext()).isTrue();
         assertThat(result.content()).hasSize(2);

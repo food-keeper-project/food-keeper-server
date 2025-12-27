@@ -53,11 +53,12 @@ public class FoodManagerTest {
         LocalDateTime lastCreatedAt = LocalDateTime.now();
         Cursorable<LocalDateTime> cursorable = new Cursorable<>(lastCreatedAt, 2);
 
-        FoodEntity entity1 = FoodFixture.createFoodEntity(1L);
-        FoodEntity entity2 = FoodFixture.createFoodEntity(2L);
-        List<FoodEntity> foodEntities = List.of(entity1, entity2);
+        List<FoodEntity> foodEntities = List.of(
+                FoodFixture.createFoodEntity(1L),
+                FoodFixture.createFoodEntity(2L));
+        SliceObject<FoodEntity> foodSlice = new SliceObject<>(foodEntities, cursorable, false);
 
-        given(foodRepository.findFoodCursorList(cursorable, categoryId, memberKey)).willReturn(foodEntities);
+        given(foodRepository.findFoodCursorList(cursorable, categoryId, memberKey)).willReturn(foodSlice);
         //when
         SliceObject<Food> results = foodManager.findFoodList(cursorable, categoryId, memberKey);
         //then
