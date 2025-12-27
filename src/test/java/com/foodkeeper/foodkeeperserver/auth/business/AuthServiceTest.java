@@ -17,7 +17,6 @@ import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberReposi
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
-import com.foodkeeper.foodkeeperserver.notification.dataaccess.repository.FcmRepository;
 import com.foodkeeper.foodkeeperserver.notification.implement.FcmManager;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,9 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {

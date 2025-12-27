@@ -38,7 +38,6 @@ public class NotifyService {
 
                 log.warn("[FCM 만료 토큰 삭제] fcmToken: {}", sender.fcmToken());
                 fcmManager.remove(sender.fcmToken());
-
             }
             log.error("[FCM 전송 실패] fcmToken: {}, error: {}", sender.fcmToken(), e.getMessage());
         }

@@ -1,0 +1,78 @@
+package com.foodkeeper.foodkeeperserver.notification.business;
+
+import com.foodkeeper.foodkeeperserver.notification.dataaccess.repository.FcmRepository;
+import com.foodkeeper.foodkeeperserver.notification.domain.FcmSender;
+import com.foodkeeper.foodkeeperserver.notification.implement.FcmManager;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.MessagingErrorCode;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+public class NotifyServiceTest {
+
+    @InjectMocks
+    private NotifyService notifyService;
+
+    @Mock
+    private FcmRepository fcmRepository;
+
+    @BeforeEach
+    void setUp() {
+        FcmManager fcmManager = new FcmManager(fcmRepository);
+        notifyService = new NotifyService(fcmManager);
+    }
+
+    @Test
+    @DisplayName("알림 전송 요청 시 FirebaseMessaging 호출 성공")
+    void sendNotification_SUCCESS() throws Exception {
+        //given
+        FcmSender fcmSender = new FcmSender("fcmToken", "title", "body");
+
+        try (MockedStatic<FirebaseMessaging> mockFirebase = mockStatic(FirebaseMessaging.class)) {
+            FirebaseMessaging messaging = mock(FirebaseMessaging.class);
+            mockFirebase.when(FirebaseMessaging::getInstance).thenReturn(messaging);
+            //when
+            notifyService.sendNotification(fcmSender);
+            //then
+            verify(messaging, times(1)).send(any(Message.class));
+            verify(fcmRepository, never()).deleteByToken(anyString());
+        }
+    }
+
+    @Test
+    @DisplayName("만료된 토큰 에러코드 반환 시 토큰 삭제 성공")
+    void sendNotification_FAIL_DELETE() throws Exception {
+        //given
+        String expiredToken = "token";
+        FcmSender fcmSender = new FcmSender(expiredToken, "title","body");
+
+        try (MockedStatic<FirebaseMessaging> mockFirebase = mockStatic(FirebaseMessaging.class)) {
+            FirebaseMessaging messaging = mock(FirebaseMessaging.class);
+            mockFirebase.when(FirebaseMessaging::getInstance).thenReturn(messaging);
+
+            FirebaseMessagingException exception = mock(FirebaseMessagingException.class);
+            given(exception.getMessagingErrorCode()).willReturn(MessagingErrorCode.UNREGISTERED);
+            doThrow(exception).when(messaging).send(any(Message.class));
+
+            //when
+            notifyService.sendNotification(fcmSender);
+            //then
+            verify(fcmRepository, times(1)).deleteByToken(expiredToken);
+
+        }
+
+
+    }
+}
