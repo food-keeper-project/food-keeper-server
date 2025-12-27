@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+import java.util.Optional;
+
 @NullMarked
 public interface FoodRepository extends JpaRepository<FoodEntity, Long>, FoodRepositoryCustom {
     Optional<FoodEntity> findByIdAndMemberKey(Long id, String memberKey);

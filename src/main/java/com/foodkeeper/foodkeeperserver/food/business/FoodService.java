@@ -10,6 +10,7 @@ import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
 import com.foodkeeper.foodkeeperserver.food.implement.ImageManager;
 import com.foodkeeper.foodkeeperserver.food.implement.SelectedFoodCategoryManager;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
+import com.foodkeeper.foodkeeperserver.food.domain.RecipeFood;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class FoodService {
         Food food = register.toFood(imageUrlFuture.join(), memberKey);
         try {
             Food savedFood = foodManager.register(food);
-            List<FoodCategory> foodCategories = foodCategoryManager.findAll(register.categoryIds());
+            List<FoodCategory> foodCategories = foodCategoryManager.findAllByIds(register.categoryIds());
             foodCategories.forEach(category ->
                     selectedFoodCategoryManager.save(SelectedFoodCategory.create(savedFood.id(), category.id())));
             return savedFood.id();
@@ -81,6 +82,14 @@ public class FoodService {
                 .toList();
     }
 
+    @Transactional
+    public void removeFood(Long foodId, String memberKey) {
+        Food food = foodManager.findFood(foodId, memberKey);
+        selectedFoodCategoryManager.removeAllByFoodId(foodId);
+        foodManager.removeFood(food);
+
+        imageManager.deleteFile(food.imageUrl());
+    }
 
     public Long bookmarkFood(Long foodId, String memberKey) {
         return foodBookmarker.bookmark(foodManager.find(foodId), memberKey);

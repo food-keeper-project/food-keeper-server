@@ -9,10 +9,12 @@ import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +22,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class FoodManagerTest {
@@ -72,30 +76,44 @@ public class FoodManagerTest {
     void findFoodById_SUCCESS() throws Exception {
         //given
         Long foodId = FoodFixture.ID;
-        String memberId = FoodFixture.MEMBER_KEY;
+        String memberKey = FoodFixture.MEMBER_KEY;
 
         FoodEntity foodEntity = FoodFixture.createFoodEntity(foodId);
-        given(foodRepository.findByIdAndMemberKey(foodId, memberId)).willReturn(Optional.of(foodEntity));
+        given(foodRepository.findByIdAndMemberKey(foodId, memberKey)).willReturn(Optional.of(foodEntity));
         //when
-        Food food = foodManager.findFood(foodId, memberId);
+        Food food = foodManager.findFood(foodId, memberKey);
         //then
         assertThat(food.name()).isEqualTo(FoodFixture.NAME);
-        assertThat(food.memberKey()).isEqualTo(memberId);
+        assertThat(food.memberKey()).isEqualTo(memberKey);
     }
 
     @Test
     @DisplayName("선택된 식재료들의 이름 조회 시 이름 리스트 반환")
     void findFoodNames_SUCCESS() throws Exception {
         //given
-        String memberId = FoodFixture.MEMBER_KEY;
+        String memberKey = FoodFixture.MEMBER_KEY;
         FoodEntity entity1 = FoodFixture.createFoodEntity(1L);
         FoodEntity entity2 = FoodFixture.createFoodEntity(2L);
-        given(foodRepository.findAllByMemberKey(memberId)).willReturn(List.of(entity1, entity2));
+        given(foodRepository.findAllByMemberKey(memberKey)).willReturn(List.of(entity1, entity2));
         //when
-        List<FoodEntity> foods = foodRepository.findAllByMemberKey(memberId);
+        List<FoodEntity> foods = foodRepository.findAllByMemberKey(memberKey);
         //then
         assertThat(foods).hasSize(2);
         assertThat(foods.getFirst().getId()).isEqualTo(1L);
     }
+
+    @Test
+    @DisplayName("식재료 삭제")
+    void removeFood_SUCCESS() throws Exception {
+        //given
+        Food food = FoodFixture.createFood();
+        //when
+        foodManager.removeFood(food);
+        //then
+        ArgumentCaptor<FoodEntity> captor = ArgumentCaptor.forClass(FoodEntity.class);
+        verify(foodRepository).delete(captor.capture());
+        assertThat(captor.getValue().getName()).isEqualTo(food.name());
+    }
+
 
 }

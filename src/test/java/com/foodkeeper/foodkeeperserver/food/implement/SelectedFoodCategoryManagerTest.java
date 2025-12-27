@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,5 +45,17 @@ public class SelectedFoodCategoryManagerTest {
 
         assertThat(capturedEntity.getFoodId()).isEqualTo(1L);
         assertThat(capturedEntity.getFoodCategoryId()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("식재료와 매핑된 카테고리 삭제")
+    void removeAllByFoodId_SUCCESS() throws Exception {
+        //given
+        Long foodId = 1L;
+
+        //when
+        selectedFoodCategoryManager.removeAllByFoodId(foodId);
+        //then
+        verify(selectedFoodCategoryRepository, times(1)).deleteAllByFoodId(foodId);
     }
 }
