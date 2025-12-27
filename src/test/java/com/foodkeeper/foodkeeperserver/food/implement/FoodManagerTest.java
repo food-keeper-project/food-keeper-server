@@ -61,9 +61,9 @@ public class FoodManagerTest {
         //when
         SliceObject<Food> results = foodManager.findFoodList(cursorable, categoryId, memberKey);
         //then
-        assertThat(results.getContent()).hasSize(2);
-        assertThat(results.getContent().getFirst().name()).isEqualTo(FoodFixture.NAME);
-        assertThat(results.getContent().get(0)).isInstanceOf(Food.class);
+        assertThat(results.content()).hasSize(2);
+        assertThat(results.content().getFirst().name()).isEqualTo(FoodFixture.NAME);
+        assertThat(results.content().get(0)).isInstanceOf(Food.class);
     }
 
     @Test

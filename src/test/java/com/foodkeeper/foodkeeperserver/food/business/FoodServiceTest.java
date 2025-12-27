@@ -150,9 +150,9 @@ public class FoodServiceTest {
         //when
         SliceObject<RegisteredFood> result = foodService.getFoodList(cursorable, categoryId, memberKey);
         //then
-        assertThat(result.isHasNext()).isTrue();
-        assertThat(result.getContent()).hasSize(2);
-        assertThat(result.getContent().getFirst().categoryIds().getFirst()).isEqualTo(1L);
+        assertThat(result.hasNext()).isTrue();
+        assertThat(result.content()).hasSize(2);
+        assertThat(result.content().getFirst().categoryIds().getFirst()).isEqualTo(1L);
     }
 
     @Test

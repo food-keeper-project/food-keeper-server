@@ -41,7 +41,7 @@ class BookmarkedFoodServiceTest {
         String memberKey = "memberKey";
         Cursorable<Long> cursorable = new Cursorable<>(10L, 10);
         List<BookmarkedFoodEntity> bookmarkedFoodEntities = List.of(BookmarkedFoodEntityFixture.DEFAULT.get(memberKey));
-        SliceObject<BookmarkedFoodEntity> slice = new SliceObject<>(bookmarkedFoodEntities, cursorable);
+        SliceObject<BookmarkedFoodEntity> slice = new SliceObject<>(bookmarkedFoodEntities, cursorable, false);
         given(bookmarkedFoodRepository.findBookmarkedFoods(any(), eq(memberKey))).willReturn(slice);
 
         // when
@@ -49,7 +49,7 @@ class BookmarkedFoodServiceTest {
 
 
         // then
-        assertThat(bookmarkedFoods.getContent()).hasSize(1);
-        assertThat(bookmarkedFoods.getContent().getFirst().name()).isEqualTo("name");
+        assertThat(bookmarkedFoods.content()).hasSize(1);
+        assertThat(bookmarkedFoods.content().getFirst().name()).isEqualTo("name");
     }
 }
