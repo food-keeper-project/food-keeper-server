@@ -33,6 +33,16 @@ management:
       percentiles-histogram:
         http.server.requests: true
 
+springdoc:
+  swagger-ui:
+    url: /v3/api-docs
+    path: /v3/api-docs
+    disable-swagger-default-url: true
+  api-docs:
+    enabled: true
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json
+
 logging:
   level:
     com.foodkeeper: debug
