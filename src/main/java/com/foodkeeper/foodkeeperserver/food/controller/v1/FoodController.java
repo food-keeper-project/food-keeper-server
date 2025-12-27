@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import java.util.List;
@@ -59,16 +60,18 @@ public class FoodController {
         return ResponseEntity.created(URI.create("/api/v1/bookmarked-foods/" + bookmarkedFoodId)).build();
     }
 
+    @NullMarked
     @Operation(summary = "식재료 전체 조회", description = "식재료 전체 조회 API")
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<FoodResponse>>> getFoods(@ModelAttribute FoodsRequest request,
-                                                                            @CursorDefault(defaultLimit = 10) Cursorable cursorable,
+                                                                            @CursorDefault Cursorable<LocalDateTime> cursorable,
                                                                             @AuthMember Member authMember) {
-        SliceObject<RegisteredFood> foods = foodService.getFoodList(cursorable, request.categoryId(), request.lastCreatedAt(), authMember.memberKey());
-        List<FoodResponse> foodResponses = foods.getContent().stream().map(FoodResponse::toFoodResponse).toList();
-        return ResponseEntity.ok(ApiResponse.success(new PageResponse<>(foodResponses, foods.isHasNext())));
+        SliceObject<RegisteredFood> foods = foodService.getFoodList(cursorable, request.categoryId(), authMember.memberKey());
+        List<FoodResponse> foodResponses = foods.content().stream().map(FoodResponse::toFoodResponse).toList();
+        return ResponseEntity.ok(ApiResponse.success(new PageResponse<>(foodResponses, foods.hasNext())));
     }
 
+    @NullMarked
     @Operation(summary = "식재료 단일 조회", description = "식재료 단일 조회 API")
     @GetMapping("/{foodId}")
     public ResponseEntity<ApiResponse<FoodResponse>> getFood(@PathVariable Long foodId, @AuthMember Member authMember) {
@@ -76,6 +79,7 @@ public class FoodController {
         return ResponseEntity.ok(ApiResponse.success(FoodResponse.toFoodResponse(RegisteredFood)));
     }
 
+    @NullMarked
     @Operation(summary = "레시피 추천용 식재료 전체 조회", description = "레시피 추천용 식재료 전체 조회 API")
     @GetMapping("/recipes")
     public ResponseEntity<ApiResponse<RecipeFoodResponse>> getFoodNames(@AuthMember Member authMember) {
@@ -83,6 +87,7 @@ public class FoodController {
         return ResponseEntity.ok(ApiResponse.success(new RecipeFoodResponse(recipeFoods)));
     }
 
+    @NullMarked
     @Operation(summary = "유통기한 임박 식재료 리스트 조회", description = "유통기한 임박 식재료 조회 API")
     @GetMapping("/imminent")
     public ResponseEntity<ApiResponse<FoodImminentResponse>> getImminentFoods(@AuthMember Member authMember) {

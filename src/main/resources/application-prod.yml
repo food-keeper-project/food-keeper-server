@@ -17,11 +17,24 @@ spring:
         hbm2ddl:
           auto: validate
 
+springdoc:
+  swagger-ui:
+    config-url: /v3/api-docs
+    path: /v3/api-docs
+  api-docs:
+    enabled: true
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json
+
 management:
   endpoints:
     web:
       exposure:
         include: health, prometheus
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
 
 logging:
   level:

@@ -28,10 +28,9 @@ public class FoodManager {
     }
 
     @Transactional(readOnly = true)
-    public SliceObject<Food> findFoodList(Cursorable cursorable, Long categoryId, LocalDateTime lastCreatedAt, String memberKey) {
-        List<FoodEntity> entities = foodRepository.findFoodCursorList(cursorable, categoryId, lastCreatedAt, memberKey);
-        List<Food> foods = entities.stream().map(FoodEntity::toDomain).toList();
-        return new SliceObject<>(foods, cursorable);
+    public SliceObject<Food> findFoodList(Cursorable<LocalDateTime> cursorable, Long categoryId, String memberKey) {
+        return foodRepository.findFoodCursorList(cursorable, categoryId, memberKey)
+                .map(FoodEntity::toDomain);
     }
 
     @Transactional(readOnly = true)
@@ -43,8 +42,7 @@ public class FoodManager {
     // 1) 이름 정렬 2) 최신순
     @Transactional(readOnly = true)
     public List<Food> findAllByMemberKey(String memberKey) {
-        List<FoodEntity> foods = foodRepository.findAllByMemberKey(memberKey);
-        return foods.stream()
+        return foodRepository.findAllByMemberKey(memberKey).stream()
                 .map(FoodEntity::toDomain)
                 .toList();
     }
@@ -52,8 +50,7 @@ public class FoodManager {
     // 알림 설정 리스트 조회
     @Transactional(readOnly = true)
     public List<Food> findImminentFoods(String memberKey) {
-        List<FoodEntity> foods = foodRepository.findImminentFoods(memberKey);
-        return foods.stream()
+        return foodRepository.findImminentFoods(memberKey).stream()
                 .map(FoodEntity::toDomain)
                 .toList();
     }

@@ -55,19 +55,20 @@ public class FoodManagerTest {
         Long categoryId = 1L;
         String memberKey = FoodFixture.MEMBER_KEY;
         LocalDateTime lastCreatedAt = LocalDateTime.now();
-        Cursorable cursorable = new Cursorable(1L,2);
+        Cursorable<LocalDateTime> cursorable = new Cursorable<>(lastCreatedAt, 2);
 
-        FoodEntity entity1 = FoodFixture.createFoodEntity(1L);
-        FoodEntity entity2 = FoodFixture.createFoodEntity(2L);
-        List<FoodEntity> foodEntities = List.of(entity1, entity2);
+        List<FoodEntity> foodEntities = List.of(
+                FoodFixture.createFoodEntity(1L),
+                FoodFixture.createFoodEntity(2L));
+        SliceObject<FoodEntity> foodSlice = new SliceObject<>(foodEntities, cursorable, false);
 
-        given(foodRepository.findFoodCursorList(cursorable,categoryId,lastCreatedAt,memberKey)).willReturn(foodEntities);
+        given(foodRepository.findFoodCursorList(cursorable, categoryId, memberKey)).willReturn(foodSlice);
         //when
-        SliceObject<Food> results = foodManager.findFoodList(cursorable,categoryId,lastCreatedAt,memberKey);
+        SliceObject<Food> results = foodManager.findFoodList(cursorable, categoryId, memberKey);
         //then
-        assertThat(results.getContent()).hasSize(2);
-        assertThat(results.getContent().getFirst().name()).isEqualTo(FoodFixture.NAME);
-        assertThat(results.getContent().get(0)).isInstanceOf(Food.class);
+        assertThat(results.content()).hasSize(2);
+        assertThat(results.content().getFirst().name()).isEqualTo(FoodFixture.NAME);
+        assertThat(results.content().get(0)).isInstanceOf(Food.class);
     }
 
     @Test

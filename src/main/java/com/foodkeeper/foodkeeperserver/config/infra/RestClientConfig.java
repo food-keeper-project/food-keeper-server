@@ -46,6 +46,7 @@ public class RestClientConfig {
 
         return factory.createClient(ClovaClient.class);
     }
+
     private SimpleClientHttpRequestFactory createFactory(int connectTimeout, int readTimeout) {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout((int) Duration.ofSeconds(connectTimeout).toMillis());

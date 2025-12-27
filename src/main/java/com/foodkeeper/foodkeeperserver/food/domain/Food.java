@@ -42,6 +42,7 @@ public record Food(
                 categoryIds
         );
     }
+
     private long calculateRemainDay(LocalDate today) {
         return ChronoUnit.DAYS.between(today, this.expiryDate);
     }

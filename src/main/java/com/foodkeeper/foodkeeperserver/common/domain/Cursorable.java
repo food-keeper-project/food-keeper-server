@@ -1,15 +1,9 @@
 package com.foodkeeper.foodkeeperserver.common.domain;
 
-import lombok.Getter;
-
-@Getter
-public final class Cursorable {
+public record Cursorable<T>(T cursor, Integer limit) {
     private static final int SYSTEM_MAX = 50;
 
-    private final Long cursor;
-    private final Integer limit;
-
-    public Cursorable(Long cursor, Integer limit) {
+    public Cursorable(T cursor, Integer limit) {
         this.cursor = cursor;
         if (limit == null || limit <= 0) {
             this.limit = 10;
