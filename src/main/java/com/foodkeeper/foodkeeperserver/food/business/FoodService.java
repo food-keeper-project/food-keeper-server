@@ -50,7 +50,7 @@ public class FoodService {
     public SliceObject<RegisteredFood> getFoodList(Cursorable<LocalDateTime> cursorable, Long categoryId, String memberKey) {
         SliceObject<Food> foods = foodManager.findFoodList(cursorable, categoryId, memberKey);
         SelectedFoodCategories categories = new SelectedFoodCategories(selectedFoodCategoryManager.findByFoodIds(
-                foods.getContent().stream().map(Food::id).toList()
+                foods.content().stream().map(Food::id).toList()
         ));
         return foods.map(food -> food.toRegisteredFood(categories.getCategoryIdsByFoodId(food.id())));
     }

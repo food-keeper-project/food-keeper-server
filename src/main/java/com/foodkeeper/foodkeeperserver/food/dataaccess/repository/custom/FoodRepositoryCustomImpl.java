@@ -1,10 +1,11 @@
 package com.foodkeeper.foodkeeperserver.food.dataaccess.repository.custom;
 
+import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.enums.EntityStatus;
 import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
+import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
 import com.querydsl.jpa.impl.JPAQuery;
-import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,7 +15,6 @@ import java.util.List;
 import static com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QFoodEntity.foodEntity;
 import static com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QSelectedFoodCategoryEntity.selectedFoodCategoryEntity;
 
-@Repository
 public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implements FoodRepositoryCustom {
 
     protected FoodRepositoryCustomImpl() {
@@ -23,20 +23,24 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
 
     // 카테고리 분류 조회
     @Override
-    public List<FoodEntity> findFoodCursorList(Cursorable<LocalDateTime> cursorable, Long categoryId, String memberKey) {
+    public SliceObject<FoodEntity> findFoodCursorList(Cursorable<LocalDateTime> cursorable,
+                                                      Long categoryId,
+                                                      String memberKey) {
         JPAQuery<FoodEntity> query = selectFrom(foodEntity);
 
         applyCategoryFilter(query, categoryId);
 
-        return query
+        List<FoodEntity> content = query
                 .where(
                         foodEntity.memberKey.eq(memberKey),
-                        foodEntity.createdAt.lt(cursorable.cursor())
-                        // todo isDeleted == false 인 데이터만 조건 추가
+                        foodEntity.createdAt.lt(cursorable.cursor()),
+                        foodEntity.status.ne(EntityStatus.DELETED)
                 )
                 .orderBy(foodEntity.createdAt.desc(), foodEntity.id.desc())
                 .limit(cursorable.limit() + 1)
                 .fetch();
+
+        return new SliceObject<>(content, cursorable, hasNext(cursorable, content));
     }
 
     @Override

@@ -64,8 +64,8 @@ public class FoodController {
                                                                             @CursorDefault Cursorable<LocalDateTime> cursorable,
                                                                             @AuthMember Member authMember) {
         SliceObject<RegisteredFood> foods = foodService.getFoodList(cursorable, request.categoryId(), authMember.memberKey());
-        List<FoodResponse> foodResponses = foods.getContent().stream().map(FoodResponse::toFoodResponse).toList();
-        return ResponseEntity.ok(ApiResponse.success(new PageResponse<>(foodResponses, foods.isHasNext())));
+        List<FoodResponse> foodResponses = foods.content().stream().map(FoodResponse::toFoodResponse).toList();
+        return ResponseEntity.ok(ApiResponse.success(new PageResponse<>(foodResponses, foods.hasNext())));
     }
 
     @NullMarked
