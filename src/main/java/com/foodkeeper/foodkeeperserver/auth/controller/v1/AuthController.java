@@ -3,6 +3,7 @@ package com.foodkeeper.foodkeeperserver.auth.controller.v1;
 import com.foodkeeper.foodkeeperserver.auth.business.AuthService;
 import com.foodkeeper.foodkeeperserver.auth.business.TokenRefreshService;
 import com.foodkeeper.foodkeeperserver.auth.controller.v1.request.SignInRequest;
+import com.foodkeeper.foodkeeperserver.auth.controller.v1.request.TokenRefreshRequest;
 import com.foodkeeper.foodkeeperserver.auth.controller.v1.response.AuthTokenResponse;
 import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
 import com.foodkeeper.foodkeeperserver.common.aspect.annotation.SignInLog;
@@ -44,8 +45,9 @@ public class AuthController {
     @Operation(summary = "토큰 Refresh", description = "토큰 Refresh API")
     @NullMarked
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse<AuthTokenResponse>> refreshToken(String refreshToken) {
-        Jwt jwt = tokenRefreshService.refresh(refreshToken);
+    public ResponseEntity<ApiResponse<AuthTokenResponse>> refreshToken(@Valid @RequestBody TokenRefreshRequest request,
+                                                                       @AuthMember Member member) {
+        Jwt jwt = tokenRefreshService.refresh(request.refreshToken(), member.memberKey());
         return ResponseEntity.ok(ApiResponse.success(new AuthTokenResponse(jwt.accessToken(), jwt.refreshToken())));
     }
 

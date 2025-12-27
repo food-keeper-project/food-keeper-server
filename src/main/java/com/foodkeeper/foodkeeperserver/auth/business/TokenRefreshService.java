@@ -17,13 +17,13 @@ public class TokenRefreshService {
     private final JwtGenerator jwtGenerator;
     private final RefreshTokenManager refreshTokenManager;
 
-    public Jwt refresh(String refreshToken) {
-        String subject = jwtValidator.getSubjectIfValid(refreshToken);
+    public Jwt refresh(String refreshToken, String memberKey) {
+        jwtValidator.validate(refreshToken);
 
-        String savedRefreshToken = refreshTokenManager.find(subject);
+        String savedRefreshToken = refreshTokenManager.find(memberKey);
         if (refreshToken.equals(savedRefreshToken)) {
-            Jwt jwt = jwtGenerator.generateJwt(subject);
-            refreshTokenManager.updateRefreshToken(subject, jwt.refreshToken());
+            Jwt jwt = jwtGenerator.generateJwt(memberKey);
+            refreshTokenManager.updateRefreshToken(memberKey, jwt.refreshToken());
             return jwt;
         }
 
