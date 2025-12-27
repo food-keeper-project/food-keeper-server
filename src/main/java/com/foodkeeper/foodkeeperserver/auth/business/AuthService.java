@@ -12,6 +12,7 @@ import com.foodkeeper.foodkeeperserver.auth.implement.SignInLogAppender;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.SignUpType;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
+import com.foodkeeper.foodkeeperserver.notification.implement.FcmManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,7 @@ public class AuthService {
     private final SignInLogAppender signInLogAppender;
     private final JwtGenerator jwtGenerator;
     private final RefreshTokenManager refreshTokenManager;
+    private final FcmManager fcmManager;
 
     public Jwt signInByOAuth(SignInContext context) {
         OAuthUser oAuthUser = oauthAuthenticator.authenticate(context.accessToken());
@@ -40,6 +42,8 @@ public class AuthService {
 
         Jwt jwt = jwtGenerator.generateJwt(memberKey);
         refreshTokenManager.updateRefreshToken(memberKey, jwt.refreshToken());
+
+        fcmManager.addTokenOrUpdate(context.fcmToken(), memberKey);
         return jwt;
     }
 

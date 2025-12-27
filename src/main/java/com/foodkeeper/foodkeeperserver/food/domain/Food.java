@@ -1,6 +1,5 @@
 package com.foodkeeper.foodkeeperserver.food.domain;
 
-import com.foodkeeper.foodkeeperserver.food.domain.response.RecipeFood;
 import lombok.Builder;
 
 import java.time.LocalDate;
@@ -43,7 +42,9 @@ public record Food(
                 categoryIds
         );
     }
-    private long calculateRemainDay(LocalDate today) {
+
+
+    public long calculateRemainDay(LocalDate today) {
         return ChronoUnit.DAYS.between(today, this.expiryDate);
     }
 

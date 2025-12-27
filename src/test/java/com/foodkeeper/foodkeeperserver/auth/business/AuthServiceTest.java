@@ -17,6 +17,7 @@ import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberReposi
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
+import com.foodkeeper.foodkeeperserver.notification.implement.FcmManager;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,11 +39,18 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
-    @Mock MemberRepository memberRepository;
-    @Mock OauthRepository oauthRepository;
-    @Mock MemberRoleRepository memberRoleRepository;
-    @Mock KakaoAuthenticator kakaoAuthenticator;
-    @Mock SignInLogRepository signInLogRepository;
+    @Mock
+    MemberRepository memberRepository;
+    @Mock
+    OauthRepository oauthRepository;
+    @Mock
+    MemberRoleRepository memberRoleRepository;
+    @Mock
+    KakaoAuthenticator kakaoAuthenticator;
+    @Mock
+    SignInLogRepository signInLogRepository;
+    @Mock
+    FcmManager fcmManager;
     SecretKey secretKey;
     AuthService authService;
 
@@ -55,7 +63,7 @@ class AuthServiceTest {
         MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, oauthRepository, memberRoleRepository);
         RefreshTokenManager refreshTokenManager = new RefreshTokenManager(memberRepository);
         authService = new AuthService(kakaoAuthenticator, memberFinder, memberRegistrar, signInLogAppender,
-                jwtGenerator, refreshTokenManager);
+                jwtGenerator, refreshTokenManager, fcmManager);
     }
 
     @Test
@@ -82,6 +90,7 @@ class AuthServiceTest {
         given(kakaoAuthenticator.authenticate(eq(accessToken))).willReturn(oauthUser);
         given(oauthRepository.findByAccount(eq(account))).willReturn(Optional.of(oauthEntity));
         given(signInLogRepository.save(any(SignInLogEntity.class))).willReturn(signInLogEntity);
+
 
         // when
         Jwt jwt = authService.signInByOAuth(register);
@@ -130,3 +139,7 @@ class AuthServiceTest {
         assertThat(jwt.accessToken()).isNotEqualTo(jwt.refreshToken());
     }
 }
+/**
+ * fcmRepository 를 주입하게 되면 모든 경우의 수를 다 해봐야 하고,,
+ * fcmManager 를 주입하면 호출 검증말고는 검증을 못하고,,, 해서 어떻게 해야될지 원호님 의견이 궁금합니다,,
+ */

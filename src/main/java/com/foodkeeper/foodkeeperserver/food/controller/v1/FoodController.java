@@ -4,7 +4,6 @@ import com.foodkeeper.foodkeeperserver.common.controller.CursorDefault;
 import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.business.FoodService;
-import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodCursorRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodRegisterRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodsRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodImminentResponse;
@@ -28,8 +27,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
-import java.util.List;
-
 import java.util.List;
 
 @Tag(name = "Food", description = "식재료 관련 API")

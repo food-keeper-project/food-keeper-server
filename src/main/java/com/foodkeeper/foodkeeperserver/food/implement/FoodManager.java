@@ -2,16 +2,17 @@ package com.foodkeeper.foodkeeperserver.food.implement;
 
 import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
+import com.foodkeeper.foodkeeperserver.common.utils.ListUtil;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -66,5 +67,13 @@ public class FoodManager {
 
     public Food find(Long foodId) {
         return foodRepository.findById(foodId).orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_DATA)).toDomain();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Food> findFoodsToNotify(LocalDate today) {
+        List<FoodEntity> foods = ListUtil.getOrElseThrowList(foodRepository.findFoodsToNotify(today));
+        return foods.stream()
+                .map(FoodEntity::toDomain)
+                .toList();
     }
 }
