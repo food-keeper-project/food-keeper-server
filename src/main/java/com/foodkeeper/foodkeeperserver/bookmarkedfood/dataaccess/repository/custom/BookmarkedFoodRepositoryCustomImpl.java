@@ -1,6 +1,7 @@
 package com.foodkeeper.foodkeeperserver.bookmarkedfood.dataaccess.repository.custom;
 
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.dataaccess.entity.BookmarkedFoodEntity;
+import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.enums.EntityStatus;
 import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
@@ -21,7 +22,9 @@ public class BookmarkedFoodRepositoryCustomImpl extends QuerydslRepositorySuppor
     public SliceObject<BookmarkedFoodEntity> findBookmarkedFoods(Cursorable<Long> cursorable, String memberKey) {
         List<BookmarkedFoodEntity> content = selectFrom(bookmarkedFoodEntity)
                 .where(ltCursor(cursorable.cursor()), bookmarkedFoodEntity.memberKey.eq(memberKey))
+                .where(bookmarkedFoodEntity.status.ne(EntityStatus.DELETED))
                 .orderBy(bookmarkedFoodEntity.id.desc())
+                .limit(cursorable.limit() + 1)
                 .fetch();
 
         return new SliceObject<>(content, cursorable, hasNext(cursorable, content));
