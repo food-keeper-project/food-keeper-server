@@ -2,7 +2,7 @@ package com.foodkeeper.foodkeeperserver.notification.implement;
 
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
-import com.foodkeeper.foodkeeperserver.notification.domain.FcmSender;
+import com.foodkeeper.foodkeeperserver.notification.domain.FcmMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ public class Notifier {
     private final FoodManager foodManager;
     private final FcmManager fcmManager;
 
-    public List<FcmSender> sendFoodNotification(LocalDate today) {
+    public List<FcmMessage> sendFoodNotification(LocalDate today) {
         List<Food> foods = foodManager.findFoodsToNotify(today);
         List<String> memberKeys = foods.stream()
                 .map(Food::memberKey)
@@ -36,10 +36,10 @@ public class Notifier {
                 .toList();
     }
 
-    private FcmSender createFcmSender(Food food, String token, LocalDate today) {
+    private FcmMessage createFcmSender(Food food, String token, LocalDate today) {
         long remainDays = food.calculateRemainDay(today);
         String title = "유통기한 임박 알림";
         String body = String.format("%s의 유통기한이 %d일 남았습니다", food.name(), remainDays);
-        return new FcmSender(token, title, body);
+        return new FcmMessage(token, title, body);
     }
 }

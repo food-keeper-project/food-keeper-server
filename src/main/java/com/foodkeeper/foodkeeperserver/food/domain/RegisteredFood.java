@@ -16,3 +16,4 @@ public record RegisteredFood(
         List<Long> categoryIds
 ) {
 }
+// todo 남은 일수도 같이 응답

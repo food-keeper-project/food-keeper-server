@@ -3,7 +3,7 @@ package com.foodkeeper.foodkeeperserver.notification.implement;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
-import com.foodkeeper.foodkeeperserver.notification.domain.FcmSender;
+import com.foodkeeper.foodkeeperserver.notification.domain.FcmMessage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +41,7 @@ public class NotifierTest {
         given(fcmManager.findTokens(List.of(memberKey))).willReturn(Map.of(memberKey,tokens));
 
         //when
-        List<FcmSender> result = notifier.sendFoodNotification(today);
+        List<FcmMessage> result = notifier.sendFoodNotification(today);
         //then
         assertThat(result.getFirst().fcmToken()).isEqualTo("phone");
         assertThat(result.getFirst().title()).isEqualTo("유통기한 임박 알림");

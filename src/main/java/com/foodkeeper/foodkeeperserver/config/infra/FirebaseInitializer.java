@@ -34,7 +34,7 @@ public class FirebaseInitializer {
 
             FirebaseApp.initializeApp(options);
         } catch (IOException e) {
-            throw new AppException(ErrorType.FCM_TOKEN_INITIALIZE_ERROR);
+            throw new AppException(ErrorType.FCM_TOKEN_INITIALIZE_ERROR, e.getMessage());
         }
     }
 

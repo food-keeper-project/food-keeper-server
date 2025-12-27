@@ -42,7 +42,7 @@ public class FcmManager {
                         }
                 );
     }
-    // hard delete : firebase 에서 만료된 토큰은 굳이 soft delete 안해도 될 것 같음
+
     @Transactional
     public void remove(String fcmToken) {
         fcmRepository.deleteByToken(fcmToken);

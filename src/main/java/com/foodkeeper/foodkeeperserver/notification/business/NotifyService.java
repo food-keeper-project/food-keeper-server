@@ -1,6 +1,6 @@
 package com.foodkeeper.foodkeeperserver.notification.business;
 
-import com.foodkeeper.foodkeeperserver.notification.domain.FcmSender;
+import com.foodkeeper.foodkeeperserver.notification.domain.FcmMessage;
 import com.foodkeeper.foodkeeperserver.notification.implement.FcmManager;
 import com.google.firebase.messaging.*;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ public class NotifyService {
     private final FcmManager fcmManager;
 
     @Async("fcmExecutor")
-    public void sendNotification(FcmSender sender) {
+    public void sendNotification(FcmMessage sender) {
 
         Notification notification = Notification.builder()
                 .setTitle(sender.title())

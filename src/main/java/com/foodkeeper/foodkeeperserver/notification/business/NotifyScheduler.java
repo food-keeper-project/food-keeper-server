@@ -1,6 +1,6 @@
 package com.foodkeeper.foodkeeperserver.notification.business;
 
-import com.foodkeeper.foodkeeperserver.notification.domain.FcmSender;
+import com.foodkeeper.foodkeeperserver.notification.domain.FcmMessage;
 import com.foodkeeper.foodkeeperserver.notification.implement.Notifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,14 +20,14 @@ public class NotifyScheduler {
 
     @Scheduled(cron = "0 0 12 * * *")
     public void scheduleExpiryAlarm() {
-        log.info("유통기한 알림 전송 시작");
-        List<FcmSender> senders = notifier.sendFoodNotification(LocalDate.now());
+        log.info("[Expiry Alarm] 유통기한 알림 전송 시작");
+        List<FcmMessage> senders = notifier.sendFoodNotification(LocalDate.now());
 
         if (senders.isEmpty()) {
-            log.info("보낼 알림이 없습니다.");
+            log.info("[Expiry Alarm] 보낼 알림이 없습니다.");
             return;
         }
-        for (FcmSender sender : senders) {
+        for (FcmMessage sender : senders) {
             notifyService.sendNotification(sender);
         }
     }

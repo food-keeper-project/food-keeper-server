@@ -1,7 +1,7 @@
 package com.foodkeeper.foodkeeperserver.notification.business;
 
 import com.foodkeeper.foodkeeperserver.notification.dataaccess.repository.FcmRepository;
-import com.foodkeeper.foodkeeperserver.notification.domain.FcmSender;
+import com.foodkeeper.foodkeeperserver.notification.domain.FcmMessage;
 import com.foodkeeper.foodkeeperserver.notification.implement.FcmManager;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
@@ -38,13 +38,13 @@ public class NotifyServiceTest {
     @DisplayName("알림 전송 요청 시 FirebaseMessaging 호출 성공")
     void sendNotification_SUCCESS() throws Exception {
         //given
-        FcmSender fcmSender = new FcmSender("fcmToken", "title", "body");
+        FcmMessage fcmMessage = new FcmMessage("fcmToken", "title", "body");
 
         try (MockedStatic<FirebaseMessaging> mockFirebase = mockStatic(FirebaseMessaging.class)) {
             FirebaseMessaging messaging = mock(FirebaseMessaging.class);
             mockFirebase.when(FirebaseMessaging::getInstance).thenReturn(messaging);
             //when
-            notifyService.sendNotification(fcmSender);
+            notifyService.sendNotification(fcmMessage);
             //then
             verify(messaging, times(1)).send(any(Message.class));
             verify(fcmRepository, never()).deleteByToken(anyString());
@@ -56,7 +56,7 @@ public class NotifyServiceTest {
     void sendNotification_FAIL_DELETE() throws Exception {
         //given
         String expiredToken = "token";
-        FcmSender fcmSender = new FcmSender(expiredToken, "title","body");
+        FcmMessage fcmMessage = new FcmMessage(expiredToken, "title","body");
 
         try (MockedStatic<FirebaseMessaging> mockFirebase = mockStatic(FirebaseMessaging.class)) {
             FirebaseMessaging messaging = mock(FirebaseMessaging.class);
@@ -67,7 +67,7 @@ public class NotifyServiceTest {
             doThrow(exception).when(messaging).send(any(Message.class));
 
             //when
-            notifyService.sendNotification(fcmSender);
+            notifyService.sendNotification(fcmMessage);
             //then
             verify(fcmRepository, times(1)).deleteByToken(expiredToken);
 
