@@ -5,6 +5,7 @@ import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import java.time.LocalDate;
@@ -70,6 +71,17 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
                 .filter(food -> food.isImminent(today))
                 .sorted(Comparator.comparing(FoodEntity::getExpiryDate)) // 유통기한순
                 .toList();
+    }
+
+    @Override
+    public List<FoodEntity> findFoodsToNotify(LocalDate today) {
+        return selectFrom(foodEntity)
+                .where(
+                        foodEntity.expiryDate.eq(
+                                Expressions.dateTemplate(
+                                        LocalDate.class, "DATE_ADD({0}, INTERVAL {1} DAY)", today, foodEntity.expiryAlarm)))
+                .fetch();
+
     }
 
     // 카테고리 선택했을 시 필터링 조회
