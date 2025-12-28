@@ -42,9 +42,9 @@ public class ClovaService {
         }
     }
 
-    public String getRecipeRecommendation(List<String> ingredients) throws IOException {
-        String ingredientsStr = String.join(", ", ingredients);
-        String userPrompt = "현재 가지고 있는 재료 리스트 : [" + ingredientsStr + "]. 이 재료들로 레시피 추천해줘";
+    public String getRecipeRecommendation(List<String> ingredients, List<String> excludedMenus) throws IOException {
+
+        String userPrompt = removeDuplicateFood(ingredients, excludedMenus);
 
         ClovaRequest request = ClovaRequest.createPrompt(systemPrompt, userPrompt);
 
@@ -52,4 +52,22 @@ public class ClovaService {
         return clovaResponse.getContent();
     }
 
+    private String removeDuplicateFood(List<String> ingredients, List<String> excludedMenus) {
+        StringBuilder promptBuilder = new StringBuilder();
+
+        String ingredientsStr = String.join(", ", ingredients);
+        promptBuilder.append(String.format("현재 가지고 있는 재료 리스트: [%s].\n", ingredientsStr));
+
+        if (excludedMenus != null && !excludedMenus.isEmpty()) {
+            String bannedMenus = String.join(", ", excludedMenus);
+            promptBuilder.append("\n[중요 제약 사항]\n");
+            promptBuilder.append(String.format("사용자는 이미 다음 요리들을 추천받았습니다: **[%s]**\n", bannedMenus));
+            promptBuilder.append("1. 위 목록에 있는 요리와 이름이 같거나 매우 유사한 요리는 **절대 추천하지 마세요.**\n");
+            promptBuilder.append("2. 위 요리들과는 조리법(볶음/탕/찜 등)이나 식감이 다른 새로운 메뉴를 선정하세요.\n");
+        }
+
+        promptBuilder.append("\n위 조건을 만족하는 레시피 1개를 정해진 JSON 형식으로 답변해줘.");
+
+        return promptBuilder.toString();
+    }
 }

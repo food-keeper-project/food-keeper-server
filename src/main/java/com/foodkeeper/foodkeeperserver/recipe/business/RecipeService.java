@@ -17,8 +17,8 @@ public class RecipeService {
     private final ObjectMapper objectMapper;
 
 
-    public RecipeResponse recommendRecipe(List<String> ingredients) throws IOException {
-        String response = clovaService.getRecipeRecommendation(ingredients);
+    public RecipeResponse recommendRecipe(List<String> ingredients, List<String> excludedMenus) throws IOException {
+        String response = clovaService.getRecipeRecommendation(ingredients, excludedMenus);
         return objectMapper.readValue(response, RecipeResponse.class);
     }
 }

@@ -23,8 +23,9 @@ public class RecipeController {
 
     @Operation(summary = "AI 레시피 추천", description = "AI 레시피 추천 API")
     @GetMapping("/recommend")
-    public ResponseEntity<ApiResponse<RecipeResponse>> recommendRecipe(@RequestParam List<String> ingredients) throws IOException {
-        RecipeResponse response = recipeService.recommendRecipe(ingredients);
+    public ResponseEntity<ApiResponse<RecipeResponse>> recommendRecipe(@RequestParam List<String> ingredients,
+                                                                       @RequestParam List<String> excludedMenus) throws IOException {
+        RecipeResponse response = recipeService.recommendRecipe(ingredients, excludedMenus);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 }
