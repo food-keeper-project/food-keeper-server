@@ -9,6 +9,8 @@ import java.util.Optional;
 
 @NullMarked
 public interface FoodCategoryRepository extends JpaRepository<FoodCategoryEntity, Long> {
+
     List<FoodCategoryEntity> findAllByMemberKey(String memberKey);
+  
     Optional<FoodCategoryEntity> findByIdAndMemberKey(Long id, String memberKey);
 }

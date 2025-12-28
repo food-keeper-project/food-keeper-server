@@ -38,7 +38,7 @@ public class FoodManagerTest {
     @DisplayName("식재료 저장 요청 시 리포지토리 호출 및 결과 반환")
     void register_SUCCESS() throws Exception {
         //given
-        Food food = FoodFixture.createFood(1L);
+        Food food = FoodFixture.createFood();
         FoodEntity foodEntity = FoodFixture.createFoodEntity(1L);
 
         given(foodRepository.save(any(FoodEntity.class))).willReturn(foodEntity);
@@ -55,19 +55,20 @@ public class FoodManagerTest {
         Long categoryId = 1L;
         String memberKey = FoodFixture.MEMBER_KEY;
         LocalDateTime lastCreatedAt = LocalDateTime.now();
-        Cursorable cursorable = new Cursorable(1L,2);
+        Cursorable<LocalDateTime> cursorable = new Cursorable<>(lastCreatedAt, 2);
 
-        FoodEntity entity1 = FoodFixture.createFoodEntity(1L);
-        FoodEntity entity2 = FoodFixture.createFoodEntity(2L);
-        List<FoodEntity> foodEntities = List.of(entity1, entity2);
+        List<FoodEntity> foodEntities = List.of(
+                FoodFixture.createFoodEntity(1L),
+                FoodFixture.createFoodEntity(2L));
+        SliceObject<FoodEntity> foodSlice = new SliceObject<>(foodEntities, cursorable, false);
 
-        given(foodRepository.findFoodCursorList(cursorable,categoryId,lastCreatedAt,memberKey)).willReturn(foodEntities);
+        given(foodRepository.findFoodCursorList(cursorable, categoryId, memberKey)).willReturn(foodSlice);
         //when
-        SliceObject<Food> results = foodManager.findFoodList(cursorable,categoryId,lastCreatedAt,memberKey);
+        SliceObject<Food> results = foodManager.findFoodList(cursorable, categoryId, memberKey);
         //then
-        assertThat(results.getContent()).hasSize(2);
-        assertThat(results.getContent().getFirst().name()).isEqualTo(FoodFixture.NAME);
-        assertThat(results.getContent().get(0)).isInstanceOf(Food.class);
+        assertThat(results.content()).hasSize(2);
+        assertThat(results.content().getFirst().name()).isEqualTo(FoodFixture.NAME);
+        assertThat(results.content().get(0)).isInstanceOf(Food.class);
     }
 
     @Test
@@ -105,7 +106,7 @@ public class FoodManagerTest {
     @DisplayName("식재료 삭제")
     void removeFood_SUCCESS() throws Exception {
         //given
-        Food food = FoodFixture.createFood(1L);
+        Food food = FoodFixture.createFood();
         //when
         foodManager.removeFood(food);
         //then
@@ -114,16 +115,5 @@ public class FoodManagerTest {
         assertThat(captor.getValue().getName()).isEqualTo(food.name());
     }
 
-    @Test
-    @DisplayName("오늘 날짜를 기준으로 알림 날짜에 부합하는 foods 조회")
-    void findFoodsToNotify_SUCCESS() throws Exception {
-        //given
-        LocalDate today = LocalDate.of(2025,12,26);
-        List<FoodEntity> foods = List.of(mock(FoodEntity.class));
-        given(foodRepository.findFoodsToNotify(today)).willReturn(foods);
-        //when
-        foodManager.findFoodsToNotify(today);
-        //then
-        verify(foodRepository).findFoodsToNotify(today);
-    }
+
 }

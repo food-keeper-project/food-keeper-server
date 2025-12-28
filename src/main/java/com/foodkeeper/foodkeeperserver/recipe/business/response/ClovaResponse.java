@@ -2,6 +2,7 @@ package com.foodkeeper.foodkeeperserver.recipe.business.response;
 
 public record ClovaResponse(ClovaResponseStatus status, ClovaResult result) {
     private static final String EMPTY_JSON = "{}";
+
     public String getContent() {
         if (result != null && result.message() != null) {
             return cleanJsonContent(result.message().content());

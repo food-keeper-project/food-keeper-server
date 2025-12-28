@@ -48,10 +48,10 @@ public class FoodService {
     }
 
     // 커서 리스트 조회
-    public SliceObject<RegisteredFood> getFoodList(Cursorable cursorable, Long categoryId, LocalDateTime lastCreatedAt, String memberKey) {
-        SliceObject<Food> foods = foodManager.findFoodList(cursorable, categoryId, lastCreatedAt, memberKey);
+    public SliceObject<RegisteredFood> getFoodList(Cursorable<LocalDateTime> cursorable, Long categoryId, String memberKey) {
+        SliceObject<Food> foods = foodManager.findFoodList(cursorable, categoryId, memberKey);
         SelectedFoodCategories categories = new SelectedFoodCategories(selectedFoodCategoryManager.findByFoodIds(
-                foods.getContent().stream().map(Food::id).toList()
+                foods.content().stream().map(Food::id).toList()
         ));
         return foods.map(food -> food.toRegisteredFood(categories.getCategoryIdsByFoodId(food.id())));
     }

@@ -133,27 +133,28 @@ public class FoodServiceTest {
         Long categoryId = 1L;
         String memberKey = FoodFixture.MEMBER_KEY;
         LocalDateTime lastCreatedAt = LocalDateTime.now();
-        Cursorable cursorable = new Cursorable(1L, 2);
+        Cursorable<LocalDateTime> cursorable = new Cursorable<>(lastCreatedAt, 2);
 
-
-        List<FoodEntity> foodEntities = new ArrayList<>();
-        foodEntities.add(FoodFixture.createFoodEntity(1L));
-        foodEntities.add(FoodFixture.createFoodEntity(2L));
-        foodEntities.add(FoodFixture.createFoodEntity(3L));
+        List<FoodEntity> foodEntities = List.of(FoodFixture.createFoodEntity(1L),
+                FoodFixture.createFoodEntity(2L));
+        SliceObject<FoodEntity> foodSlice = new SliceObject<>(foodEntities, cursorable, true);
 
 
         List<SelectedFoodCategoryEntity> selectedFoodCategories = List.of(
                 SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 1L),
                 SelectedFoodCategoryFixture.createSelectedCategoryEntity(2L, 2L)
         );
-        given(foodRepository.findFoodCursorList(cursorable, categoryId, lastCreatedAt, memberKey)).willReturn(foodEntities);
+      
+        given(foodRepository.findFoodCursorList(cursorable, categoryId, memberKey)).willReturn(foodSlice);
         given(selectedFoodCategoryRepository.findByFoodIdIn(anyList())).willReturn(selectedFoodCategories);
+
         //when
-        SliceObject<RegisteredFood> result = foodService.getFoodList(cursorable, categoryId, lastCreatedAt, memberKey);
+        SliceObject<RegisteredFood> result = foodService.getFoodList(cursorable, categoryId, memberKey);
+
         //then
-        assertThat(result.isHasNext()).isTrue();
-        assertThat(result.getContent()).hasSize(2);
-        assertThat(result.getContent().getFirst().categoryIds().getFirst()).isEqualTo(1L);
+        assertThat(result.hasNext()).isTrue();
+        assertThat(result.content()).hasSize(2);
+        assertThat(result.content().getFirst().categoryIds().getFirst()).isEqualTo(1L);
     }
 
     @Test
@@ -179,7 +180,7 @@ public class FoodServiceTest {
     void bookmarkFood() {
         // given
         long bookmarkedFoodId = 2L;
-        Food food = FoodFixture.createFood(1L);
+        Food food = FoodFixture.createFood();
         FoodEntity foodEntity = FoodEntity.from(food);
         BookmarkedFoodEntity bookmarkedFoodEntity = mock(BookmarkedFoodEntity.class);
         given(bookmarkedFoodEntity.getId()).willReturn(bookmarkedFoodId);

@@ -1,73 +1,83 @@
 package com.foodkeeper.foodkeeperserver.food.dataaccess.repository.custom;
 
+import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.enums.EntityStatus;
 import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
+import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
-import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QFoodEntity;
-import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QSelectedFoodCategoryEntity;
-import com.querydsl.core.types.dsl.Expressions;
+import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
 import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
-@Repository
-@RequiredArgsConstructor
-public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
+import static com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QFoodEntity.foodEntity;
+import static com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QSelectedFoodCategoryEntity.selectedFoodCategoryEntity;
 
-    private final JPAQueryFactory queryFactory;
-    private final QFoodEntity foodEntity = QFoodEntity.foodEntity;
-    private final QSelectedFoodCategoryEntity selectedFoodCategoryEntity = QSelectedFoodCategoryEntity.selectedFoodCategoryEntity;
+public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implements FoodRepositoryCustom {
+
+    protected FoodRepositoryCustomImpl() {
+        super(FoodEntity.class);
+    }
 
     // 카테고리 분류 조회
     @Override
-    public List<FoodEntity> findFoodCursorList(Cursorable cursorable, Long categoryId, LocalDateTime lastCreatedAt, String memberKey) {
-        JPAQuery<FoodEntity> query = queryFactory.selectFrom(foodEntity);
+    public SliceObject<FoodEntity> findFoodCursorList(Cursorable<LocalDateTime> cursorable,
+                                                      Long categoryId,
+                                                      String memberKey) {
+        JPAQuery<FoodEntity> query = selectFrom(foodEntity);
 
         applyCategoryFilter(query, categoryId);
 
-        return query.where(foodEntity.memberKey.eq(memberKey), foodEntity.createdAt.lt(lastCreatedAt)
-                // todo isDeleted == false 인 데이터만 조건 추가
-        ).orderBy(foodEntity.createdAt.desc(), foodEntity.id.desc()).limit(cursorable.getLimit() + 1).fetch();
+        List<FoodEntity> content = query
+                .where(
+                        foodEntity.memberKey.eq(memberKey),
+                        foodEntity.createdAt.lt(cursorable.cursor()),
+                        foodEntity.status.ne(EntityStatus.DELETED)
+                )
+                .orderBy(foodEntity.createdAt.desc(), foodEntity.id.desc())
+                .limit(cursorable.limit() + 1)
+                .fetch();
+
+        return new SliceObject<>(content, cursorable, hasNext(cursorable, content));
     }
 
     @Override
     public List<FoodEntity> findAllByMemberKey(String memberKey) {
 
-        return queryFactory.select(foodEntity).from(foodEntity).where(foodEntity.memberKey.eq(memberKey)).orderBy(foodEntity.name.asc(), foodEntity.createdAt.desc()).fetch();
+        return selectFrom(foodEntity)
+                .where(
+                        foodEntity.memberKey.eq(memberKey)
+                )
+                .orderBy(
+                        foodEntity.name.asc(),
+                        foodEntity.createdAt.desc()
+                )
+                .fetch();
     }
 
 
     // 유통기한 임박한 식재료 조회
     @Override
     public List<FoodEntity> findImminentFoods(String memberKey) {
-        List<FoodEntity> foods = queryFactory.selectFrom(foodEntity).where(foodEntity.memberKey.eq(memberKey)).fetch();
+        List<FoodEntity> foods = selectFrom(foodEntity)
+                .where(foodEntity.memberKey.eq(memberKey))
+                .fetch();
 
         LocalDate today = LocalDate.now();
-        return foods.stream().filter(food -> {
-                    return food.isImminent(today);
-                }).sorted(Comparator.comparing(FoodEntity::getExpiryDate)) // 유통기한순
+        return foods.stream()
+                .filter(food -> food.isImminent(today))
+                .sorted(Comparator.comparing(FoodEntity::getExpiryDate)) // 유통기한순
                 .toList();
-    }
-
-    // 유통 기한 = 오늘 + 알림시간
-    public List<FoodEntity> findFoodsToNotify(LocalDate today) {
-        return queryFactory.selectFrom(foodEntity)
-                .where(
-                        foodEntity.expiryDate.eq(
-                                Expressions.dateTemplate(
-                                        LocalDate.class, "DATE_ADD({0}, INTERVAL {1} DAY)", today, foodEntity.expiryAlarm)))
-                .fetch();
     }
 
     // 카테고리 선택했을 시 필터링 조회
     private void applyCategoryFilter(JPAQuery<FoodEntity> query, Long categoryId) {
         if (categoryId != null) {
-            query.join(selectedFoodCategoryEntity).on(foodEntity.id.eq(selectedFoodCategoryEntity.foodId)).where(selectedFoodCategoryEntity.foodCategoryId.eq(categoryId));
+            query.join(selectedFoodCategoryEntity)
+                    .on(foodEntity.id.eq(selectedFoodCategoryEntity.foodId))
+                    .where(selectedFoodCategoryEntity.foodCategoryId.eq(categoryId));
         }
     }
 
