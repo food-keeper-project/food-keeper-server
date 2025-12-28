@@ -1,7 +1,7 @@
 package com.foodkeeper.foodkeeperserver.recipe.controller.v1.response;
 
-import com.foodkeeper.foodkeeperserver.recipe.domain.Ingredient;
-import com.foodkeeper.foodkeeperserver.recipe.domain.RecipeStep;
+import com.foodkeeper.foodkeeperserver.recipe.controller.v1.Ingredient;
+import com.foodkeeper.foodkeeperserver.recipe.controller.v1.RecipeStep;
 
 import java.util.List;
 
