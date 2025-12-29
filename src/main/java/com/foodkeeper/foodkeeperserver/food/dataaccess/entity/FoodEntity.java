@@ -60,11 +60,11 @@ public class FoodEntity extends BaseEntity {
             int selectedCategoryCount,
             String memberKey) {
         this.name = name;
-        this.imageUrl = (imageUrl != null) ? imageUrl : "";
+        this.imageUrl = imageUrl;
         this.storageMethod = storageMethod;
         this.expiryDate = expiryDate;
-        this.expiryAlarm = (expiryAlarm == null) ? 2 : expiryAlarm;
-        this.memo = (memo != null) ? memo : "";
+        this.expiryAlarm = expiryAlarm;
+        this.memo = memo;
         this.selectedCategoryCount = selectedCategoryCount;
         this.memberKey = memberKey;
     }
@@ -93,7 +93,8 @@ public class FoodEntity extends BaseEntity {
                 this.memo,
                 this.selectedCategoryCount,
                 this.memberKey,
-                this.getCreatedAt()
+                this.getCreatedAt(),
+                this.getStatus()
         );
     }
 

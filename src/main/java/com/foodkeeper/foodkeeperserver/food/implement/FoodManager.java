@@ -3,6 +3,8 @@ package com.foodkeeper.foodkeeperserver.food.implement;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
+import com.foodkeeper.foodkeeperserver.support.exception.AppException;
+import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FoodManager {
 
     private final FoodRepository foodRepository;
+    private final SelectedFoodCategoryManager selectedFoodCategoryManager;
 
     @Transactional
     public Food register(Food food) {
@@ -19,10 +22,12 @@ public class FoodManager {
         return foodEntity.toDomain();
     }
 
-
     @Transactional
-    public void removeFood(Food food) {
-        foodRepository.delete(FoodEntity.from(food));
+    public Food removeFood(Long id, String memberId) {
+        FoodEntity foodEntity = foodRepository.findByIdAndMemberKey(id, memberId).orElseThrow(() -> new AppException(ErrorType.FOOD_DATA_NOT_FOUND));
+        foodEntity.delete();
+        selectedFoodCategoryManager.removeAllByFoodId(id);
+        return foodEntity.toDomain();
     }
 
 

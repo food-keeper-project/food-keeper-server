@@ -7,7 +7,7 @@ import com.foodkeeper.foodkeeperserver.food.business.FoodService;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodRegisterRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodsRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodListResponse;
-import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodRegisterResponse;
+import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodIdResponse;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponse;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
@@ -39,12 +39,12 @@ public class FoodController {
     @NullMarked
     @Operation(summary = "식재료 추가", description = "식재료 추가 API")
     @PostMapping
-    public ResponseEntity<ApiResponse<FoodRegisterResponse>> createFood(@RequestPart @Valid FoodRegisterRequest request,
-                                                                        @RequestPart(required = false) MultipartFile image,
-                                                                        @AuthMember Member authMember) {
+    public ResponseEntity<ApiResponse<FoodIdResponse>> createFood(@RequestPart @Valid FoodRegisterRequest request,
+                                                                  @RequestPart(required = false) MultipartFile image,
+                                                                  @AuthMember Member authMember) {
         FoodRegister register = FoodRegisterRequest.toRegister(request);
         Long foodId = foodService.registerFood(register, image, authMember.memberKey());
-        return ResponseEntity.ok(ApiResponse.success(new FoodRegisterResponse(foodId)));
+        return ResponseEntity.ok(ApiResponse.success(new FoodIdResponse(foodId)));
     }
 
     @NullMarked
@@ -90,6 +90,12 @@ public class FoodController {
         return ResponseEntity.ok(ApiResponse.success(new FoodListResponse(FoodResponse.toFoodListResponse(imminentFoods))));
     }
 
-
+    @NullMarked
+    @Operation(summary = "식재료 소비완료", description = "식재료 소비완료 API")
+    @DeleteMapping("/{foodId}")
+    public ResponseEntity<ApiResponse<FoodIdResponse>> remove(@PathVariable Long foodId, @AuthMember Member member) {
+        Long resultId = foodService.removeFood(foodId, member.memberKey());
+        return ResponseEntity.ok(ApiResponse.success(new FoodIdResponse(resultId)));
+    }
 }
 

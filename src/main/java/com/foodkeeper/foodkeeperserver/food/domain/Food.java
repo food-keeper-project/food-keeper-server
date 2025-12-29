@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.food.domain;
 
+import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.enums.EntityStatus;
 import lombok.Builder;
 
 import java.time.LocalDate;
@@ -18,7 +19,8 @@ public record Food(
         String memo,
         Integer selectedCategoryCount,
         String memberKey,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        EntityStatus status
 ) {
 
     public RegisteredFood toRegisteredFood(List<String> categoryNames) {
@@ -28,9 +30,10 @@ public record Food(
                 this.imageUrl,
                 this.storageMethod,
                 this.expiryDate,
-                this.expiryAlarm,
+                this.expiryAlarm != null ? this.expiryAlarm : 2,
                 this.memo,
                 this.createdAt,
+                this.status,
                 categoryNames,
                 this.calculateRemainDay(LocalDate.now())
         );

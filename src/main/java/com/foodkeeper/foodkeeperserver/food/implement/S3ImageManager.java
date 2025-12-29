@@ -64,9 +64,8 @@ public class S3ImageManager implements ImageManager {
 
     private String toUrls(MultipartFile file) {
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter dateTimeFormatter =
-                DateTimeFormatter.ofPattern("yyyyMMdd");
-        String createdDate = now.format(dateTimeFormatter);
+        String DATE_TIME_FORMATTER = "yyyyMMdd";
+        String createdDate = now.format(DateTimeFormatter.ofPattern(DATE_TIME_FORMATTER));
         String uuid = UUID.randomUUID().toString();
         String ext = Objects.requireNonNull(file.getOriginalFilename()).substring(file.getOriginalFilename().lastIndexOf("."));
         return createdDate + "/" + uuid + ext;

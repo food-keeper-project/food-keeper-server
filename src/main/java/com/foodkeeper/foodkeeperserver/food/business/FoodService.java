@@ -3,7 +3,10 @@ package com.foodkeeper.foodkeeperserver.food.business;
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.implement.FoodBookmarker;
 import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
-import com.foodkeeper.foodkeeperserver.food.domain.*;
+import com.foodkeeper.foodkeeperserver.food.domain.Food;
+import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
+import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
+import com.foodkeeper.foodkeeperserver.food.domain.SelectedFoodCategory;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.implement.*;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
@@ -15,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -70,12 +72,11 @@ public class FoodService {
     }
 
     @Transactional
-    public void removeFood(Long foodId, String memberKey) {
-        Food food = foodReader.findFood(foodId, memberKey);
-        selectedFoodCategoryManager.removeAllByFoodId(foodId);
-        foodManager.removeFood(food);
+    public Long removeFood(Long foodId, String memberId) {
+        Food food = foodManager.removeFood(foodId, memberId);
 
         imageManager.deleteFile(food.imageUrl());
+        return food.id();
     }
 
     public Long bookmarkFood(Long foodId, String memberKey) {
