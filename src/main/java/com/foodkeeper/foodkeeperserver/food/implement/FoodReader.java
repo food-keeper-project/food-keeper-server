@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -21,7 +20,7 @@ public class FoodReader {
 
     private final FoodRepository foodRepository;
 
-    public SliceObject<Food> findFoodList(Cursorable<LocalDateTime> cursorable, Long categoryId, String memberKey) {
+    public SliceObject<Food> findFoodList(Cursorable<Long> cursorable, Long categoryId, String memberKey) {
         return foodRepository.findFoodCursorList(cursorable, categoryId, memberKey)
                 .map(FoodEntity::toDomain);
     }

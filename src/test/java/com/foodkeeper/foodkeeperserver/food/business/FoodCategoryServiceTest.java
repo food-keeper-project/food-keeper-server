@@ -41,7 +41,7 @@ public class FoodCategoryServiceTest {
     @DisplayName("카테고리 등록")
     void registerFoodCategory_SUCCESS() {
         // given
-        FoodCategoryRegister request = new FoodCategoryRegister("카테고리1", "memberKey");
+        FoodCategoryRegister request = new FoodCategoryRegister("유제품", "memberKey");
         FoodCategoryEntity entity = CategoryFixture.createCategoryEntity(1L);
         given(foodCategoryRepository.save(any(FoodCategoryEntity.class))).willReturn(entity);
         // when

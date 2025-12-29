@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -48,7 +47,7 @@ public class FoodService {
         }
     }
 
-    public SliceObject<RegisteredFood> getFoodList(Cursorable<LocalDateTime> cursorable, Long categoryId, String memberKey) {
+    public SliceObject<RegisteredFood> getFoodList(Cursorable<Long> cursorable, Long categoryId, String memberKey) {
         SliceObject<Food> foods = foodReader.findFoodList(cursorable, categoryId, memberKey);
         return foodProvider.getFoodList(foods);
     }
@@ -74,7 +73,6 @@ public class FoodService {
     @Transactional
     public Long removeFood(Long foodId, String memberId) {
         Food food = foodManager.removeFood(foodId, memberId);
-
         imageManager.deleteFile(food.imageUrl());
         return food.id();
     }

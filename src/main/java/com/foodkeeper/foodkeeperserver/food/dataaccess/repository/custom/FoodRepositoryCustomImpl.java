@@ -10,7 +10,6 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QFoodEntity.foodEntity;
@@ -24,7 +23,7 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
 
     // 카테고리 분류 조회
     @Override
-    public SliceObject<FoodEntity> findFoodCursorList(Cursorable<LocalDateTime> cursorable,
+    public SliceObject<FoodEntity> findFoodCursorList(Cursorable<Long> cursorable,
                                                       Long categoryId,
                                                       String memberKey) {
         JPAQuery<FoodEntity> query = selectFrom(foodEntity);
@@ -34,10 +33,10 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
         List<FoodEntity> content = query
                 .where(
                         foodEntity.memberKey.eq(memberKey),
-                        foodEntity.createdAt.lt(cursorable.cursor()),
+                        foodEntity.id.lt(cursorable.cursor()),
                         foodEntity.status.ne(EntityStatus.DELETED)
                 )
-                .orderBy(foodEntity.createdAt.desc(), foodEntity.id.desc())
+                .orderBy(foodEntity.id.desc())
                 .limit(cursorable.limit() + 1)
                 .fetch();
 
