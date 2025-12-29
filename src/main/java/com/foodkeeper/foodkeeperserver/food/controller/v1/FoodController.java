@@ -4,14 +4,11 @@ import com.foodkeeper.foodkeeperserver.common.controller.CursorDefault;
 import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.business.FoodService;
-import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodCursorRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodRegisterRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodsRequest;
-import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodImminentResponse;
+import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodListResponse;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodRegisterResponse;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponse;
-import com.foodkeeper.foodkeeperserver.food.controller.v1.response.RecipeFoodResponse;
-import com.foodkeeper.foodkeeperserver.food.domain.RecipeFood;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
@@ -29,8 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 import java.time.LocalDateTime;
-import java.util.List;
-
 import java.util.List;
 
 @Tag(name = "Food", description = "식재료 관련 API")
@@ -75,24 +70,24 @@ public class FoodController {
     @Operation(summary = "식재료 단일 조회", description = "식재료 단일 조회 API")
     @GetMapping("/{foodId}")
     public ResponseEntity<ApiResponse<FoodResponse>> getFood(@PathVariable Long foodId, @AuthMember Member authMember) {
-        RegisteredFood RegisteredFood = foodService.getFood(foodId, authMember.memberKey());
-        return ResponseEntity.ok(ApiResponse.success(FoodResponse.toFoodResponse(RegisteredFood)));
+        RegisteredFood registeredFood = foodService.getFood(foodId, authMember.memberKey());
+        return ResponseEntity.ok(ApiResponse.success(FoodResponse.toFoodResponse(registeredFood)));
     }
 
     @NullMarked
     @Operation(summary = "레시피 추천용 식재료 전체 조회", description = "레시피 추천용 식재료 전체 조회 API")
     @GetMapping("/recipes")
-    public ResponseEntity<ApiResponse<RecipeFoodResponse>> getFoodNames(@AuthMember Member authMember) {
-        List<RecipeFood> recipeFoods = foodService.getAllByMemberKey(authMember.memberKey());
-        return ResponseEntity.ok(ApiResponse.success(new RecipeFoodResponse(recipeFoods)));
+    public ResponseEntity<ApiResponse<FoodListResponse>> getFoodNames(@AuthMember Member authMember) {
+        List<RegisteredFood> recipeFoods = foodService.getAllFoods(authMember.memberKey());
+        return ResponseEntity.ok(ApiResponse.success(new FoodListResponse(FoodResponse.toFoodListResponse(recipeFoods))));
     }
 
     @NullMarked
     @Operation(summary = "유통기한 임박 식재료 리스트 조회", description = "유통기한 임박 식재료 조회 API")
     @GetMapping("/imminent")
-    public ResponseEntity<ApiResponse<FoodImminentResponse>> getImminentFoods(@AuthMember Member authMember) {
-        List<RecipeFood> foods = foodService.getImminentFoods(authMember.memberKey());
-        return ResponseEntity.ok(ApiResponse.success(new FoodImminentResponse(foods)));
+    public ResponseEntity<ApiResponse<FoodListResponse>> getImminentFoods(@AuthMember Member authMember) {
+        List<RegisteredFood> imminentFoods = foodService.getImminentFoods(authMember.memberKey());
+        return ResponseEntity.ok(ApiResponse.success(new FoodListResponse(FoodResponse.toFoodListResponse(imminentFoods))));
     }
 
 

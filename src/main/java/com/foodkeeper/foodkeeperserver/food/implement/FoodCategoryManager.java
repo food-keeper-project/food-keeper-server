@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -25,6 +27,15 @@ public class FoodCategoryManager {
         return foodCategories.stream()
                 .map(FoodCategoryEntity::toDomain)
                 .toList();
+    }
+
+    public Map<Long, String> findNamesByIds(List<Long> categoryIds) {
+        List<FoodCategoryEntity> foodCategories = ListUtil.getOrElseThrowList(foodCategoryRepository.findAllByIdIn(categoryIds));
+        return foodCategories.stream()
+                .collect(Collectors.toMap(
+                        FoodCategoryEntity::getId,
+                        FoodCategoryEntity::getName
+                ));
     }
 
     @Transactional

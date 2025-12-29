@@ -97,9 +97,4 @@ public class FoodEntity extends BaseEntity {
         );
     }
 
-
-    public boolean isImminent(LocalDate today) {
-        long remainDay = ChronoUnit.DAYS.between(today, this.expiryDate);
-        return remainDay >= 0 && remainDay <= this.expiryAlarm;
-    }
 }

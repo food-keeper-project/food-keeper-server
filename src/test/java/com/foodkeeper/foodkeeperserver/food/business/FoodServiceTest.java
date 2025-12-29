@@ -12,7 +12,6 @@ import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodCategoryRe
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.SelectedFoodCategoryRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
-import com.foodkeeper.foodkeeperserver.food.domain.RecipeFood;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.fixture.CategoryFixture;
@@ -37,7 +36,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -144,7 +142,7 @@ public class FoodServiceTest {
                 SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 1L),
                 SelectedFoodCategoryFixture.createSelectedCategoryEntity(2L, 2L)
         );
-      
+
         given(foodRepository.findFoodCursorList(cursorable, categoryId, memberKey)).willReturn(foodSlice);
         given(selectedFoodCategoryRepository.findByFoodIdIn(anyList())).willReturn(selectedFoodCategories);
 
@@ -154,7 +152,7 @@ public class FoodServiceTest {
         //then
         assertThat(result.hasNext()).isTrue();
         assertThat(result.content()).hasSize(2);
-        assertThat(result.content().getFirst().categoryIds().getFirst()).isEqualTo(1L);
+        assertThat(result.content().getFirst().categoryNames().getFirst()).isEqualTo(1L);
     }
 
     @Test
@@ -171,7 +169,7 @@ public class FoodServiceTest {
         //when
         RegisteredFood result = foodService.getFood(1L, FoodFixture.MEMBER_KEY);
         //then
-        assertThat(result.categoryIds()).hasSize(2).containsExactly(1L, 2L);
+        assertThat(result.categoryNames()).hasSize(2).containsExactly(1L, 2L);
 
     }
 
@@ -217,7 +215,7 @@ public class FoodServiceTest {
         FoodEntity food2 = FoodFixture.createFoodEntity(ids.get(1));
         given(foodRepository.findAllByMemberKey(memberKey)).willReturn(List.of(food1, food2));
         //when
-        List<RecipeFood> foods = foodService.getAllByMemberKey(memberKey);
+        List<RecipeFood> foods = foodService.getAllFoods(memberKey);
         //then
         assertThat(foods).hasSize(2);
         assertThat(foods.getFirst().name()).isEqualTo(foodName);

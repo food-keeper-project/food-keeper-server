@@ -5,6 +5,8 @@ import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import java.time.LocalDate;
@@ -48,7 +50,8 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
 
         return selectFrom(foodEntity)
                 .where(
-                        foodEntity.memberKey.eq(memberKey)
+                        foodEntity.memberKey.eq(memberKey),
+                        foodEntity.status.ne(EntityStatus.DELETED)
                 )
                 .orderBy(
                         foodEntity.name.asc(),
@@ -61,15 +64,14 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
     // 유통기한 임박한 식재료 조회
     @Override
     public List<FoodEntity> findImminentFoods(String memberKey) {
-        List<FoodEntity> foods = selectFrom(foodEntity)
-                .where(foodEntity.memberKey.eq(memberKey))
-                .fetch();
-
         LocalDate today = LocalDate.now();
-        return foods.stream()
-                .filter(food -> food.isImminent(today))
-                .sorted(Comparator.comparing(FoodEntity::getExpiryDate)) // 유통기한순
-                .toList();
+        return selectFrom(foodEntity)
+                .where(
+                        foodEntity.memberKey.eq(memberKey),
+                        foodEntity.status.ne(EntityStatus.DELETED),
+                        isImminent(today))
+                .orderBy(foodEntity.expiryDate.asc())
+                .fetch();
     }
 
     // 카테고리 선택했을 시 필터링 조회
@@ -79,6 +81,13 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
                     .on(foodEntity.id.eq(selectedFoodCategoryEntity.foodId))
                     .where(selectedFoodCategoryEntity.foodCategoryId.eq(categoryId));
         }
+    }
+
+    private BooleanExpression isImminent(LocalDate today) {
+        return Expressions.numberTemplate(Integer.class,
+                        "DATEDIFF({0}, {1})", foodEntity.expiryDate, today)
+                .loe(foodEntity.expiryAlarm)
+                .and(foodEntity.expiryDate.goe(today));
     }
 
 

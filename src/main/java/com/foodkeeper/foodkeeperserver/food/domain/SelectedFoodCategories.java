@@ -1,7 +1,9 @@
 package com.foodkeeper.foodkeeperserver.food.domain;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SelectedFoodCategories {
@@ -14,10 +16,19 @@ public class SelectedFoodCategories {
         this.categoriesGroupByFoodIds = groupByFoodIds();
     }
 
-    // 식재료의 카테고리 List
-    public List<Long> getCategoryIdsByFoodId(Long foodId) {
-        return categoriesGroupByFoodIds.getOrDefault(foodId, List.of());
+    public List<Long> getAllCategoryIds() {
+        return selectedFoodCategories.stream()
+                .map(SelectedFoodCategory::foodCategoryId)
+                .toList();
     }
+
+    public List<String> getCategoryNamesByFoodId(Long foodId, Map<Long, String> nameMap) {
+        List<Long> categoryIds = categoriesGroupByFoodIds.getOrDefault(foodId, Collections.emptyList());
+        return categoryIds.stream()
+                .map(nameMap::get)
+                .toList();
+    }
+
 
     // key : foodId, value : List<CategoryId> - 식재료에 category 매핑
     private Map<Long, List<Long>> groupByFoodIds() {
