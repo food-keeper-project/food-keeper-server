@@ -149,7 +149,7 @@ public class FoodServiceTest {
         given(foodCategoryRepository.findAllByIdIn(List.of(1L,2L))).willReturn(foodCategories);
 
         //when
-        SliceObject<RegisteredFood> result = foodService.getFoodList(cursorable, categoryId, memberKey);
+        SliceObject<RegisteredFood> result = foodService.findFoodList(cursorable, categoryId, memberKey);
 
         //then
         assertThat(result.hasNext()).isTrue();
@@ -172,7 +172,7 @@ public class FoodServiceTest {
         given(selectedFoodCategoryRepository.findByFoodId(1L)).willReturn(selectedFoodCategories);
         given(foodCategoryRepository.findAllByIdIn(List.of(1L,2L))).willReturn(foodCategories);
         //when
-        RegisteredFood result = foodService.getFood(1L, FoodFixture.MEMBER_KEY);
+        RegisteredFood result = foodService.findFood(1L, FoodFixture.MEMBER_KEY);
         //then
         assertThat(result.categoryNames()).hasSize(2);
         assertThat(result.categoryNames()).contains("유제품");
@@ -221,7 +221,7 @@ public class FoodServiceTest {
         FoodEntity food2 = FoodFixture.createFoodEntity(ids.get(1));
         given(foodRepository.findAllByMemberKey(memberKey)).willReturn(List.of(food1, food2));
         //when
-        List<RegisteredFood> foods = foodService.getAllFoods(memberKey);
+        List<RegisteredFood> foods = foodService.findAllFoods(memberKey);
         //then
         assertThat(foods).hasSize(2);
         assertThat(foods.getFirst().name()).isEqualTo(foodName);
@@ -248,7 +248,7 @@ public class FoodServiceTest {
                 .willReturn(List.of(categoryEntity));
 
         //when
-        List<RegisteredFood> results = foodService.getImminentFoods(memberKey);
+        List<RegisteredFood> results = foodService.findImminentFoods(memberKey);
         //then
         assertThat(results.getFirst().name()).isEqualTo("우유");
         assertThat(results.getFirst().categoryNames()).contains("유제품");

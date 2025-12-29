@@ -47,27 +47,27 @@ public class FoodService {
         }
     }
 
-    public SliceObject<RegisteredFood> getFoodList(Cursorable<Long> cursorable, Long categoryId, String memberKey) {
+    public SliceObject<RegisteredFood> findFoodList(Cursorable<Long> cursorable, Long categoryId, String memberKey) {
         SliceObject<Food> foods = foodReader.findFoodList(cursorable, categoryId, memberKey);
-        return foodProvider.getFoodList(foods);
+        return foodProvider.findFoodList(foods);
     }
 
     // 단일 조회
-    public RegisteredFood getFood(Long foodId, String memberKey) {
+    public RegisteredFood findFood(Long foodId, String memberKey) {
         Food food = foodReader.findFood(foodId, memberKey);
-        return foodProvider.getFood(food);
+        return foodProvider.findFood(food);
     }
 
 
-    public List<RegisteredFood> getAllFoods(String memberKey) {
+    public List<RegisteredFood> findAllFoods(String memberKey) {
         List<Food> foods = foodReader.findAll(memberKey);
-        return foodProvider.getAllFoods(foods);
+        return foodProvider.findAllFoods(foods);
     }
 
     // 유통기한 임박 재료 리스트 조회
-    public List<RegisteredFood> getImminentFoods(String memberKey) {
+    public List<RegisteredFood> findImminentFoods(String memberKey) {
         List<Food> foods = foodReader.findImminentFoods(memberKey);
-        return foodProvider.getAllFoods(foods);
+        return foodProvider.findAllFoods(foods);
     }
 
     @Transactional

@@ -64,7 +64,7 @@ public class FoodProviderTest {
                 .willReturn(categoryEntities);
 
         // when
-        SliceObject<RegisteredFood> result = foodProvider.getFoodList(foodSlice);
+        SliceObject<RegisteredFood> result = foodProvider.findFoodList(foodSlice);
 
         // then
         assertThat(result.content()).hasSize(2);
@@ -90,7 +90,7 @@ public class FoodProviderTest {
                 .willReturn(categoryEntities);
 
         //when
-        RegisteredFood result = foodProvider.getFood(food);
+        RegisteredFood result = foodProvider.findFood(food);
 
         //then
         assertThat(result.categoryNames()).contains("유제품");
@@ -117,7 +117,7 @@ public class FoodProviderTest {
                 .willReturn(categoryEntities);
 
         //when
-        List<RegisteredFood> result = foodProvider.getAllFoods(foods);
+        List<RegisteredFood> result = foodProvider.findAllFoods(foods);
 
         //then
         assertThat(result.getFirst().categoryNames()).contains("유제품");

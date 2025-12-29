@@ -17,7 +17,7 @@ public class FoodProvider {
     private final FoodCategoryManager foodCategoryManager;
     private final SelectedFoodCategoryManager selectedFoodCategoryManager;
 
-    public SliceObject<RegisteredFood> getFoodList(SliceObject<Food> foods) {
+    public SliceObject<RegisteredFood> findFoodList(SliceObject<Food> foods) {
         SelectedFoodCategories categories = new SelectedFoodCategories(selectedFoodCategoryManager.findByFoodIds(
                 foods.content().stream().map(Food::id).toList()
         ));
@@ -25,7 +25,7 @@ public class FoodProvider {
         return foods.map(food -> food.toRegisteredFood(categories.getCategoryNamesByFoodId(food.id(), nameMap)));
     }
 
-    public RegisteredFood getFood(Food food) {
+    public RegisteredFood findFood(Food food) {
         SelectedFoodCategories categories = new SelectedFoodCategories(
                 selectedFoodCategoryManager.findByFoodId(food.id())
         );
@@ -33,7 +33,7 @@ public class FoodProvider {
         return food.toRegisteredFood(categories.getCategoryNamesByFoodId(food.id(), nameMap));
     }
 
-    public List<RegisteredFood> getAllFoods(List<Food> foods) {
+    public List<RegisteredFood> findAllFoods(List<Food> foods) {
         SelectedFoodCategories categories = new SelectedFoodCategories(selectedFoodCategoryManager.findByFoodIds(
                 foods.stream().map(Food::id).toList()
         ));
