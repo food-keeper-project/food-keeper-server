@@ -71,8 +71,8 @@ public class FoodService {
     }
 
     @Transactional
-    public Long removeFood(Long foodId, String memberId) {
-        Food food = foodManager.removeFood(foodId, memberId);
+    public Long removeFood(Long foodId, String memberKey) {
+        Food food = foodManager.removeFood(foodId, memberKey);
         imageManager.deleteFile(food.imageUrl());
         return food.id();
     }
