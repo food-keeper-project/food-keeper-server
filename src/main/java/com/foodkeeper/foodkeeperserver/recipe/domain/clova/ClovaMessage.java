@@ -1,4 +1,4 @@
-package com.foodkeeper.foodkeeperserver.recipe.controller.v1;
+package com.foodkeeper.foodkeeperserver.recipe.domain.clova;
 
 import com.foodkeeper.foodkeeperserver.recipe.domain.AiType;
 

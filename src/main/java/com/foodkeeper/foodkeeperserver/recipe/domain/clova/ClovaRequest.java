@@ -1,7 +1,6 @@
-package com.foodkeeper.foodkeeperserver.recipe.business.request;
+package com.foodkeeper.foodkeeperserver.recipe.domain.clova;
 
 import com.foodkeeper.foodkeeperserver.recipe.domain.AiType;
-import com.foodkeeper.foodkeeperserver.recipe.controller.v1.ClovaMessage;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;

@@ -1,24 +1,19 @@
 package com.foodkeeper.foodkeeperserver.recipe.business;
 
-import com.foodkeeper.foodkeeperserver.recipe.controller.v1.response.RecipeResponse;
-import com.foodkeeper.foodkeeperserver.recipe.implement.ClovaService;
+import com.foodkeeper.foodkeeperserver.recipe.domain.Recipe;
+import com.foodkeeper.foodkeeperserver.recipe.implement.AiRecipeRecommender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tools.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class RecipeService {
 
-    private final ClovaService clovaService;
-    private final ObjectMapper objectMapper;
+    private final AiRecipeRecommender aiRecipeRecommender;
 
-
-    public RecipeResponse recommendRecipe(List<String> ingredients, List<String> excludedMenus) throws IOException {
-        String response = clovaService.getRecipeRecommendation(ingredients, excludedMenus);
-        return objectMapper.readValue(response, RecipeResponse.class);
+    public Recipe recommendRecipe(List<String> ingredients, List<String> excludedMenus) {
+        return aiRecipeRecommender.getRecipeRecommendation(ingredients, excludedMenus);
     }
 }
