@@ -33,7 +33,7 @@ public class FoodManagerTest {
 
     @Test
     @DisplayName("식재료 저장 요청 시 리포지토리 호출 및 결과 반환")
-    void register_SUCCESS() throws Exception {
+    void register_SUCCESS() {
         //given
         Food food = FoodFixture.createFood();
         FoodEntity foodEntity = FoodFixture.createFoodEntity(1L);
@@ -47,7 +47,7 @@ public class FoodManagerTest {
 
     @Test
     @DisplayName("식재료 커서 요청 시 리포지토리 호출 및 리스트 결과 반환")
-    void findFoodList_SUCCESS() throws Exception {
+    void findFoodList_SUCCESS() {
         //given
         Long categoryId = 1L;
         String memberKey = FoodFixture.MEMBER_KEY;
@@ -65,12 +65,12 @@ public class FoodManagerTest {
         //then
         assertThat(results.content()).hasSize(2);
         assertThat(results.content().getFirst().name()).isEqualTo(FoodFixture.NAME);
-        assertThat(results.content().get(0)).isInstanceOf(Food.class);
+        assertThat(results.content().getFirst()).isInstanceOf(Food.class);
     }
 
     @Test
     @DisplayName("식재료 단일 조회 시 식재료 세부정보 반환")
-    void findFoodById_SUCCESS() throws Exception {
+    void findFoodById_SUCCESS() {
         //given
         Long foodId = FoodFixture.ID;
         String memberKey = FoodFixture.MEMBER_KEY;
@@ -86,7 +86,7 @@ public class FoodManagerTest {
 
     @Test
     @DisplayName("선택된 식재료들의 이름 조회 시 이름 리스트 반환")
-    void findFoodNames_SUCCESS() throws Exception {
+    void findFoodNames_SUCCESS() {
         //given
         String memberKey = FoodFixture.MEMBER_KEY;
         FoodEntity entity1 = FoodFixture.createFoodEntity(1L);
@@ -101,7 +101,7 @@ public class FoodManagerTest {
 
     @Test
     @DisplayName("식재료 삭제")
-    void removeFood_SUCCESS() throws Exception {
+    void removeFood_SUCCESS() {
         //given
         Food food = FoodFixture.createFood();
         //when

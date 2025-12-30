@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Tag(name = "Food", description = "식재료 관련 API")
