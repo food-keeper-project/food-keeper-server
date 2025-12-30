@@ -54,7 +54,8 @@ public class AiRecipeRecommender {
         ClovaRequest clovaRequest = ClovaRequest.createPrompt(systemPrompt, userPrompt);
         ClovaResponse clovaResponse = clovaClient.getRecipe(BEARER + apiKey, clovaRequest);
 
-        return objectMapper.readValue(clovaResponse.getContent(), Recipe.class);
+        String content = clovaResponse.getContent();
+        return objectMapper.readValue(content, Recipe.class);
     }
 
     private String removeDuplicateFood(List<String> ingredients, List<String> excludedMenus) {
