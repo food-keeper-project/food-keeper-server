@@ -3,6 +3,7 @@ package com.foodkeeper.foodkeeperserver.food.dataaccess.entity;
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.BaseEntity;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,7 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 
 
 @Entity
@@ -60,11 +60,11 @@ public class FoodEntity extends BaseEntity {
             int selectedCategoryCount,
             String memberKey) {
         this.name = name;
-        this.imageUrl = (imageUrl != null) ? imageUrl : "";
+        this.imageUrl = imageUrl;
         this.storageMethod = storageMethod;
         this.expiryDate = expiryDate;
-        this.expiryAlarm = (expiryAlarm == null) ? 2 : expiryAlarm;
-        this.memo = (memo != null) ? memo : "";
+        this.expiryAlarm = expiryAlarm;
+        this.memo = memo;
         this.selectedCategoryCount = selectedCategoryCount;
         this.memberKey = memberKey;
     }
@@ -93,13 +93,18 @@ public class FoodEntity extends BaseEntity {
                 this.memo,
                 this.selectedCategoryCount,
                 this.memberKey,
-                this.getCreatedAt()
+                this.getCreatedAt(),
+                this.getStatus()
         );
     }
 
-
-    public boolean isImminent(LocalDate today) {
-        long remainDay = ChronoUnit.DAYS.between(today, this.expiryDate);
-        return remainDay >= 0 && remainDay <= this.expiryAlarm;
+    public void update(FoodRegister register, String imageUrl) {
+        this.name = register.name();
+        this.storageMethod = register.storageMethod();
+        this.imageUrl = imageUrl;
+        this.expiryDate = register.expiryDate();
+        this.expiryAlarm = register.expiryAlarm();
+        this.memo = register.memo();
     }
+
 }

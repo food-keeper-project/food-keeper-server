@@ -3,6 +3,7 @@ package com.foodkeeper.foodkeeperserver.food.implement;
 import com.foodkeeper.foodkeeperserver.common.utils.ListUtil;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodCategoryRepository;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.SelectedFoodCategoryRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
@@ -17,6 +18,7 @@ import java.util.List;
 public class FoodCategoryManager {
 
     private final FoodCategoryRepository foodCategoryRepository;
+    private final SelectedFoodCategoryRepository selectedFoodCategoryRepository;
 
     // 카테고리 먼저 조회
     @Transactional(readOnly = true)

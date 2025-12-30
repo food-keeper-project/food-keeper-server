@@ -5,7 +5,7 @@ import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -15,14 +15,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
 @Component
 @RequiredArgsConstructor
 public class FoodManager {
 
     private final FoodRepository foodRepository;
+    private final SelectedFoodCategoryManager selectedFoodCategoryManager;
 
     @Transactional
-    public Food register(Food food) {
+    public Food registerFood(Food food) {
         FoodEntity foodEntity = foodRepository.save(FoodEntity.from(food));
         return foodEntity.toDomain();
     }
@@ -56,8 +58,20 @@ public class FoodManager {
     }
 
     @Transactional
-    public void removeFood(Food food) {
-        foodRepository.delete(FoodEntity.from(food));
+    public void updateFood(Long foodId, FoodRegister register, String imageUrl) {
+        FoodEntity foodEntity  = foodRepository.findById(foodId).orElseThrow(() -> new AppException(ErrorType.FOOD_DATA_NOT_FOUND));
+        foodEntity.update(register, imageUrl);
+        if(register.categoryIds() != null) {
+            selectedFoodCategoryManager.update(foodId, register.categoryIds());
+        }
+    }
+
+    @Transactional
+    public Food removeFood(Long foodId, String memberId) {
+        FoodEntity foodEntity = foodRepository.findByIdAndMemberKey(foodId, memberId).orElseThrow(() -> new AppException(ErrorType.FOOD_DATA_NOT_FOUND));
+        foodEntity.delete();
+        selectedFoodCategoryManager.removeAllByFoodId(foodId);
+        return foodEntity.toDomain();
     }
 
 

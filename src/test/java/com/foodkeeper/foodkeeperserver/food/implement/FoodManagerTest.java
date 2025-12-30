@@ -36,14 +36,14 @@ public class FoodManagerTest {
 
     @Test
     @DisplayName("식재료 저장 요청 시 리포지토리 호출 및 결과 반환")
-    void register_SUCCESS() throws Exception {
+    void register_Food_SUCCESS() throws Exception {
         //given
         Food food = FoodFixture.createFood();
         FoodEntity foodEntity = FoodFixture.createFoodEntity(1L);
 
         given(foodRepository.save(any(FoodEntity.class))).willReturn(foodEntity);
         //when
-        Food savedFood = foodManager.register(food);
+        Food savedFood = foodManager.registerFood(food);
         //then
         assertThat(savedFood.name()).isEqualTo(foodEntity.getName());
     }

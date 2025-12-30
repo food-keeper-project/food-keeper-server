@@ -41,4 +41,19 @@ public class SelectedFoodCategoryManager {
         selectedFoodCategoryRepository.deleteAllByFoodId(foodId);
     }
 
+    // 다 지우고 다시 생성
+    @Transactional
+    public void update(Long foodId, List<Long> categoryIds) {
+        removeAllByFoodId(foodId);
+        if (categoryIds != null && !categoryIds.isEmpty()) {
+            List<SelectedFoodCategoryEntity> newMappings = categoryIds.stream()
+                    .map(categoryId -> SelectedFoodCategoryEntity.builder()
+                            .foodId(foodId)
+                            .foodCategoryId(categoryId)
+                            .build())
+                    .toList();
+            selectedFoodCategoryRepository.saveAll(newMappings);
+        }
+    }
+
 }

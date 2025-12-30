@@ -34,9 +34,9 @@ public class FoodService {
     @Transactional
     public Long registerFood(FoodRegister register, MultipartFile file, String memberKey) {
         CompletableFuture<String> imageUrlFuture = imageManager.fileUpload(file);
-        Food food = register.toFood(imageUrlFuture.join(), memberKey);
+        Food food = register.toNewFood(imageUrlFuture.join(), memberKey);
         try {
-            Food savedFood = foodManager.register(food);
+            Food savedFood = foodManager.registerFood(food);
             List<FoodCategory> foodCategories = foodCategoryManager.findAllByIds(register.categoryIds());
             foodCategories.forEach(category ->
                     selectedFoodCategoryManager.save(SelectedFoodCategory.create(savedFood.id(), category.id())));
@@ -93,5 +93,16 @@ public class FoodService {
 
     public Long bookmarkFood(Long foodId, String memberKey) {
         return foodBookmarker.bookmark(foodManager.find(foodId), memberKey);
+    }
+
+    @Transactional
+    public Long updateFood(Long foodId, FoodRegister foodRegister, MultipartFile imageUrl, String memberKey) {
+
+        CompletableFuture<String> imageUrlFuture = imageManager.fileUpload(imageUrl);
+        Food food = foodRegister.toNewFood(imageUrlFuture.join(), memberKey);
+
+        foodManager.updateFood(food,foodRegister.categoryIds(), imageUrl);
+        imageManager.fileUpload(imageUrl);
+        return food.id();
     }
 }

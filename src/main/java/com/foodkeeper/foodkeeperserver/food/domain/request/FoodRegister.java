@@ -13,7 +13,7 @@ public record FoodRegister(String name,
                            Integer expiryAlarm,
                            String memo) {
 
-    public Food toFood(String imageUrl, String memberKey) {
+    public Food toNewFood(String imageUrl, String memberKey) {
         return Food.builder()
                 .name(this.name)
                 .imageUrl(imageUrl)
@@ -25,4 +25,5 @@ public record FoodRegister(String name,
                 .memberKey(memberKey)
                 .build();
     }
+
 }
