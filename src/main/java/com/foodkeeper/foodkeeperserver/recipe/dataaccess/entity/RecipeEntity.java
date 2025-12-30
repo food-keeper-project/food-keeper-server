@@ -52,6 +52,16 @@ public class RecipeEntity extends BaseEntity {
                 .build();
     }
 
+    public Recipe toDomain() {
+        return Recipe.builder()
+                .menuName(title)
+                .description(description)
+                .cookMinutes(cookMinutes)
+                .steps(List.of())
+                .ingredients(List.of())
+                .build();
+    }
+
     public Recipe toDomain(List<RecipeStep> steps, List<RecipeIngredient> ingredients) {
         return Recipe.builder()
                 .menuName(title)

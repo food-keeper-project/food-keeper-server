@@ -6,7 +6,7 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record RecipeResponse(String menuName,
+public record RecipeResponse(String title,
                              String description,
                              Integer cookMinutes,
                              List<IngredientResponse> ingredients,
@@ -14,7 +14,7 @@ public record RecipeResponse(String menuName,
 
     public static RecipeResponse from(Recipe recipe) {
         return RecipeResponse.builder()
-                .menuName(recipe.menuName())
+                .title(recipe.menuName())
                 .description(recipe.description())
                 .cookMinutes(recipe.cookMinutes())
                 .ingredients(recipe.ingredients().stream().map(IngredientResponse::from).toList())

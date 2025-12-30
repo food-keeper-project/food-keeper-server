@@ -1,12 +1,17 @@
 package com.foodkeeper.foodkeeperserver.recipe.controller.v1;
 
+import com.foodkeeper.foodkeeperserver.common.controller.CursorDefault;
+import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
 import com.foodkeeper.foodkeeperserver.recipe.business.RecipeService;
 import com.foodkeeper.foodkeeperserver.recipe.controller.v1.request.RecipeRegisterRequest;
+import com.foodkeeper.foodkeeperserver.recipe.controller.v1.response.RecipeListResponse;
 import com.foodkeeper.foodkeeperserver.recipe.controller.v1.response.RecipeResponse;
 import com.foodkeeper.foodkeeperserver.security.auth.AuthMember;
 import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
+import com.foodkeeper.foodkeeperserver.support.response.PageResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NullMarked;
@@ -16,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 
+@Tag(name = "Recipe", description = "레시피 관련 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/recipes")
@@ -33,10 +39,30 @@ public class RecipeController {
     }
 
     @NullMarked
+    @Operation(summary = "레시피 등록", description = "레시피 등록 API")
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> registerRecipe(@RequestBody @Valid RecipeRegisterRequest request,
                                                             @AuthMember Member member) {
         Long recipeId = recipeService.registerRecipe(request.toRecipe(), member.memberKey());
         return ResponseEntity.created(URI.create("/api/v1/recipes/" + recipeId)).body(ApiResponse.success());
+    }
+
+    @NullMarked
+    @Operation(summary = "레시피 목록 조회", description = "레시피 목록 조회 API")
+    @GetMapping
+    public ResponseEntity<ApiResponse<PageResponse<RecipeListResponse>>> findRecipes(@CursorDefault Cursorable<Long> cursorable,
+                                                                                     @AuthMember Member member) {
+        return ResponseEntity.ok(ApiResponse.success(PageResponse.from(
+                recipeService.findRecipes(cursorable, member.memberKey())
+                        .map(RecipeListResponse::from))));
+    }
+
+    @NullMarked
+    @Operation(summary = "레시피 단일 조회", description = "레시피 단일 조회 API")
+    @GetMapping("/{recipeId}")
+    public ResponseEntity<ApiResponse<RecipeResponse>> findRecipe(@PathVariable Long recipeId,
+                                                                  @AuthMember Member member) {
+        return ResponseEntity.ok(ApiResponse.success(RecipeResponse.from(
+                recipeService.findRecipe(recipeId, member.memberKey()))));
     }
 }

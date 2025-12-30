@@ -16,6 +16,7 @@ import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaResponseStatus;
 import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaResult;
 import com.foodkeeper.foodkeeperserver.recipe.fixture.RecipeEntityFixture;
 import com.foodkeeper.foodkeeperserver.recipe.implement.AiRecipeRecommender;
+import com.foodkeeper.foodkeeperserver.recipe.implement.RecipeFinder;
 import com.foodkeeper.foodkeeperserver.recipe.implement.RecipeRegistrar;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -52,7 +53,8 @@ class RecipeServiceTest {
         AiRecipeRecommender aiRecipeRecommender = new AiRecipeRecommender(clovaClient, new ObjectMapper());
         RecipeRegistrar recipeRegistrar = new RecipeRegistrar(recipeRepository, recipeIngredientRepository,
                 recipeStepRepository);
-        recipeService = new RecipeService(aiRecipeRecommender, recipeRegistrar);
+        RecipeFinder recipeFinder = new RecipeFinder(recipeRepository, recipeStepRepository, recipeIngredientRepository);
+        recipeService = new RecipeService(aiRecipeRecommender, recipeRegistrar, recipeFinder);
     }
 
     @Test
