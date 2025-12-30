@@ -89,7 +89,7 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
                 LocalDate.class,
                 "DATE_ADD({0}, INTERVAL {1} DAY)",
                 today,
-                foodEntity.expiryAlarm
+                foodEntity.expiryAlarmDays
         );
         return startPoint.and(foodEntity.expiryDate.loe(endPoint));
     }

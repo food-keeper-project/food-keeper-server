@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 
 
 @Entity
@@ -38,7 +37,7 @@ public class FoodEntity extends BaseEntity {
     private LocalDate expiryDate;
 
     @Column(nullable = false)
-    private Integer expiryAlarm;
+    private Integer expiryAlarmDays;
 
     @Column(nullable = false)
     private String memo;
@@ -55,7 +54,7 @@ public class FoodEntity extends BaseEntity {
             String imageUrl,
             StorageMethod storageMethod,
             LocalDate expiryDate,
-            Integer expiryAlarm,
+            Integer expiryAlarmDays,
             String memo,
             int selectedCategoryCount,
             String memberKey) {
@@ -63,7 +62,7 @@ public class FoodEntity extends BaseEntity {
         this.imageUrl = imageUrl;
         this.storageMethod = storageMethod;
         this.expiryDate = expiryDate;
-        this.expiryAlarm = expiryAlarm;
+        this.expiryAlarmDays = expiryAlarmDays;
         this.memo = memo;
         this.selectedCategoryCount = selectedCategoryCount;
         this.memberKey = memberKey;
@@ -75,7 +74,7 @@ public class FoodEntity extends BaseEntity {
                 .imageUrl(food.imageUrl())
                 .storageMethod(food.storageMethod())
                 .expiryDate(food.expiryDate())
-                .expiryAlarm(food.expiryAlarm())
+                .expiryAlarmDays(food.expiryAlarm())
                 .memo(food.memo())
                 .selectedCategoryCount(food.selectedCategoryCount())
                 .memberKey(food.memberKey())
@@ -89,7 +88,7 @@ public class FoodEntity extends BaseEntity {
                 this.imageUrl,
                 this.storageMethod,
                 this.expiryDate,
-                this.expiryAlarm,
+                this.expiryAlarmDays,
                 this.memo,
                 this.selectedCategoryCount,
                 this.memberKey,
