@@ -5,14 +5,12 @@ import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodsFinder;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -28,7 +26,7 @@ public class FoodManager {
     }
 
     @Transactional(readOnly = true)
-    public SliceObject<Food> findFoodList(Cursorable<LocalDateTime> cursorable, Long categoryId, String memberKey) {
+    public SliceObject<Food> findFoodList(Cursorable<Long> cursorable, Long categoryId, String memberKey) {
         return foodRepository.findFoodCursorList(cursorable, categoryId, memberKey)
                 .map(FoodEntity::toDomain);
     }

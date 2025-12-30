@@ -5,11 +5,10 @@ import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
-import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -24,7 +23,7 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
 
     // 카테고리 분류 조회
     @Override
-    public SliceObject<FoodEntity> findFoodCursorList(Cursorable<LocalDateTime> cursorable,
+    public SliceObject<FoodEntity> findFoodCursorList(Cursorable<Long> cursorable,
                                                       Long categoryId,
                                                       String memberKey) {
         JPAQuery<FoodEntity> query = selectFrom(foodEntity);
@@ -34,14 +33,18 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
         List<FoodEntity> content = query
                 .where(
                         foodEntity.memberKey.eq(memberKey),
-                        foodEntity.createdAt.lt(cursorable.cursor()),
-                        foodEntity.status.ne(EntityStatus.DELETED)
+                        foodEntity.status.ne(EntityStatus.DELETED),
+                        ltCursor(cursorable.cursor())
                 )
-                .orderBy(foodEntity.createdAt.desc(), foodEntity.id.desc())
+                .orderBy(foodEntity.id.desc(), foodEntity.createdAt.desc())
                 .limit(cursorable.limit() + 1)
                 .fetch();
 
         return new SliceObject<>(content, cursorable, hasNext(cursorable, content));
+    }
+
+    private static BooleanExpression ltCursor(Long cursor) {
+        return cursor == null ? null : foodEntity.id.lt(cursor);
     }
 
     @Override

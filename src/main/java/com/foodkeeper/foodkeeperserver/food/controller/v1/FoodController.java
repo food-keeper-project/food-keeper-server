@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Tag(name = "Food", description = "식재료 관련 API")
@@ -60,7 +59,7 @@ public class FoodController {
     @Operation(summary = "식재료 전체 조회", description = "식재료 전체 조회 API")
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<FoodResponse>>> getFoods(@ModelAttribute FoodsRequest request,
-                                                                            @CursorDefault Cursorable<LocalDateTime> cursorable,
+                                                                            @CursorDefault Cursorable<Long> cursorable,
                                                                             @AuthMember Member authMember) {
         SliceObject<RegisteredFood> foods = foodService.getFoodList(cursorable, request.categoryId(), authMember.memberKey());
         List<FoodResponse> foodResponses = foods.content().stream().map(FoodResponse::toFoodResponse).toList();

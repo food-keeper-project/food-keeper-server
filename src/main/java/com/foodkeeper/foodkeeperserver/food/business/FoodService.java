@@ -10,14 +10,12 @@ import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
 import com.foodkeeper.foodkeeperserver.food.implement.ImageManager;
 import com.foodkeeper.foodkeeperserver.food.implement.SelectedFoodCategoryManager;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
-import com.foodkeeper.foodkeeperserver.food.domain.RecipeFood;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -48,7 +46,7 @@ public class FoodService {
     }
 
     // 커서 리스트 조회
-    public SliceObject<RegisteredFood> getFoodList(Cursorable<LocalDateTime> cursorable, Long categoryId, String memberKey) {
+    public SliceObject<RegisteredFood> getFoodList(Cursorable<Long> cursorable, Long categoryId, String memberKey) {
         SliceObject<Food> foods = foodManager.findFoodList(cursorable, categoryId, memberKey);
         SelectedFoodCategories categories = selectedFoodCategoryManager.findByFoodIds(
                 foods.content().stream().map(Food::id).toList());
