@@ -8,7 +8,7 @@ import java.util.List;
 @Builder
 public record RecipeResponse(String menuName,
                              String description,
-                             String totalTime,
+                             Integer cookMinutes,
                              List<IngredientResponse> ingredients,
                              List<RecipeStepResponse> steps) {
 
@@ -16,7 +16,7 @@ public record RecipeResponse(String menuName,
         return RecipeResponse.builder()
                 .menuName(recipe.menuName())
                 .description(recipe.description())
-                .totalTime(recipe.totalTime())
+                .cookMinutes(recipe.cookMinutes())
                 .ingredients(recipe.ingredients().stream().map(IngredientResponse::from).toList())
                 .steps(recipe.steps().stream().map(RecipeStepResponse::from).toList())
                 .build();
