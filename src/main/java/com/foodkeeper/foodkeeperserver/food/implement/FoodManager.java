@@ -28,7 +28,7 @@ public class FoodManager {
     }
 
     @Transactional(readOnly = true)
-    public SliceObject<Food> findFoodList(Cursorable<LocalDateTime> cursorable, Long categoryId, String memberKey) {
+    public SliceObject<Food> findFoodList(Cursorable<Long> cursorable, Long categoryId, String memberKey) {
         return foodRepository.findFoodCursorList(cursorable, categoryId, memberKey)
                 .map(FoodEntity::toDomain);
     }

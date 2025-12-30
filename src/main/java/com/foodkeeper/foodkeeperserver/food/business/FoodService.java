@@ -48,7 +48,7 @@ public class FoodService {
     }
 
     // 커서 리스트 조회
-    public SliceObject<RegisteredFood> getFoodList(Cursorable<LocalDateTime> cursorable, Long categoryId, String memberKey) {
+    public SliceObject<RegisteredFood> getFoodList(Cursorable<Long> cursorable, Long categoryId, String memberKey) {
         SliceObject<Food> foods = foodManager.findFoodList(cursorable, categoryId, memberKey);
         SelectedFoodCategories categories = selectedFoodCategoryManager.findByFoodIds(
                 foods.content().stream().map(Food::id).toList());

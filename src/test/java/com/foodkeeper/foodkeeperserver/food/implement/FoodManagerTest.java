@@ -14,15 +14,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,8 +51,8 @@ public class FoodManagerTest {
         //given
         Long categoryId = 1L;
         String memberKey = FoodFixture.MEMBER_KEY;
-        LocalDateTime lastCreatedAt = LocalDateTime.now();
-        Cursorable<LocalDateTime> cursorable = new Cursorable<>(lastCreatedAt, 2);
+        long foodId = 1L;
+        Cursorable<Long> cursorable = new Cursorable<>(foodId, 2);
 
         List<FoodEntity> foodEntities = List.of(
                 FoodFixture.createFoodEntity(1L),
