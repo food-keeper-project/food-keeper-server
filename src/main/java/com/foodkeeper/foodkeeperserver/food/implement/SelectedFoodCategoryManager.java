@@ -45,14 +45,13 @@ public class SelectedFoodCategoryManager {
     @Transactional
     public void update(Long foodId, List<Long> categoryIds) {
         removeAllByFoodId(foodId);
+
         if (categoryIds != null && !categoryIds.isEmpty()) {
-            List<SelectedFoodCategoryEntity> newMappings = categoryIds.stream()
-                    .map(categoryId -> SelectedFoodCategoryEntity.builder()
-                            .foodId(foodId)
-                            .foodCategoryId(categoryId)
-                            .build())
+            List<SelectedFoodCategoryEntity> newCategory = categoryIds.stream()
+                    .map(categoryId -> SelectedFoodCategory.create(foodId, categoryId))
+                    .map(SelectedFoodCategoryEntity::from)
                     .toList();
-            selectedFoodCategoryRepository.saveAll(newMappings);
+            selectedFoodCategoryRepository.saveAll(newCategory);
         }
     }
 

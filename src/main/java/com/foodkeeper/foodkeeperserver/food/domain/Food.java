@@ -40,24 +40,16 @@ public record Food(
         );
     }
 
-    public void update(FoodRegister register, String newImageUrl) {
-        if (request.name() != null) :this.name = request.name();
-        if (request.storageMethod() != null) {
-            this.storageMethod = request.storageMethod();
-        }
-        if (request.expiryDate() != null) {
-            this.expiryDate = request.expiryDate();
-        }
-        if (request.expiryAlarm() != null) {
-            this.expiryAlarm = request.expiryAlarm();
-        }
-        if (request.memo() != null) {
-            this.memo = request.memo();
-        }
-
-        if (newImageUrl != null && !newImageUrl.isBlank()) {
-            this.imageUrl = newImageUrl;
-        }
+    public Food update(FoodRegister request, String imageUrl) {
+        return Food.builder()
+                .id(this.id)
+                .name(request.name() != null ? request.name() : this.name)
+                .storageMethod(request.storageMethod() != null ? request.storageMethod() : this.storageMethod)
+                .expiryDate(request.expiryDate() != null ? request.expiryDate() : this.expiryDate)
+                .expiryAlarm(request.expiryAlarm() != null ? request.expiryAlarm() : this.expiryAlarm)
+                .memo(request.memo() != null ? request.memo() : this.memo)
+                .imageUrl(imageUrl != null ? imageUrl : this.imageUrl)
+                .build();
     }
 
     private long calculateRemainDay(LocalDate today) {

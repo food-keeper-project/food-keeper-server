@@ -7,9 +7,9 @@ import com.foodkeeper.foodkeeperserver.food.business.FoodService;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodRegisterRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodUpdateRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodsRequest;
-import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponses;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodIdResponse;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponse;
+import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponses;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
@@ -59,8 +59,8 @@ public class FoodController {
     @Operation(summary = "식재료 전체 조회", description = "식재료 전체 조회 API")
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<FoodResponse>>> findFoods(@ModelAttribute FoodsRequest request,
-                                                                            @CursorDefault Cursorable<Long> cursorable,
-                                                                            @AuthMember Member authMember) {
+                                                                             @CursorDefault Cursorable<Long> cursorable,
+                                                                             @AuthMember Member authMember) {
         SliceObject<RegisteredFood> foods = foodService.findFoodList(cursorable, request.categoryId(), authMember.memberKey());
         List<FoodResponse> foodResponses = foods.content().stream().map(FoodResponse::toFoodResponse).toList();
         return ResponseEntity.ok(ApiResponse.success(new PageResponse<>(foodResponses, foods.hasNext())));
@@ -105,7 +105,9 @@ public class FoodController {
                                                                   @RequestPart @Valid FoodUpdateRequest request,
                                                                   @RequestPart(required = false) MultipartFile image,
                                                                   @AuthMember Member authMember) {
-
+        FoodRegister foodRegister = FoodUpdateRequest.toRegister(request);
+        Long resultId = foodService.updateFood(foodId, foodRegister, image, authMember.memberKey());
+        return ResponseEntity.ok(ApiResponse.success(new FoodIdResponse(resultId)));
     }
 
 }

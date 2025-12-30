@@ -98,13 +98,13 @@ public class FoodEntity extends BaseEntity {
         );
     }
 
-    public void update(FoodRegister register, String imageUrl) {
-        this.name = register.name();
-        this.storageMethod = register.storageMethod();
-        this.imageUrl = imageUrl;
-        this.expiryDate = register.expiryDate();
-        this.expiryAlarm = register.expiryAlarm();
-        this.memo = register.memo();
+    public void update(Food food) {
+        this.name = food.name();
+        this.storageMethod = food.storageMethod();
+        this.imageUrl = food.imageUrl();
+        this.expiryDate = food.expiryDate();
+        this.expiryAlarm = food.expiryAlarm();
+        this.memo = food.memo();
     }
 
 }

@@ -18,7 +18,7 @@ import java.util.List;
 public class FoodCategoryManager {
 
     private final FoodCategoryRepository foodCategoryRepository;
-    private final SelectedFoodCategoryRepository selectedFoodCategoryRepository;
+
 
     // 카테고리 먼저 조회
     @Transactional(readOnly = true)

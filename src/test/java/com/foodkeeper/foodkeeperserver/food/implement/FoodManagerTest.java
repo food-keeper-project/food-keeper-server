@@ -4,12 +4,14 @@ import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.SelectedFoodCategoryRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
+import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.enums.EntityStatus;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -22,7 +24,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,9 +32,17 @@ public class FoodManagerTest {
 
     @InjectMocks
     FoodManager foodManager;
-
     @Mock
     FoodRepository foodRepository;
+    @Mock
+    SelectedFoodCategoryRepository selectedFoodCategoryRepository;
+
+    @BeforeEach
+    void setUp() {
+        SelectedFoodCategoryManager selectedFoodCategoryManager = new SelectedFoodCategoryManager(selectedFoodCategoryRepository);
+
+        foodManager = new FoodManager(foodRepository, selectedFoodCategoryManager);
+    }
 
     @Test
     @DisplayName("식재료 저장 요청 시 리포지토리 호출 및 결과 반환")
@@ -106,14 +116,33 @@ public class FoodManagerTest {
     @DisplayName("식재료 삭제")
     void removeFood_SUCCESS() throws Exception {
         //given
-        Food food = FoodFixture.createFood();
+
+        FoodEntity foodEntity = FoodFixture.createFoodEntity(1L);
+        given(foodRepository.findByIdAndMemberKey(1L, FoodFixture.MEMBER_KEY)).willReturn(Optional.of(foodEntity));
+        willDoNothing().given(selectedFoodCategoryRepository).deleteAllByFoodId(1L);
         //when
-        foodManager.removeFood(food);
+        Food result = foodManager.removeFood(1L, FoodFixture.MEMBER_KEY);
         //then
-        ArgumentCaptor<FoodEntity> captor = ArgumentCaptor.forClass(FoodEntity.class);
-        verify(foodRepository).delete(captor.capture());
-        assertThat(captor.getValue().getName()).isEqualTo(food.name());
+        verify(selectedFoodCategoryRepository).deleteAllByFoodId(1L);
+        assertThat(result.status()).isEqualTo(EntityStatus.DELETED);
     }
 
+    @Test
+    @DisplayName("식재료 수정")
+    void updateFood_SUCCESS() throws Exception {
+        //given
+        Food food = Food.builder().id(1L).name("초코우유").build();
+        String memberKey = FoodFixture.MEMBER_KEY;
+        FoodEntity foodEntity = FoodFixture.createFoodEntity(1L);
+
+        given(foodRepository.findByIdAndMemberKey(1L, memberKey)).willReturn(Optional.of(foodEntity));
+        willDoNothing().given(selectedFoodCategoryRepository).deleteAllByFoodId(1L);
+        given(selectedFoodCategoryRepository.saveAll(any())).willReturn(List.of());
+
+        //when
+        foodManager.updateFood(food, List.of(1L, 2L), memberKey);
+        //then
+        assertThat(foodEntity.getName()).isEqualTo(food.name());
+    }
 
 }

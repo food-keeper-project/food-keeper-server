@@ -33,7 +33,7 @@ public class FoodCategoryServiceTest {
 
     @BeforeEach
     void setUp() {
-        FoodCategoryManager foodCategoryManager = new FoodCategoryManager(foodCategoryRepository);
+        FoodCategoryManager foodCategoryManager =  new FoodCategoryManager(foodCategoryRepository);
         foodCategoryService = new FoodCategoryService(foodCategoryManager);
     }
 

@@ -96,13 +96,16 @@ public class FoodService {
     }
 
     @Transactional
-    public Long updateFood(Long foodId, FoodRegister foodRegister, MultipartFile imageUrl, String memberKey) {
+    public Long updateFood(Long foodId, FoodRegister register, MultipartFile imageUrl, String memberKey) {
+        Food food = foodReader.findFood(foodId, memberKey);
 
-        CompletableFuture<String> imageUrlFuture = imageManager.fileUpload(imageUrl);
-        Food food = foodRegister.toNewFood(imageUrlFuture.join(), memberKey);
-
-        foodManager.updateFood(food,foodRegister.categoryIds(), imageUrl);
-        imageManager.fileUpload(imageUrl);
+        CompletableFuture<String> newImage = null;
+        if (imageUrl != null) {
+            newImage = imageManager.fileUpload(imageUrl);
+            imageManager.deleteFile(food.imageUrl());
+        }
+        Food updatedFood = food.update(register, newImage.join());
+        foodManager.updateFood(updatedFood, register.categoryIds(), memberKey);
         return food.id();
     }
 }

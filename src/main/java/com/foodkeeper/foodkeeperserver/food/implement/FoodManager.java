@@ -5,7 +5,6 @@ import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
-import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -15,13 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 @Component
 @RequiredArgsConstructor
 public class FoodManager {
 
     private final FoodRepository foodRepository;
     private final SelectedFoodCategoryManager selectedFoodCategoryManager;
+
 
     @Transactional
     public Food registerFood(Food food) {
@@ -58,11 +57,11 @@ public class FoodManager {
     }
 
     @Transactional
-    public void updateFood(Long foodId, FoodRegister register, String imageUrl) {
-        FoodEntity foodEntity  = foodRepository.findById(foodId).orElseThrow(() -> new AppException(ErrorType.FOOD_DATA_NOT_FOUND));
-        foodEntity.update(register, imageUrl);
-        if(register.categoryIds() != null) {
-            selectedFoodCategoryManager.update(foodId, register.categoryIds());
+    public void updateFood(Food food, List<Long> categoryIds, String memberKey) {
+        FoodEntity foodEntity = foodRepository.findByIdAndMemberKey(food.id(), memberKey).orElseThrow(() -> new AppException(ErrorType.FOOD_DATA_NOT_FOUND));
+        foodEntity.update(food);
+        if (categoryIds != null) {
+            selectedFoodCategoryManager.update(food.id(), categoryIds);
         }
     }
 

@@ -3,10 +3,12 @@ package com.foodkeeper.foodkeeperserver.food.controller.v1;
 
 import com.foodkeeper.foodkeeperserver.food.business.FoodCategoryService;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodCategoryRegisterRequest;
-import com.foodkeeper.foodkeeperserver.food.controller.v1.request.UpdateCategoryRequest;
+import com.foodkeeper.foodkeeperserver.food.controller.v1.request.CategoryUpdateRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodCategoryResponse;
 import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCategoryRegister;
+import com.foodkeeper.foodkeeperserver.member.domain.Member;
+import com.foodkeeper.foodkeeperserver.security.auth.AuthMember;
 import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,19 +32,18 @@ public class FoodCategoryController {
     @NullMarked
     @Operation(summary = "카테고리 추가", description = "카테고리 추가 API")
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> createCategory(@RequestBody FoodCategoryRegisterRequest request) {
-        String memberKey = "memberKey"; // todo 로그인 방식 구현 후 리팩토링
-        FoodCategoryRegister register = new FoodCategoryRegister(request.name(), memberKey);
+    public ResponseEntity<ApiResponse<Void>> createCategory(@RequestBody FoodCategoryRegisterRequest request,
+                                                            @AuthMember Member member) {
+        FoodCategoryRegister register = new FoodCategoryRegister(request.name(), member.memberKey());
         foodCategoryService.registerFoodCategory(register);
-        return ResponseEntity.created(URI.create("/api/v1/categories")).build();
+        return ResponseEntity.created(URI.create("/api/v1/categories/{id}")).build();
     }
 
     @NullMarked
     @Operation(summary = "카테고리 전체 조회", description = "카테고리 전체 조회 API")
     @GetMapping
-    public ResponseEntity<ApiResponse<List<FoodCategoryResponse>>> getCategories() {
-        String memberKey = "memberKey"; // todo 로그인 방식 구현 후 리팩토링
-        List<FoodCategory> foodCategories = foodCategoryService.findAllByMemberKey(memberKey);
+    public ResponseEntity<ApiResponse<List<FoodCategoryResponse>>> getCategories(@AuthMember Member member) {
+        List<FoodCategory> foodCategories = foodCategoryService.findAllByMemberKey(member.memberKey());
         List<FoodCategoryResponse> responses = foodCategories.stream()
                 .map(FoodCategoryResponse::from)
                 .toList();
@@ -52,18 +53,16 @@ public class FoodCategoryController {
     @NullMarked
     @Operation(summary = "카테고리 이름 수정", description = "카테고리 이름 수정 API")
     @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> update(@PathVariable Long id, @RequestBody @Valid UpdateCategoryRequest request) {
-        String memberKey = "memberKey"; // todo 로그인 방식 구현 후 리팩토링
-        foodCategoryService.updateCategory(id, request.name(), memberKey);
+    public ResponseEntity<ApiResponse<Void>> updateCategory(@PathVariable Long id, @RequestBody @Valid CategoryUpdateRequest request, @AuthMember Member member) {
+        foodCategoryService.updateCategory(id, request.name(), member.memberKey());
         return ResponseEntity.ok(ApiResponse.success());
     }
 
     @NullMarked
     @Operation(summary = "카테고리 삭제", description = "카테고리 삭제 API")
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> remove(@PathVariable Long id) {
-        String memberKey = "memberKey"; // todo 로그인 방식 구현 후 리팩토링
-        foodCategoryService.removeCategory(id, memberKey);
+    public ResponseEntity<ApiResponse<Void>> removeCategory(@PathVariable Long id, @AuthMember Member member) {
+        foodCategoryService.removeCategory(id, member.memberKey());
         return ResponseEntity.ok(ApiResponse.success());
     }
 }
