@@ -12,6 +12,7 @@ import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
 import com.foodkeeper.foodkeeperserver.auth.implement.KakaoAuthenticator;
 import com.foodkeeper.foodkeeperserver.auth.implement.RefreshTokenManager;
 import com.foodkeeper.foodkeeperserver.auth.implement.SignInLogAppender;
+import com.foodkeeper.foodkeeperserver.food.implement.FoodCategoryManager;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
@@ -43,6 +44,7 @@ class AuthServiceTest {
     @Mock MemberRoleRepository memberRoleRepository;
     @Mock KakaoAuthenticator kakaoAuthenticator;
     @Mock SignInLogRepository signInLogRepository;
+    @Mock FoodCategoryManager foodCategoryManager;
     SecretKey secretKey;
     AuthService authService;
 
@@ -52,7 +54,8 @@ class AuthServiceTest {
         JwtGenerator jwtGenerator = new JwtGenerator(secretKey);
         SignInLogAppender signInLogAppender = new SignInLogAppender(signInLogRepository);
         MemberFinder memberFinder = new MemberFinder(memberRepository, oauthRepository);
-        MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, oauthRepository, memberRoleRepository);
+        MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, oauthRepository, memberRoleRepository,
+                foodCategoryManager);
         RefreshTokenManager refreshTokenManager = new RefreshTokenManager(memberRepository);
         authService = new AuthService(kakaoAuthenticator, memberFinder, memberRegistrar, signInLogAppender,
                 jwtGenerator, refreshTokenManager);
