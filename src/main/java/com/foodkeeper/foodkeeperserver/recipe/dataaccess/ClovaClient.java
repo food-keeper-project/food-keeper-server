@@ -1,8 +1,7 @@
-package com.foodkeeper.foodkeeperserver.recipe.controller.v1;
+package com.foodkeeper.foodkeeperserver.recipe.dataaccess;
 
-
-import com.foodkeeper.foodkeeperserver.recipe.business.request.ClovaRequest;
-import com.foodkeeper.foodkeeperserver.recipe.business.response.ClovaResponse;
+import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaRequest;
+import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaResponse;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.service.annotation.HttpExchange;

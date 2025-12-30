@@ -5,6 +5,7 @@ import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import java.time.LocalDate;
@@ -71,6 +72,7 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
                 .sorted(Comparator.comparing(FoodEntity::getExpiryDate)) // 유통기한순
                 .toList();
     }
+
 
     // 카테고리 선택했을 시 필터링 조회
     private void applyCategoryFilter(JPAQuery<FoodEntity> query, Long categoryId) {
