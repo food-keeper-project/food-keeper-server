@@ -26,10 +26,9 @@ public class FoodService {
     private final FoodReader foodReader;
     private final ImageManager imageManager;
     private final FoodManager foodManager;
-    private final FoodCategoryManager foodCategoryManager;
+    private final CategoryManager categoryManager;
     private final SelectedFoodCategoryManager selectedFoodCategoryManager;
     private final FoodBookmarker foodBookmarker;
-    private final FoodProvider foodProvider;
 
     @Transactional
     public Long registerFood(FoodRegister register, MultipartFile file, String memberKey) {
@@ -37,7 +36,7 @@ public class FoodService {
         Food food = register.toFood(imageUrlFuture.join(), memberKey);
         try {
             Food savedFood = foodManager.register(food);
-            List<FoodCategory> foodCategories = foodCategoryManager.findAllByIds(register.categoryIds());
+            List<FoodCategory> foodCategories = categoryManager.findAllByIds(register.categoryIds());
             foodCategories.forEach(category ->
                     selectedFoodCategoryManager.save(SelectedFoodCategory.create(savedFood.id(), category.id())));
             return savedFood.id();
@@ -48,26 +47,22 @@ public class FoodService {
     }
 
     public SliceObject<RegisteredFood> findFoodList(Cursorable<Long> cursorable, Long categoryId, String memberKey) {
-        SliceObject<Food> foods = foodReader.findFoodList(cursorable, categoryId, memberKey);
-        return foodProvider.findFoodList(foods);
+        return foodReader.findFoodList(cursorable, categoryId, memberKey);
     }
 
     // 단일 조회
     public RegisteredFood findFood(Long foodId, String memberKey) {
-        Food food = foodReader.findFood(foodId, memberKey);
-        return foodProvider.findFood(food);
+        return foodReader.findFood(foodId, memberKey);
     }
 
 
     public List<RegisteredFood> findAllFoods(String memberKey) {
-        List<Food> foods = foodReader.findAll(memberKey);
-        return foodProvider.findAllFoods(foods);
+        return foodReader.findAll(memberKey);
     }
 
     // 유통기한 임박 재료 리스트 조회
     public List<RegisteredFood> findImminentFoods(String memberKey) {
-        List<Food> foods = foodReader.findImminentFoods(memberKey);
-        return foodProvider.findAllFoods(foods);
+        return foodReader.findImminentFoods(memberKey);
     }
 
     @Transactional

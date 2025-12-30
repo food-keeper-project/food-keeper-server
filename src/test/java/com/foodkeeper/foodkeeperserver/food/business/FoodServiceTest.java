@@ -64,20 +64,19 @@ public class FoodServiceTest {
     @BeforeEach
     void setUp() {
         FoodManager foodManager = new FoodManager(foodRepository, new SelectedFoodCategoryManager(selectedFoodCategoryRepository));
-        FoodReader foodReader = new FoodReader(foodRepository);
-        FoodCategoryManager foodCategoryManager = new FoodCategoryManager(foodCategoryRepository);
+        CategoryManager categoryManager = new CategoryManager(foodCategoryRepository);
+        FoodCategoryReader foodCategoryReader = new FoodCategoryReader(foodCategoryRepository, selectedFoodCategoryRepository);
+        FoodReader foodReader = new FoodReader(foodRepository, foodCategoryReader);
         SelectedFoodCategoryManager selectedFoodCategoryManager = new SelectedFoodCategoryManager(selectedFoodCategoryRepository);
-        FoodProvider foodProvider = new FoodProvider(foodCategoryManager, selectedFoodCategoryManager);
         FoodBookmarker foodBookmarker = new FoodBookmarker(bookmarkedFoodRepository);
 
         foodService = new FoodService(
                 foodReader,
                 imageManager,
                 foodManager,
-                foodCategoryManager,
+                categoryManager,
                 selectedFoodCategoryManager,
-                foodBookmarker,
-                foodProvider
+                foodBookmarker
         );
     }
 

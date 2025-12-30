@@ -1,0 +1,45 @@
+package com.foodkeeper.foodkeeperserver.food.implement;
+
+import com.foodkeeper.foodkeeperserver.common.utils.ListUtil;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.SelectedFoodCategoryEntity;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodCategoryRepository;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.SelectedFoodCategoryRepository;
+import com.foodkeeper.foodkeeperserver.food.domain.FoodCategories;
+import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
+import com.foodkeeper.foodkeeperserver.food.domain.SelectedFoodCategory;
+import com.foodkeeper.foodkeeperserver.support.exception.AppException;
+import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Component
+@RequiredArgsConstructor
+public class FoodCategoryReader {
+
+    private final FoodCategoryRepository foodCategoryRepository;
+    private final SelectedFoodCategoryRepository selectedFoodCategoryRepository;
+
+    // 여러개의 음식
+    public FoodCategories findNamesByFoodIds(List<Long> foodIds) {
+        List<SelectedFoodCategory> categoryIds = ListUtil.getOrElseThrowList(selectedFoodCategoryRepository.findByFoodIdIn(foodIds).stream()
+                .map(SelectedFoodCategoryEntity::toDomain).toList());
+        List<FoodCategoryEntity> foodCategories = foodCategoryRepository.findAllByIdIn(categoryIds.stream()
+                .map(SelectedFoodCategory::foodCategoryId).toList());
+        return new FoodCategories(categoryIds, foodCategories.stream().map(FoodCategoryEntity::toDomain).toList());
+    }
+
+    // 단일 음식
+    public FoodCategories findNamesFoodById(Long foodId) {
+        List<SelectedFoodCategory> categoryIds = ListUtil.getOrElseThrowList(selectedFoodCategoryRepository.findByFoodId(foodId).stream()
+                .map(SelectedFoodCategoryEntity::toDomain).toList());
+        List<FoodCategoryEntity> foodCategories = foodCategoryRepository.findAllByIdIn(categoryIds.stream()
+                .map(SelectedFoodCategory::foodCategoryId).toList());
+        return new FoodCategories(categoryIds, foodCategories.stream().map(FoodCategoryEntity::toDomain).toList());
+    }
+
+
+}

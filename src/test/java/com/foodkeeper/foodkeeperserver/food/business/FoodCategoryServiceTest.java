@@ -5,7 +5,8 @@ import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodCategoryRe
 import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCategoryRegister;
 import com.foodkeeper.foodkeeperserver.food.fixture.CategoryFixture;
-import com.foodkeeper.foodkeeperserver.food.implement.FoodCategoryManager;
+import com.foodkeeper.foodkeeperserver.food.implement.CategoryManager;
+import com.foodkeeper.foodkeeperserver.food.implement.FoodCategoryReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,8 +34,8 @@ public class FoodCategoryServiceTest {
 
     @BeforeEach
     void setUp() {
-        FoodCategoryManager foodCategoryManager = new FoodCategoryManager(foodCategoryRepository);
-        foodCategoryService = new FoodCategoryService(foodCategoryManager);
+        CategoryManager categoryManager = new CategoryManager(foodCategoryRepository);
+        foodCategoryService = new FoodCategoryService(categoryManager);
     }
 
     @Test

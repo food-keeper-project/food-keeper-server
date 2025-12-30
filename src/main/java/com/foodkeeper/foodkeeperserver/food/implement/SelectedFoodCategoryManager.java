@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Component
 @RequiredArgsConstructor
 public class SelectedFoodCategoryManager {
@@ -20,21 +18,6 @@ public class SelectedFoodCategoryManager {
         selectedFoodCategoryRepository.save(selectedFoodCategoryEntity);
     }
 
-    @Transactional(readOnly = true)
-    public List<SelectedFoodCategory> findByFoodIds(List<Long> foodIds) {
-        List<SelectedFoodCategoryEntity> entities = selectedFoodCategoryRepository.findByFoodIdIn(foodIds);
-        return entities.stream()
-                .map(SelectedFoodCategoryEntity::toDomain)
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public List<SelectedFoodCategory> findByFoodId(Long foodId) {
-        List<SelectedFoodCategoryEntity> entities = selectedFoodCategoryRepository.findByFoodId(foodId);
-        return entities.stream()
-                .map(SelectedFoodCategoryEntity::toDomain)
-                .toList();
-    }
 
     @Transactional
     public void removeAllByFoodId(Long foodId) {

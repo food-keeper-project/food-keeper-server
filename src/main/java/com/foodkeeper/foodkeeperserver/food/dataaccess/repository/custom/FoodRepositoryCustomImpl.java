@@ -6,6 +6,7 @@ import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.DateTemplate;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 
@@ -82,10 +83,15 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
     }
 
     private BooleanExpression isImminent(LocalDate today) {
-        return Expressions.numberTemplate(Integer.class,
-                        "DATEDIFF({0}, {1})", foodEntity.expiryDate, today)
-                .loe(foodEntity.expiryAlarm)
-                .and(foodEntity.expiryDate.goe(today));
+        // 유통기한 지난 날짜는 Pass
+        BooleanExpression startPoint = foodEntity.expiryDate.goe(today);
+        DateTemplate<LocalDate> endPoint = Expressions.dateTemplate(
+                LocalDate.class,
+                "DATE_ADD({0}, INTERVAL {1} DAY)",
+                today,
+                foodEntity.expiryAlarm
+        );
+        return startPoint.and(foodEntity.expiryDate.loe(endPoint));
     }
 
 

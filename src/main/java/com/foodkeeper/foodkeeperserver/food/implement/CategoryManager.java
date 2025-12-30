@@ -11,16 +11,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class FoodCategoryManager {
+public class CategoryManager {
 
     private final FoodCategoryRepository foodCategoryRepository;
 
-    // 카테고리 먼저 조회
     @Transactional(readOnly = true)
     public List<FoodCategory> findAllByIds(List<Long> categoryIds) {
         List<FoodCategoryEntity> foodCategories = ListUtil.getOrElseThrowList(foodCategoryRepository.findAllById(categoryIds));
@@ -29,27 +26,18 @@ public class FoodCategoryManager {
                 .toList();
     }
 
-    public Map<Long, String> findNamesByIds(List<Long> categoryIds) {
-        List<FoodCategoryEntity> foodCategories = ListUtil.getOrElseThrowList(foodCategoryRepository.findAllByIdIn(categoryIds));
-        return foodCategories.stream()
-                .collect(Collectors.toMap(
-                        FoodCategoryEntity::getId,
-                        FoodCategoryEntity::getName
-                ));
-    }
-
-    @Transactional
-    public void addCategory(String name, String memberKey) {
-        FoodCategory foodCategory = FoodCategory.create(name, memberKey);
-        foodCategoryRepository.save(FoodCategoryEntity.from(foodCategory));
-    }
-
     @Transactional(readOnly = true)
     public List<FoodCategory> findAllByMemberKey(String memberKey) {
         List<FoodCategoryEntity> foodCategories = ListUtil.getOrElseThrowList(foodCategoryRepository.findAllByMemberKey(memberKey));
         return foodCategories.stream()
                 .map(FoodCategoryEntity::toDomain)
                 .toList();
+    }
+
+    @Transactional
+    public void addCategory(String name, String memberKey) {
+        FoodCategory foodCategory = FoodCategory.create(name, memberKey);
+        foodCategoryRepository.save(FoodCategoryEntity.from(foodCategory));
     }
 
     @Transactional
@@ -62,5 +50,4 @@ public class FoodCategoryManager {
         FoodCategoryEntity foodCategoryEntity = foodCategoryRepository.findByIdAndMemberKey(id, memberKey).orElseThrow(() -> new AppException(ErrorType.CATEGORY_DATA_NOT_FOUND));
         foodCategoryEntity.delete();
     }
-
 }
