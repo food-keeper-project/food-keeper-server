@@ -43,7 +43,7 @@ public class RecipeController {
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> registerRecipe(@RequestBody @Valid RecipeRegisterRequest request,
                                                             @AuthMember Member member) {
-        Long recipeId = recipeService.registerRecipe(request.toRecipe(), member.memberKey());
+        Long recipeId = recipeService.registerRecipe(request.toNewRecipe(), member.memberKey());
         return ResponseEntity.created(URI.create("/api/v1/recipes/" + recipeId)).body(ApiResponse.success());
     }
 
@@ -64,5 +64,14 @@ public class RecipeController {
                                                                   @AuthMember Member member) {
         return ResponseEntity.ok(ApiResponse.success(RecipeResponse.from(
                 recipeService.findRecipe(recipeId, member.memberKey()))));
+    }
+
+    @NullMarked
+    @Operation(summary = "레시피 삭제", description = "레시피 삭제 API")
+    @DeleteMapping("/{recipeId}")
+    public ResponseEntity<ApiResponse<Void>> removeRecipe(@PathVariable Long recipeId,
+                                                                    @AuthMember Member member) {
+        // TODO: 레시피 삭제
+        return ResponseEntity.ok(ApiResponse.success());
     }
 }

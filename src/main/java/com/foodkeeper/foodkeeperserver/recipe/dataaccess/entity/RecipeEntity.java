@@ -1,6 +1,7 @@
 package com.foodkeeper.foodkeeperserver.recipe.dataaccess.entity;
 
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.BaseEntity;
+import com.foodkeeper.foodkeeperserver.recipe.domain.NewRecipe;
 import com.foodkeeper.foodkeeperserver.recipe.domain.Recipe;
 import com.foodkeeper.foodkeeperserver.recipe.domain.RecipeIngredient;
 import com.foodkeeper.foodkeeperserver.recipe.domain.RecipeStep;
@@ -43,7 +44,7 @@ public class RecipeEntity extends BaseEntity {
         this.memberKey = memberKey;
     }
 
-    public static RecipeEntity of(Recipe recipe, String memberKey) {
+    public static RecipeEntity of(NewRecipe recipe, String memberKey) {
         return RecipeEntity.builder()
                 .title(recipe.menuName())
                 .description(recipe.description())
@@ -54,6 +55,7 @@ public class RecipeEntity extends BaseEntity {
 
     public Recipe toDomain() {
         return Recipe.builder()
+                .id(id)
                 .menuName(title)
                 .description(description)
                 .cookMinutes(cookMinutes)
@@ -64,6 +66,7 @@ public class RecipeEntity extends BaseEntity {
 
     public Recipe toDomain(List<RecipeStep> steps, List<RecipeIngredient> ingredients) {
         return Recipe.builder()
+                .id(id)
                 .menuName(title)
                 .description(description)
                 .cookMinutes(cookMinutes)

@@ -6,7 +6,7 @@ import com.foodkeeper.foodkeeperserver.recipe.dataaccess.entity.RecipeStepEntity
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.repository.RecipeIngredientRepository;
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.repository.RecipeRepository;
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.repository.RecipeStepRepository;
-import com.foodkeeper.foodkeeperserver.recipe.domain.Recipe;
+import com.foodkeeper.foodkeeperserver.recipe.domain.NewRecipe;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +20,7 @@ public class RecipeRegistrar {
     private final RecipeStepRepository recipeStepRepository;
 
     @Transactional
-    public Long register(Recipe recipe, String memberKey) {
+    public Long register(NewRecipe recipe, String memberKey) {
         RecipeEntity recipeEntity = recipeRepository.save(RecipeEntity.of(recipe, memberKey));
         recipe.ingredients().forEach(ingredient ->
                 recipeIngredientRepository.save(RecipeIngredientEntity.of(ingredient, recipeEntity.getId())));

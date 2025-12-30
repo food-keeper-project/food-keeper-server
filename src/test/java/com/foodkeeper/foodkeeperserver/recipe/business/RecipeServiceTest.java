@@ -2,12 +2,11 @@ package com.foodkeeper.foodkeeperserver.recipe.business;
 
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.ClovaClient;
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.entity.RecipeEntity;
-import com.foodkeeper.foodkeeperserver.recipe.dataaccess.entity.RecipeStepEntity;
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.repository.RecipeIngredientRepository;
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.repository.RecipeRepository;
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.repository.RecipeStepRepository;
 import com.foodkeeper.foodkeeperserver.recipe.domain.AiType;
-import com.foodkeeper.foodkeeperserver.recipe.domain.Recipe;
+import com.foodkeeper.foodkeeperserver.recipe.domain.NewRecipe;
 import com.foodkeeper.foodkeeperserver.recipe.domain.RecipeIngredient;
 import com.foodkeeper.foodkeeperserver.recipe.domain.RecipeStep;
 import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaMessage;
@@ -32,7 +31,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 @ExtendWith(MockitoExtension.class)
@@ -92,7 +90,7 @@ class RecipeServiceTest {
                 new ClovaResult(clovaMessage));
         given(clovaClient.getRecipe(anyString(), any())).willReturn(clovaResponse);
 
-        Recipe recipe = recipeService.recommendRecipe(List.of("test"), List.of("test"));
+        NewRecipe recipe = recipeService.recommendRecipe(List.of("test"), List.of("test"));
 
         assertThat(recipe.menuName()).isEqualTo("요리 이름");
         assertThat(recipe.description()).isEqualTo("요리에 대한 매력적인 한 줄 소개");
@@ -118,10 +116,15 @@ class RecipeServiceTest {
 
         RecipeStep recipeStep = new RecipeStep("title", "content");
         RecipeIngredient recipeIngredient = new RecipeIngredient("name", "quantity");
-        Recipe recipe = RecipeEntityFixture.DEFAULT.get(memberKey)
-                .toDomain(List.of(recipeStep), List.of(recipeIngredient));
+        NewRecipe newRecipe = NewRecipe.builder()
+                .menuName("menu")
+                .description("desc")
+                .cookMinutes(20)
+                .steps(List.of(recipeStep))
+                .ingredients(List.of(recipeIngredient))
+                .build();
 
-        Long savedRecipeId = recipeService.registerRecipe(recipe, memberKey);
+        Long savedRecipeId = recipeService.registerRecipe(newRecipe, memberKey);
 
         assertThat(savedRecipeId).isEqualTo(recipeId);
     }

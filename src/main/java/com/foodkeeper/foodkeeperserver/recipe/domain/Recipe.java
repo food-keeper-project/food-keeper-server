@@ -5,7 +5,8 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record Recipe(String menuName,
+public record Recipe(Long id,
+                     String menuName,
                      String description,
                      Integer cookMinutes,
                      List<RecipeIngredient> ingredients,

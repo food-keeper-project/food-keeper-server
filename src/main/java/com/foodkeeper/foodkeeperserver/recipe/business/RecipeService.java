@@ -2,6 +2,7 @@ package com.foodkeeper.foodkeeperserver.recipe.business;
 
 import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
+import com.foodkeeper.foodkeeperserver.recipe.domain.NewRecipe;
 import com.foodkeeper.foodkeeperserver.recipe.domain.Recipe;
 import com.foodkeeper.foodkeeperserver.recipe.implement.AiRecipeRecommender;
 import com.foodkeeper.foodkeeperserver.recipe.implement.RecipeFinder;
@@ -27,11 +28,11 @@ public class RecipeService {
         return recipeFinder.find(recipeId, memberKey);
     }
 
-    public Long registerRecipe(Recipe recipe, String memberKey) {
+    public Long registerRecipe(NewRecipe recipe, String memberKey) {
         return recipeRegistrar.register(recipe, memberKey);
     }
 
-    public Recipe recommendRecipe(List<String> ingredients, List<String> excludedMenus) {
+    public NewRecipe recommendRecipe(List<String> ingredients, List<String> excludedMenus) {
         return aiRecipeRecommender.getRecipeRecommendation(ingredients, excludedMenus);
     }
 }

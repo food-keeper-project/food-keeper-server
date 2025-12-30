@@ -1,6 +1,7 @@
 package com.foodkeeper.foodkeeperserver.recipe.implement;
 
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.ClovaClient;
+import com.foodkeeper.foodkeeperserver.recipe.domain.NewRecipe;
 import com.foodkeeper.foodkeeperserver.recipe.domain.Recipe;
 import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaRequest;
 import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaResponse;
@@ -48,14 +49,14 @@ public class AiRecipeRecommender {
         }
     }
 
-    public Recipe getRecipeRecommendation(List<String> ingredients, List<String> excludedMenus) {
+    public NewRecipe getRecipeRecommendation(List<String> ingredients, List<String> excludedMenus) {
         String userPrompt = removeDuplicateFood(ingredients, excludedMenus);
 
         ClovaRequest clovaRequest = ClovaRequest.createPrompt(systemPrompt, userPrompt);
         ClovaResponse clovaResponse = clovaClient.getRecipe(BEARER + apiKey, clovaRequest);
 
         String content = clovaResponse.getContent();
-        return objectMapper.readValue(content, Recipe.class);
+        return objectMapper.readValue(content, NewRecipe.class);
     }
 
     private String removeDuplicateFood(List<String> ingredients, List<String> excludedMenus) {
