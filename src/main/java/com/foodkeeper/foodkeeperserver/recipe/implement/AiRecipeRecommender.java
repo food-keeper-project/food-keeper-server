@@ -2,7 +2,6 @@ package com.foodkeeper.foodkeeperserver.recipe.implement;
 
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.ClovaClient;
 import com.foodkeeper.foodkeeperserver.recipe.domain.NewRecipe;
-import com.foodkeeper.foodkeeperserver.recipe.domain.Recipe;
 import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaRequest;
 import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaResponse;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;

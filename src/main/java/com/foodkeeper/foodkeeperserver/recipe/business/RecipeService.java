@@ -6,7 +6,7 @@ import com.foodkeeper.foodkeeperserver.recipe.domain.NewRecipe;
 import com.foodkeeper.foodkeeperserver.recipe.domain.Recipe;
 import com.foodkeeper.foodkeeperserver.recipe.implement.AiRecipeRecommender;
 import com.foodkeeper.foodkeeperserver.recipe.implement.RecipeFinder;
-import com.foodkeeper.foodkeeperserver.recipe.implement.RecipeRegistrar;
+import com.foodkeeper.foodkeeperserver.recipe.implement.RecipeManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +17,7 @@ import java.util.List;
 public class RecipeService {
 
     private final AiRecipeRecommender aiRecipeRecommender;
-    private final RecipeRegistrar recipeRegistrar;
+    private final RecipeManager recipeManager;
     private final RecipeFinder recipeFinder;
 
     public SliceObject<Recipe> findRecipes(Cursorable<Long> cursorable, String memberKey) {
@@ -29,10 +29,14 @@ public class RecipeService {
     }
 
     public Long registerRecipe(NewRecipe recipe, String memberKey) {
-        return recipeRegistrar.register(recipe, memberKey);
+        return recipeManager.register(recipe, memberKey);
     }
 
     public NewRecipe recommendRecipe(List<String> ingredients, List<String> excludedMenus) {
         return aiRecipeRecommender.getRecipeRecommendation(ingredients, excludedMenus);
+    }
+
+    public void removeRecipe(Long recipeId, String memberKey) {
+        recipeManager.remove(recipeId, memberKey);
     }
 }

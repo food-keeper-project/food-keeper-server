@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.recipe.dataaccess.entity;
 
+import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.BaseEntity;
 import com.foodkeeper.foodkeeperserver.recipe.domain.RecipeIngredient;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "recipe_ingredient")
-public class RecipeIngredientEntity {
+public class RecipeIngredientEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

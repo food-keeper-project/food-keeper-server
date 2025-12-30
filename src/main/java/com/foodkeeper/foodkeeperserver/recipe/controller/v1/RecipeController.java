@@ -71,7 +71,7 @@ public class RecipeController {
     @DeleteMapping("/{recipeId}")
     public ResponseEntity<ApiResponse<Void>> removeRecipe(@PathVariable Long recipeId,
                                                                     @AuthMember Member member) {
-        // TODO: 레시피 삭제
+        recipeService.removeRecipe(recipeId, member.memberKey());
         return ResponseEntity.ok(ApiResponse.success());
     }
 }
