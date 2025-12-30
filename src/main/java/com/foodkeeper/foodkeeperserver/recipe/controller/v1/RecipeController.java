@@ -70,7 +70,7 @@ public class RecipeController {
     @Operation(summary = "레시피 삭제", description = "레시피 삭제 API")
     @DeleteMapping("/{recipeId}")
     public ResponseEntity<ApiResponse<Void>> removeRecipe(@PathVariable Long recipeId,
-                                                                    @AuthMember Member member) {
+                                                          @AuthMember Member member) {
         recipeService.removeRecipe(recipeId, member.memberKey());
         return ResponseEntity.ok(ApiResponse.success());
     }
