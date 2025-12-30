@@ -5,7 +5,7 @@ import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
-import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import java.time.LocalDate;
@@ -34,7 +34,7 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
         List<FoodEntity> content = query
                 .where(
                         foodEntity.memberKey.eq(memberKey),
-                        foodEntity.createdAt.lt(cursorable.cursor()),
+                        ltCursor(cursorable.cursor()),
                         foodEntity.status.ne(EntityStatus.DELETED)
                 )
                 .orderBy(foodEntity.createdAt.desc(), foodEntity.id.desc())
@@ -42,6 +42,10 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
                 .fetch();
 
         return new SliceObject<>(content, cursorable, hasNext(cursorable, content));
+    }
+
+    private static BooleanExpression ltCursor(LocalDateTime cursor) {
+        return cursor == null ? null : foodEntity.createdAt.lt(cursor);
     }
 
     @Override
