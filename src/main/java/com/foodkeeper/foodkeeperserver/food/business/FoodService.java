@@ -50,9 +50,8 @@ public class FoodService {
     // 커서 리스트 조회
     public SliceObject<RegisteredFood> getFoodList(Cursorable<LocalDateTime> cursorable, Long categoryId, String memberKey) {
         SliceObject<Food> foods = foodManager.findFoodList(cursorable, categoryId, memberKey);
-        SelectedFoodCategories categories = new SelectedFoodCategories(selectedFoodCategoryManager.findByFoodIds(
-                foods.content().stream().map(Food::id).toList()
-        ));
+        SelectedFoodCategories categories = selectedFoodCategoryManager.findByFoodIds(
+                foods.content().stream().map(Food::id).toList());
         return foods.map(food -> food.toRegisteredFood(categories.getCategoryIdsByFoodId(food.id())));
     }
 
@@ -75,10 +74,12 @@ public class FoodService {
     }
 
     // 유통기한 임박 재료 리스트 조회
-    public List<RecipeFood> getImminentFoods(String memberKey) {
+    public List<RegisteredFood> getImminentFoods(String memberKey) {
         List<Food> foods = foodManager.findImminentFoods(memberKey);
+        SelectedFoodCategories categories = selectedFoodCategoryManager.findByFoodIds(
+                foods.stream().map(Food::id).toList());
         return foods.stream()
-                .map(Food::toRecipe)
+                .map(food -> food.toRegisteredFood(categories.getCategoryIdsByFoodId(food.id())))
                 .toList();
     }
 
