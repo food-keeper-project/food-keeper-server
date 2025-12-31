@@ -5,9 +5,8 @@ import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.DateTemplate;
-import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.Ops;
+import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 
@@ -69,12 +68,10 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
     // 유통기한 임박한 식재료 조회
     @Override
     public List<FoodEntity> findImminentFoods(String memberKey) {
-        LocalDate today = LocalDate.now();
         return selectFrom(foodEntity)
                 .where(
                         foodEntity.memberKey.eq(memberKey),
-                        foodEntity.status.ne(EntityStatus.DELETED),
-                        isImminent(today))
+                        foodEntity.status.ne(EntityStatus.DELETED))
                 .orderBy(foodEntity.expiryDate.asc())
                 .fetch();
     }
@@ -89,17 +86,6 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
         }
     }
 
-    private BooleanExpression isImminent(LocalDate today) {
-        // 유통기한 지난 날짜는 Pass
-        BooleanExpression startPoint = foodEntity.expiryDate.goe(today);
-        DateTemplate<LocalDate> endPoint = Expressions.dateTemplate(
-                LocalDate.class,
-                "DATE_ADD({0}, INTERVAL {1} DAY)",
-                today,
-                foodEntity.expiryAlarmDays
-        );
-        return startPoint.and(foodEntity.expiryDate.loe(endPoint));
-    }
 
 
 }

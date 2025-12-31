@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -116,7 +117,7 @@ class FoodReaderTest {
         // given
         String memberKey = FoodFixture.MEMBER_KEY;
         List<FoodEntity> foodEntities = List.of(FoodFixture.createFoodEntity(1L));
-
+        LocalDate today = LocalDate.now();
         FoodCategories mockFoodCategories = mock(FoodCategories.class);
         given(mockFoodCategories.getCategoryNames(anyLong())).willReturn(List.of("임박식품"));
 
@@ -124,7 +125,7 @@ class FoodReaderTest {
         given(foodCategoryReader.findNamesByFoodIds(anyList())).willReturn(mockFoodCategories);
 
         // when
-        List<RegisteredFood> results = foodReader.findImminentFoods(memberKey);
+        List<RegisteredFood> results = foodReader.findImminentFoods(today, memberKey);
 
         // then
         assertThat(results).hasSize(1);

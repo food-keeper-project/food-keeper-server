@@ -1,6 +1,5 @@
 package com.foodkeeper.foodkeeperserver.food.implement;
 
-import com.foodkeeper.foodkeeperserver.common.utils.ListUtil;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.SelectedFoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodCategoryRepository;
@@ -21,8 +20,8 @@ public class FoodCategoryReader {
 
     // 여러개의 음식
     public FoodCategories findNamesByFoodIds(List<Long> foodIds) {
-        List<SelectedFoodCategory> categoryIds = ListUtil.getOrElseThrowList(selectedFoodCategoryRepository.findByFoodIdIn(foodIds).stream()
-                .map(SelectedFoodCategoryEntity::toDomain).toList());
+        List<SelectedFoodCategory> categoryIds = selectedFoodCategoryRepository.findByFoodIdIn(foodIds).stream()
+                .map(SelectedFoodCategoryEntity::toDomain).toList();
         List<FoodCategoryEntity> foodCategories = foodCategoryRepository.findAllByIdIn(categoryIds.stream()
                 .map(SelectedFoodCategory::foodCategoryId).toList());
         return new FoodCategories(categoryIds, foodCategories.stream().map(FoodCategoryEntity::toDomain).toList());
@@ -30,8 +29,8 @@ public class FoodCategoryReader {
 
     // 단일 음식
     public FoodCategories findNamesFoodById(Long foodId) {
-        List<SelectedFoodCategory> categoryIds = ListUtil.getOrElseThrowList(selectedFoodCategoryRepository.findByFoodId(foodId).stream()
-                .map(SelectedFoodCategoryEntity::toDomain).toList());
+        List<SelectedFoodCategory> categoryIds = selectedFoodCategoryRepository.findByFoodId(foodId).stream()
+                .map(SelectedFoodCategoryEntity::toDomain).toList();
         List<FoodCategoryEntity> foodCategories = foodCategoryRepository.findAllByIdIn(categoryIds.stream()
                 .map(SelectedFoodCategory::foodCategoryId).toList());
         return new FoodCategories(categoryIds, foodCategories.stream().map(FoodCategoryEntity::toDomain).toList());

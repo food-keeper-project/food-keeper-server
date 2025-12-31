@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -62,7 +63,8 @@ public class FoodService {
 
     // 유통기한 임박 재료 리스트 조회
     public List<RegisteredFood> findImminentFoods(String memberKey) {
-        return foodReader.findImminentFoods(memberKey);
+        LocalDate today = LocalDate.now();
+        return foodReader.findImminentFoods(today, memberKey);
     }
 
     @Transactional

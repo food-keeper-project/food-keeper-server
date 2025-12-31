@@ -84,8 +84,8 @@ public class FoodController {
     @NullMarked
     @Operation(summary = "유통기한 임박 식재료 리스트 조회", description = "유통기한 임박 식재료 조회 API")
     @GetMapping("/imminent")
-    public ResponseEntity<ApiResponse<FoodResponses>> findImminentFoods(@AuthMember Member authMember) {
-        List<RegisteredFood> imminentFoods = foodService.findImminentFoods(authMember.memberKey());
+    public ResponseEntity<ApiResponse<FoodResponses>> findImminentFoods() {
+        List<RegisteredFood> imminentFoods = foodService.findImminentFoods("membre");
         return ResponseEntity.ok(ApiResponse.success(new FoodResponses(FoodResponse.toFoodListResponse(imminentFoods))));
     }
 

@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Component
@@ -37,14 +38,17 @@ public class FoodReader {
 
     // 1) 이름 정렬 2) 최신순
     public List<RegisteredFood> findAll(String memberKey) {
-        List<Food> foods = foodRepository.findAllByMemberKey(memberKey).stream().map(FoodEntity::toDomain).toList();
+        List<Food> foods = foodRepository.findAllByMemberKey(memberKey).stream()
+                .map(FoodEntity::toDomain).toList();
         FoodCategories foodCategories = foodCategoryReader.findNamesByFoodIds(foods.stream().map(Food::id).toList());
         return foods.stream().map(food -> food.toRegisteredFood(foodCategories.getCategoryNames(food.id()))).toList();
     }
 
     // 알림 설정 리스트 조회
-    public List<RegisteredFood> findImminentFoods(String memberKey) {
-        List<Food> foods = foodRepository.findImminentFoods(memberKey).stream().map(FoodEntity::toDomain).toList();
+    public List<RegisteredFood> findImminentFoods(LocalDate toady, String memberKey) {
+        List<Food> foods = foodRepository.findImminentFoods(memberKey).stream()
+                .filter(food -> food.isImminent(toady))
+                .map(FoodEntity::toDomain).toList();
         FoodCategories foodCategories = foodCategoryReader.findNamesByFoodIds(foods.stream().map(Food::id).toList());
         return foods.stream().map(food -> food.toRegisteredFood(foodCategories.getCategoryNames(food.id()))).toList();
     }

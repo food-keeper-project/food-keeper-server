@@ -97,4 +97,10 @@ public class FoodEntity extends BaseEntity {
         );
     }
 
+    public boolean isImminent(LocalDate today) {
+        if(expiryDate.isBefore(today)) return false;
+        LocalDate alarmLimitDate = today.plusDays(this.expiryAlarmDays);
+        return !expiryDate.isAfter(alarmLimitDate);
+    }
+
 }
