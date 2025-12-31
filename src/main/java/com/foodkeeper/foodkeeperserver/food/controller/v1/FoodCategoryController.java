@@ -36,7 +36,7 @@ public class FoodCategoryController {
                                                             @AuthMember Member member) {
         FoodCategoryRegister register = new FoodCategoryRegister(request.name(), member.memberKey());
         foodCategoryService.registerFoodCategory(register);
-        return ResponseEntity.created(URI.create("/api/v1/categories/{id}")).build();
+        return ResponseEntity.created(URI.create("/api/v1/categories/{categoryId}")).build();
     }
 
     @NullMarked
@@ -52,19 +52,19 @@ public class FoodCategoryController {
 
     @NullMarked
     @Operation(summary = "카테고리 이름 수정", description = "카테고리 이름 수정 API")
-    @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> updateCategory(@PathVariable Long id,
+    @PatchMapping("/{categoryId}")
+    public ResponseEntity<ApiResponse<Void>> updateCategory(@PathVariable Long categoryId,
                                                             @RequestBody @Valid UpdateCategoryRequest request,
                                                             @AuthMember Member member) {
-        foodCategoryService.updateCategory(id, request.name(), member.memberKey());
+        foodCategoryService.updateCategory(categoryId, request.name(), member.memberKey());
         return ResponseEntity.ok(ApiResponse.success());
     }
 
     @NullMarked
     @Operation(summary = "카테고리 삭제", description = "카테고리 삭제 API")
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> removeCategory(@PathVariable Long id, @AuthMember Member member) {
-        foodCategoryService.removeCategory(id, member.memberKey());
+    public ResponseEntity<ApiResponse<Void>> removeCategory(@PathVariable Long categoryId, @AuthMember Member member) {
+        foodCategoryService.removeCategory(categoryId, member.memberKey());
         return ResponseEntity.ok(ApiResponse.success());
     }
 }
