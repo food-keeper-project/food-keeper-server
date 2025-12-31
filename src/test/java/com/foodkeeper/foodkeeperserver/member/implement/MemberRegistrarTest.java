@@ -4,7 +4,7 @@ import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.MemberRoleRepo
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
 import com.foodkeeper.foodkeeperserver.auth.domain.MemberRoles;
 import com.foodkeeper.foodkeeperserver.auth.domain.enums.MemberRole;
-import com.foodkeeper.foodkeeperserver.food.implement.FoodCategoryManager;
+import com.foodkeeper.foodkeeperserver.food.implement.CategoryManager;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
 import com.foodkeeper.foodkeeperserver.member.domain.NewMember;
@@ -30,7 +30,7 @@ class MemberRegistrarTest {
     @Mock MemberRepository memberRepository;
     @Mock OauthRepository oauthRepository;
     @Mock MemberRoleRepository memberRoleRepository;
-    @Mock FoodCategoryManager foodCategoryManager;
+    @Mock CategoryManager foodCategoryManager;
     MemberRegistrar memberRegistrar;
 
     @BeforeEach

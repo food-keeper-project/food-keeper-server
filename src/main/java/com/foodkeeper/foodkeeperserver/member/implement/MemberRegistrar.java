@@ -4,7 +4,7 @@ import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.MemberRoleEntity;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.OauthEntity;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.MemberRoleRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
-import com.foodkeeper.foodkeeperserver.food.implement.FoodCategoryManager;
+import com.foodkeeper.foodkeeperserver.food.implement.CategoryManager;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
 import com.foodkeeper.foodkeeperserver.member.domain.NewOAuthMember;
@@ -18,7 +18,7 @@ public class MemberRegistrar {
     private final MemberRepository memberRepository;
     private final OauthRepository oauthRepository;
     private final MemberRoleRepository memberRoleRepository;
-    private final FoodCategoryManager foodCategoryManager;
+    private final CategoryManager foodCategoryManager;
 
     @Transactional
     public String register(NewOAuthMember newOAuthMember) {
