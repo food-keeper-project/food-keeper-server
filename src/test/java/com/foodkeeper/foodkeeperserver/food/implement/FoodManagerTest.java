@@ -66,6 +66,25 @@ public class FoodManagerTest {
         assertThat(results.content()).hasSize(2);
         assertThat(results.content().getFirst().name()).isEqualTo(FoodFixture.NAME);
         assertThat(results.content().getFirst()).isInstanceOf(Food.class);
+
+    }
+
+    @Test
+    @DisplayName("데이터 없을 때 Null 이 아닌 빈 리스트 반환")
+    void returnEmptyList_NOTNULL() {
+        //given
+        Long categoryId = 1L;
+        String memberKey = FoodFixture.MEMBER_KEY;
+        long foodId = 1L;
+        Cursorable<Long> cursorable = new Cursorable<>(foodId, 2);
+        SliceObject<FoodEntity> foodSlice = new SliceObject<>(List.of(), cursorable, false);
+
+        given(foodRepository.findFoodCursorList(cursorable, categoryId, memberKey)).willReturn(foodSlice);
+        //when
+        SliceObject<Food> results = foodManager.findFoodList(cursorable, categoryId, memberKey);
+        //then
+        assertThat(results.content()).isEmpty();
+        assertThat(results.content()).isNotNull();
     }
 
     @Test

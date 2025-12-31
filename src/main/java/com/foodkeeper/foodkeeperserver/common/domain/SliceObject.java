@@ -7,7 +7,7 @@ import java.util.function.Function;
 public record SliceObject<T>(List<T> content, Cursorable<?> cursorable, boolean hasNext) {
 
     public SliceObject(List<T> content, Cursorable<?> cursorable, boolean hasNext) {
-        this.content = new ArrayList<>(content);
+        this.content = (content == null) ? new ArrayList<>() : new ArrayList<>(content);
         this.cursorable = cursorable;
         this.hasNext = hasNext;
     }
