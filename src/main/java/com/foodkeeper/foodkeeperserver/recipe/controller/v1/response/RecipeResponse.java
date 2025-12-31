@@ -1,12 +1,35 @@
 package com.foodkeeper.foodkeeperserver.recipe.controller.v1.response;
 
-import com.foodkeeper.foodkeeperserver.recipe.domain.Ingredient;
+import com.foodkeeper.foodkeeperserver.recipe.domain.NewRecipe;
+import com.foodkeeper.foodkeeperserver.recipe.domain.Recipe;
+import lombok.Builder;
 
 import java.util.List;
 
-public record RecipeResponse(String menuName,
+@Builder
+public record RecipeResponse(String title,
                              String description,
-                             String totalTime,
-                             List<Ingredient> ingredients,
-                             List<String> steps) {
+                             Integer cookMinutes,
+                             List<IngredientResponse> ingredients,
+                             List<RecipeStepResponse> steps) {
+
+    public static RecipeResponse from(Recipe recipe) {
+        return RecipeResponse.builder()
+                .title(recipe.menuName())
+                .description(recipe.description())
+                .cookMinutes(recipe.cookMinutes())
+                .ingredients(recipe.ingredients().stream().map(IngredientResponse::from).toList())
+                .steps(recipe.steps().stream().map(RecipeStepResponse::from).toList())
+                .build();
+    }
+
+    public static RecipeResponse from(NewRecipe recipe) {
+        return RecipeResponse.builder()
+                .title(recipe.menuName())
+                .description(recipe.description())
+                .cookMinutes(recipe.cookMinutes())
+                .ingredients(recipe.ingredients().stream().map(IngredientResponse::from).toList())
+                .steps(recipe.steps().stream().map(RecipeStepResponse::from).toList())
+                .build();
+    }
 }

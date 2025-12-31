@@ -8,9 +8,11 @@ import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupp
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.DateTemplate;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 
 import static com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QFoodEntity.foodEntity;
@@ -34,14 +36,18 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
         List<FoodEntity> content = query
                 .where(
                         foodEntity.memberKey.eq(memberKey),
-                        foodEntity.id.lt(cursorable.cursor()),
-                        foodEntity.status.ne(EntityStatus.DELETED)
+                        foodEntity.status.ne(EntityStatus.DELETED),
+                        ltCursor(cursorable.cursor())
                 )
-                .orderBy(foodEntity.id.desc())
+                .orderBy(foodEntity.id.desc(), foodEntity.createdAt.desc())
                 .limit(cursorable.limit() + 1)
                 .fetch();
 
         return new SliceObject<>(content, cursorable, hasNext(cursorable, content));
+    }
+
+    private static BooleanExpression ltCursor(Long cursor) {
+        return cursor == null ? null : foodEntity.id.lt(cursor);
     }
 
     @Override
@@ -72,6 +78,7 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
                 .orderBy(foodEntity.expiryDate.asc())
                 .fetch();
     }
+
 
     // 카테고리 선택했을 시 필터링 조회
     private void applyCategoryFilter(JPAQuery<FoodEntity> query, Long categoryId) {

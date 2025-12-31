@@ -31,4 +31,7 @@ public class FoodManager {
     }
 
 
+    public Food find(Long foodId) {
+        return foodRepository.findById(foodId).orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_DATA)).toDomain();
+    }
 }
