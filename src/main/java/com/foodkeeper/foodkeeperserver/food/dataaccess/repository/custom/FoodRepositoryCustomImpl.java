@@ -38,7 +38,9 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
     @Override
     public List<FoodEntity> findAllByMemberKey(String memberKey) {
 
-        return queryFactory.select(foodEntity).from(foodEntity).where(foodEntity.memberKey.eq(memberKey)).orderBy(foodEntity.name.asc(), foodEntity.createdAt.desc()).fetch();
+        return queryFactory.select(foodEntity)
+                .from(foodEntity)
+                .where(foodEntity.memberKey.eq(memberKey)).orderBy(foodEntity.name.asc(), foodEntity.createdAt.desc()).fetch();
     }
 
 
@@ -59,9 +61,8 @@ public class FoodRepositoryCustomImpl implements FoodRepositoryCustom {
         return queryFactory.selectFrom(foodEntity)
                 .where(
                         foodEntity.expiryDate.eq(
-                                Expressions.dateTemplate(
-                                        LocalDate.class, "DATE_ADD({0}, INTERVAL {1} DAY)", today, foodEntity.expiryAlarm)))
-                .fetch();
+                                Expressions.dateTemplate(LocalDate.class,
+                                        "DATE_ADD({0}, INTERVAL {1} DAY)", today, foodEntity.expiryAlarmDays))).fetch();
     }
 
     // 카테고리 선택했을 시 필터링 조회
