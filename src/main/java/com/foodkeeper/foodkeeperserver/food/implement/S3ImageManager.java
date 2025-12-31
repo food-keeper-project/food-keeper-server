@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 public class S3ImageManager implements ImageManager {
 
     private final AmazonS3 amazonS3;
+    private final String DATE_TIME_FORMATTER = "yyyyMMdd";
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -64,7 +65,6 @@ public class S3ImageManager implements ImageManager {
 
     private String toUrls(MultipartFile file) {
         LocalDateTime now = LocalDateTime.now();
-        String DATE_TIME_FORMATTER = "yyyyMMdd";
         String createdDate = now.format(DateTimeFormatter.ofPattern(DATE_TIME_FORMATTER));
         String uuid = UUID.randomUUID().toString();
         String ext = Objects.requireNonNull(file.getOriginalFilename()).substring(file.getOriginalFilename().lastIndexOf("."));

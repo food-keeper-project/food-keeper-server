@@ -38,12 +38,12 @@ public class FoodController {
     @NullMarked
     @Operation(summary = "식재료 추가", description = "식재료 추가 API")
     @PostMapping
-    public ResponseEntity<ApiResponse<FoodIdResponse>> createFood(@RequestPart @Valid FoodRegisterRequest request,
+    public ResponseEntity<ApiResponse<Void>> createFood(@RequestPart @Valid FoodRegisterRequest request,
                                                                   @RequestPart(required = false) MultipartFile image,
                                                                   @AuthMember Member authMember) {
         FoodRegister register = FoodRegisterRequest.toRegister(request);
         Long foodId = foodService.registerFood(register, image, authMember.memberKey());
-        return ResponseEntity.ok(ApiResponse.success(new FoodIdResponse(foodId)));
+        return ResponseEntity.created(URI.create("/api/v1/foods" + foodId)).build();
     }
 
     @NullMarked
@@ -92,9 +92,9 @@ public class FoodController {
     @NullMarked
     @Operation(summary = "식재료 소비완료", description = "식재료 소비완료 API")
     @DeleteMapping("/{foodId}")
-    public ResponseEntity<ApiResponse<FoodIdResponse>> removeFood(@PathVariable Long foodId, @AuthMember Member member) {
+    public ResponseEntity<ApiResponse<Void>> removeFood(@PathVariable Long foodId, @AuthMember Member member) {
         Long resultId = foodService.removeFood(foodId, member.memberKey());
-        return ResponseEntity.ok(ApiResponse.success(new FoodIdResponse(resultId)));
+        return ResponseEntity.created(URI.create("/api/v1/foods" + resultId)).build();
     }
 }
 

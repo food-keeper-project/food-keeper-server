@@ -9,11 +9,11 @@ public class FoodCategories {
 
     private final Map<Long, List<String>> categoryNames;
 
-    public FoodCategories(List<SelectedFoodCategory> foodIds, List<FoodCategory> categoryNames) {
-        Map<Long, String> categoryNameMap = categoryNames.stream()
+    public FoodCategories(List<SelectedFoodCategory> selectedFoodCategories, List<FoodCategory> foodCategories) {
+        Map<Long, String> categoryNameMap = foodCategories.stream()
                 .collect(Collectors.toMap(FoodCategory::id, FoodCategory::name));
 
-        this.categoryNames = foodIds.stream()
+        this.categoryNames = selectedFoodCategories.stream()
                 .collect(Collectors.groupingBy(
                         SelectedFoodCategory::foodId,
                         Collectors.mapping(

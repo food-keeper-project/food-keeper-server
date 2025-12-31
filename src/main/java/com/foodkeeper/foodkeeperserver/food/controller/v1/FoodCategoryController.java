@@ -53,7 +53,9 @@ public class FoodCategoryController {
     @NullMarked
     @Operation(summary = "카테고리 이름 수정", description = "카테고리 이름 수정 API")
     @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> updateCategory(@PathVariable Long id, @RequestBody @Valid UpdateCategoryRequest request, @AuthMember Member member) {
+    public ResponseEntity<ApiResponse<Void>> updateCategory(@PathVariable Long id,
+                                                            @RequestBody @Valid UpdateCategoryRequest request,
+                                                            @AuthMember Member member) {
         foodCategoryService.updateCategory(id, request.name(), member.memberKey());
         return ResponseEntity.ok(ApiResponse.success());
     }
