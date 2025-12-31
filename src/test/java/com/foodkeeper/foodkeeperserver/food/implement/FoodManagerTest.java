@@ -68,7 +68,7 @@ public class FoodManagerTest {
         Food result = foodManager.removeFood(1L, FoodFixture.MEMBER_KEY);
         //then
         verify(selectedFoodCategoryRepository).deleteAllByFoodId(1L);
-        assertThat(result.status()).isEqualTo(EntityStatus.DELETED);
+        assertThat(foodEntity.getStatus()).isEqualTo(EntityStatus.DELETED);
     }
 
 
