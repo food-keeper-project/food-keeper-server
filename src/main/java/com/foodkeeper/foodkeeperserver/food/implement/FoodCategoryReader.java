@@ -18,7 +18,6 @@ public class FoodCategoryReader {
     private final FoodCategoryRepository foodCategoryRepository;
     private final SelectedFoodCategoryRepository selectedFoodCategoryRepository;
 
-    // 여러개의 음식
     public FoodCategories findNamesByFoodIds(List<Long> foodIds) {
         List<SelectedFoodCategory> categoryIds = selectedFoodCategoryRepository.findByFoodIdIn(foodIds).stream()
                 .map(SelectedFoodCategoryEntity::toDomain).toList();
@@ -27,7 +26,6 @@ public class FoodCategoryReader {
         return new FoodCategories(categoryIds, foodCategories.stream().map(FoodCategoryEntity::toDomain).toList());
     }
 
-    // 단일 음식
     public FoodCategories findNamesFoodById(Long foodId) {
         List<SelectedFoodCategory> categoryIds = selectedFoodCategoryRepository.findByFoodId(foodId).stream()
                 .map(SelectedFoodCategoryEntity::toDomain).toList();
