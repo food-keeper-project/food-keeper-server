@@ -14,7 +14,7 @@ public class AsyncConfig {
     @Bean(name = "fcmExecutor")
     public Executor fcmExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(5);
+        executor.setCorePoolSize(30);
         executor.setThreadNamePrefix("Fcm-");
         executor.initialize();
         return executor;
@@ -23,9 +23,9 @@ public class AsyncConfig {
     @Bean(name = "imageExecutor")
     public Executor imageExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(5);
-        executor.setMaxPoolSize(10);
-        executor.setQueueCapacity(50);
+        executor.setCorePoolSize(10);
+        executor.setMaxPoolSize(30);
+        executor.setQueueCapacity(80);
         executor.setThreadNamePrefix("S3-");
         executor.initialize();
         return executor;

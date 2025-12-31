@@ -18,7 +18,7 @@ public class FcmTokenEntity extends BaseEntity {
     @Column(name = "fcm_token_id")
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String token;
 
     @Column(nullable = false)
