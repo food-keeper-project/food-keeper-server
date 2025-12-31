@@ -1,10 +1,14 @@
 package com.foodkeeper.foodkeeperserver.recipe.domain;
 
+import lombok.Builder;
+
 import java.util.List;
 
-public record Recipe(String menuName,
+@Builder
+public record Recipe(Long id,
+                     String menuName,
                      String description,
-                     String totalTime,
-                     List<Ingredient> ingredients,
+                     Integer cookMinutes,
+                     List<RecipeIngredient> ingredients,
                      List<RecipeStep> steps) {
 }

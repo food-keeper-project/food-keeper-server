@@ -2,7 +2,7 @@ package com.foodkeeper.foodkeeperserver.recipe.implement;
 
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.ClovaClient;
 import com.foodkeeper.foodkeeperserver.recipe.domain.AiType;
-import com.foodkeeper.foodkeeperserver.recipe.domain.Recipe;
+import com.foodkeeper.foodkeeperserver.recipe.domain.NewRecipe;
 import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaMessage;
 import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaResponse;
 import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaResponseStatus;
@@ -43,7 +43,7 @@ class AiRecipeRecommenderTest {
                 {
                   "menuName": "요리 이름",
                   "description": "요리에 대한 매력적인 한 줄 소개",
-                  "totalTime": "20분",
+                  "cookMinutes": 20,
                   "ingredients": [
                     { "name": "재료명", "quantity": "정량" }
                   ],
@@ -68,11 +68,11 @@ class AiRecipeRecommenderTest {
                 new ClovaResult(clovaMessage));
         given(clovaClient.getRecipe(anyString(), any())).willReturn(clovaResponse);
 
-        Recipe recipe = aiRecipeRecommender.getRecipeRecommendation(List.of("test"), List.of("test"));
+        NewRecipe recipe = aiRecipeRecommender.getRecipeRecommendation(List.of("test"), List.of("test"));
 
         assertThat(recipe.menuName()).isEqualTo("요리 이름");
         assertThat(recipe.description()).isEqualTo("요리에 대한 매력적인 한 줄 소개");
-        assertThat(recipe.totalTime()).isEqualTo("20분");
+        assertThat(recipe.cookMinutes()).isEqualTo(20);
         assertThat(recipe.ingredients()).hasSize(1);
         assertThat(recipe.ingredients().getFirst().name()).isEqualTo("재료명");
         assertThat(recipe.ingredients().getFirst().quantity()).isEqualTo("정량");

@@ -16,8 +16,8 @@
 {
   "menuName": "요리 이름",
   "description": "요리에 대한 매력적인 한 줄 소개",
-  "totalTime": "20분",
-  "ingredients": [
+  "cookMinutes": 20,
+  "recipeIngredients": [
     { "name": "재료명", "quantity": "정량" }
   ], //  (주의: 절대 "돼지고기 200g" 같은 단순 문자열로 출력하지 말고, 반드시 name과 quantity 키를 가진 객체로 분리할 것)
   "steps": [
