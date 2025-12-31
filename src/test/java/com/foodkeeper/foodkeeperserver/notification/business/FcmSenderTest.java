@@ -3,6 +3,7 @@ package com.foodkeeper.foodkeeperserver.notification.business;
 import com.foodkeeper.foodkeeperserver.notification.dataaccess.repository.FcmRepository;
 import com.foodkeeper.foodkeeperserver.notification.domain.FcmMessage;
 import com.foodkeeper.foodkeeperserver.notification.implement.FcmManager;
+import com.foodkeeper.foodkeeperserver.notification.implement.FcmSender;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
@@ -20,10 +21,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class NotifyServiceTest {
+public class FcmSenderTest {
 
     @InjectMocks
-    private NotifyService notifyService;
+    private FcmSender fcmSender;
 
     @Mock
     private FcmRepository fcmRepository;
@@ -31,7 +32,7 @@ public class NotifyServiceTest {
     @BeforeEach
     void setUp() {
         FcmManager fcmManager = new FcmManager(fcmRepository);
-        notifyService = new NotifyService(fcmManager);
+        fcmSender = new FcmSender(fcmManager);
     }
 
     @Test
@@ -44,7 +45,7 @@ public class NotifyServiceTest {
             FirebaseMessaging messaging = mock(FirebaseMessaging.class);
             mockFirebase.when(FirebaseMessaging::getInstance).thenReturn(messaging);
             //when
-            notifyService.sendNotification(fcmMessage);
+            fcmSender.sendNotification(fcmMessage);
             //then
             verify(messaging, times(1)).send(any(Message.class));
             verify(fcmRepository, never()).deleteByToken(anyString());
@@ -67,7 +68,7 @@ public class NotifyServiceTest {
             doThrow(exception).when(messaging).send(any(Message.class));
 
             //when
-            notifyService.sendNotification(fcmMessage);
+            fcmSender.sendNotification(fcmMessage);
             //then
             verify(fcmRepository, times(1)).deleteByToken(expiredToken);
 

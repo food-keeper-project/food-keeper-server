@@ -78,9 +78,9 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
     }
 
 
-    // 유통 기한 = 오늘 + 알림시간
+    // imminent 와 동이랗게 적용
     public List<FoodEntity> findFoodsToNotify(LocalDate today) {
-        return queryFactory.selectFrom(foodEntity)
+        return selectFrom(foodEntity)
                 .where(
                         foodEntity.expiryDate.eq(
                                 Expressions.dateTemplate(LocalDate.class,
