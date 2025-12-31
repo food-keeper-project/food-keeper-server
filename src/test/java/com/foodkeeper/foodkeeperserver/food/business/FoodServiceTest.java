@@ -36,8 +36,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -84,7 +82,7 @@ public class FoodServiceTest {
 
     @Test
     @DisplayName("식제품 추가 기능 구현 성공")
-    void registerFood_SUCCESS() throws Exception {
+    void registerFood_SUCCESS() {
         // given
         String memberKey = "memberKey";
         MultipartFile mockFile = new MockMultipartFile("image", "test.jpg", "image/jpeg", "data".getBytes());
@@ -112,7 +110,7 @@ public class FoodServiceTest {
 
     @Test
     @DisplayName("카테고리가 3개 초과하면 에러 발생")
-    void validateCategorySize_FAIL() throws Exception {
+    void validateCategorySize_FAIL() {
         //given
         List<Long> categoryIds = List.of(1L, 2L, 3L, 4L);
         MockMultipartFile mockImage = new MockMultipartFile("image", "test.jpg", "image/jpeg", "test data".getBytes());
@@ -128,37 +126,38 @@ public class FoodServiceTest {
 
     @Test
     @DisplayName("커서 조회 시 limit 보다 많으면 hasNext 는 true 이고, 초과되면 하나는 제거되고 카테고리 매핑")
-    void getFoodList_hasNext_TRUE() throws Exception {
+    void getFoodList_hasNext_TRUE() {
         //given
         Long categoryId = 1L;
         String memberKey = FoodFixture.MEMBER_KEY;
-        LocalDateTime lastCreatedAt = LocalDateTime.now();
-        Cursorable cursorable = new Cursorable(1L, 2);
+        Long foodId = 1L;
+        Cursorable<Long> cursorable = new Cursorable<>(foodId, 2);
 
-
-        List<FoodEntity> foodEntities = new ArrayList<>();
-        foodEntities.add(FoodFixture.createFoodEntity(1L));
-        foodEntities.add(FoodFixture.createFoodEntity(2L));
-        foodEntities.add(FoodFixture.createFoodEntity(3L));
+        List<FoodEntity> foodEntities = List.of(FoodFixture.createFoodEntity(1L),
+                FoodFixture.createFoodEntity(2L));
+        SliceObject<FoodEntity> foodSlice = new SliceObject<>(foodEntities, cursorable, true);
 
 
         List<SelectedFoodCategoryEntity> selectedFoodCategories = List.of(
                 SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 1L),
                 SelectedFoodCategoryFixture.createSelectedCategoryEntity(2L, 2L)
         );
-        given(foodRepository.findFoodCursorList(cursorable, categoryId, lastCreatedAt, memberKey)).willReturn(foodEntities);
+      
+        given(foodRepository.findFoodCursorList(cursorable, categoryId, memberKey)).willReturn(foodSlice);
         given(selectedFoodCategoryRepository.findByFoodIdIn(anyList())).willReturn(selectedFoodCategories);
+
         //when
-        SliceObject<RegisteredFood> result = foodService.getFoodList(cursorable, categoryId, lastCreatedAt, memberKey);
+        SliceObject<RegisteredFood> result = foodService.getFoodList(cursorable, categoryId, memberKey);
+
         //then
-        assertThat(result.isHasNext()).isTrue();
-        assertThat(result.getContent()).hasSize(2);
-        assertThat(result.getContent().getFirst().categoryIds().getFirst()).isEqualTo(1L);
+        assertThat(result.hasNext()).isTrue();
+        assertThat(result.content()).hasSize(2);
+        assertThat(result.content().getFirst().categoryIds().getFirst()).isEqualTo(1L);
     }
 
     @Test
     @DisplayName("식재료 단일 조회 시 카테고리와 매핑된 상태로 결과 반환")
-    void getFood_SUCCESS() throws Exception {
+    void getFood_SUCCESS() {
         //given
         FoodEntity food = FoodFixture.createFoodEntity(1L);
         List<SelectedFoodCategoryEntity> selectedFoodCategories = List.of(
@@ -179,7 +178,7 @@ public class FoodServiceTest {
     void bookmarkFood() {
         // given
         long bookmarkedFoodId = 2L;
-        Food food = FoodFixture.createFood(1L);
+        Food food = FoodFixture.createFood();
         FoodEntity foodEntity = FoodEntity.from(food);
         BookmarkedFoodEntity bookmarkedFoodEntity = mock(BookmarkedFoodEntity.class);
         given(bookmarkedFoodEntity.getId()).willReturn(bookmarkedFoodId);
@@ -207,7 +206,7 @@ public class FoodServiceTest {
     }
 
     @DisplayName("foodId 리스트와 memberKey 으로 foodName을 List<String>로 결과 반환")
-    void getFoodNames_SUCCESS() throws Exception {
+    void getFoodNames_SUCCESS() {
         //given
         List<Long> ids = List.of(1L, 2L);
         String memberKey = FoodFixture.MEMBER_KEY;
@@ -224,7 +223,7 @@ public class FoodServiceTest {
 
     @Test
     @DisplayName("임박한 재료 리스트를 조회했을 때 foodName, remainDays 반환")
-    void getImminentFood_SUCCESS() throws Exception {
+    void getImminentFood_SUCCESS() {
         //given
         String memberKey = FoodFixture.MEMBER_KEY;
         FoodEntity food1 = FoodFixture.createFoodEntity(1L);
@@ -232,16 +231,15 @@ public class FoodServiceTest {
 
         given(foodRepository.findImminentFoods(memberKey)).willReturn(List.of(food1, food2));
         //when
-        List<RecipeFood> results = foodService.getImminentFoods(memberKey);
+        List<RegisteredFood> results = foodService.getImminentFoods(memberKey);
         //then
         assertThat(results).hasSize(2);
         assertThat(results.getFirst().name()).isEqualTo(food1.getName());
-        assertThat(results.getFirst().remainDay()).isEqualTo(1L); // FoodFixture.EXPIRY_DATE = 내일
     }
 
     @Test
     @DisplayName("식재료 삭제 시 식재료와 매핑된 카테고리, 저장된 사진 삭제")
-    void removeFood_SUCCESS() throws Exception {
+    void removeFood_SUCCESS() {
         //given
         Long foodId = 1L;
         String memberKey = FoodFixture.MEMBER_KEY;

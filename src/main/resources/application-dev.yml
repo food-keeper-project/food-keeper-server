@@ -20,7 +20,9 @@ spring:
 
 springdoc:
   swagger-ui:
-    config-url: /v3/api-docs
+    url: /v3/api-docs
+    path: /v3/api-docs
+    disable-swagger-default-url: true
   api-docs:
     enabled: true
   default-produces-media-type: application/json
@@ -31,6 +33,10 @@ management:
     web:
       exposure:
         include: health, prometheus
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
 
 logging:
   level:

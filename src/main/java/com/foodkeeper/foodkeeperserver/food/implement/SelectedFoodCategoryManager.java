@@ -2,6 +2,7 @@ package com.foodkeeper.foodkeeperserver.food.implement;
 
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.SelectedFoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.SelectedFoodCategoryRepository;
+import com.foodkeeper.foodkeeperserver.food.domain.SelectedFoodCategories;
 import com.foodkeeper.foodkeeperserver.food.domain.SelectedFoodCategory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -21,11 +22,11 @@ public class SelectedFoodCategoryManager {
     }
 
     @Transactional(readOnly = true)
-    public List<SelectedFoodCategory> findByFoodIds(List<Long> foodIds) {
+    public SelectedFoodCategories findByFoodIds(List<Long> foodIds) {
         List<SelectedFoodCategoryEntity> entities = selectedFoodCategoryRepository.findByFoodIdIn(foodIds);
-        return entities.stream()
+        return new SelectedFoodCategories(entities.stream()
                 .map(SelectedFoodCategoryEntity::toDomain)
-                .toList();
+                .toList());
     }
 
     @Transactional(readOnly = true)

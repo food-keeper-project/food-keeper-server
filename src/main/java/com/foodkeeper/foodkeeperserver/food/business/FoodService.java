@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -48,11 +47,10 @@ public class FoodService {
     }
 
     // 커서 리스트 조회
-    public SliceObject<RegisteredFood> getFoodList(Cursorable cursorable, Long categoryId, LocalDateTime lastCreatedAt, String memberKey) {
-        SliceObject<Food> foods = foodManager.findFoodList(cursorable, categoryId, lastCreatedAt, memberKey);
-        SelectedFoodCategories categories = new SelectedFoodCategories(selectedFoodCategoryManager.findByFoodIds(
-                foods.getContent().stream().map(Food::id).toList()
-        ));
+    public SliceObject<RegisteredFood> getFoodList(Cursorable<Long> cursorable, Long categoryId, String memberKey) {
+        SliceObject<Food> foods = foodManager.findFoodList(cursorable, categoryId, memberKey);
+        SelectedFoodCategories categories = selectedFoodCategoryManager.findByFoodIds(
+                foods.content().stream().map(Food::id).toList());
         return foods.map(food -> food.toRegisteredFood(categories.getCategoryIdsByFoodId(food.id())));
     }
 
@@ -75,10 +73,12 @@ public class FoodService {
     }
 
     // 유통기한 임박 재료 리스트 조회
-    public List<RecipeFood> getImminentFoods(String memberKey) {
+    public List<RegisteredFood> getImminentFoods(String memberKey) {
         List<Food> foods = foodManager.findImminentFoods(memberKey);
+        SelectedFoodCategories categories = selectedFoodCategoryManager.findByFoodIds(
+                foods.stream().map(Food::id).toList());
         return foods.stream()
-                .map(Food::toRecipe)
+                .map(food -> food.toRegisteredFood(categories.getCategoryIdsByFoodId(food.id())))
                 .toList();
     }
 
