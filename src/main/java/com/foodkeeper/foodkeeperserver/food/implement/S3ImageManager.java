@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ import java.util.UUID;
 public class S3ImageManager implements ImageManager {
 
     private final AmazonS3 amazonS3;
-    private final String DATE_TIME_FORMATTER = "yyyyMMdd";
+    private static final String DATE_TIME_FORMATTER = "yyyyMMdd";
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -53,6 +54,10 @@ public class S3ImageManager implements ImageManager {
 
     @Override
     public void deleteFile(String fileName) {
+        if (Strings.isNullOrEmpty(fileName)) {
+            return;
+        }
+
         try {
             amazonS3.deleteObject(bucket, fileName);
         } catch (Exception e) {
