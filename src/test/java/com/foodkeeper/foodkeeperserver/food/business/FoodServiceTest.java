@@ -14,6 +14,7 @@ import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.SelectedFoodCategoryRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
+import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.fixture.CategoryFixture;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
@@ -136,7 +137,7 @@ public class FoodServiceTest {
                 FoodFixture.createFoodEntity(2L));
         SliceObject<FoodEntity> foodSlice = new SliceObject<>(foodEntities, cursorable, true);
 
-        List<FoodCategoryEntity> foodCategories = CategoryFixture.createCategoryEntity(List.of(1L,2L));
+        List<FoodCategoryEntity> foodCategories = CategoryFixture.createCategoryEntity(List.of(1L, 2L));
 
         List<SelectedFoodCategoryEntity> selectedFoodCategories = List.of(
                 SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 1L),
@@ -145,7 +146,7 @@ public class FoodServiceTest {
 
         given(foodRepository.findFoodCursorList(cursorable, categoryId, memberKey)).willReturn(foodSlice);
         given(selectedFoodCategoryRepository.findByFoodIdIn(anyList())).willReturn(selectedFoodCategories);
-        given(foodCategoryRepository.findAllByIdIn(List.of(1L,2L))).willReturn(foodCategories);
+        given(foodCategoryRepository.findAllByIdIn(List.of(1L, 2L))).willReturn(foodCategories);
 
         //when
         SliceObject<RegisteredFood> result = foodService.findFoodList(cursorable, categoryId, memberKey);
@@ -165,11 +166,11 @@ public class FoodServiceTest {
                 SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 1L),
                 SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 2L)
         );
-        List<FoodCategoryEntity> foodCategories = CategoryFixture.createCategoryEntity(List.of(1L,2L));
+        List<FoodCategoryEntity> foodCategories = CategoryFixture.createCategoryEntity(List.of(1L, 2L));
 
         given(foodRepository.findByIdAndMemberKey(1L, FoodFixture.MEMBER_KEY)).willReturn(Optional.of(food));
         given(selectedFoodCategoryRepository.findByFoodId(1L)).willReturn(selectedFoodCategories);
-        given(foodCategoryRepository.findAllByIdIn(List.of(1L,2L))).willReturn(foodCategories);
+        given(foodCategoryRepository.findAllByIdIn(List.of(1L, 2L))).willReturn(foodCategories);
         //when
         RegisteredFood result = foodService.findFood(1L, FoodFixture.MEMBER_KEY);
         //then
@@ -231,14 +232,14 @@ public class FoodServiceTest {
     void getImminentFood_SUCCESS() {
         //given
         String memberKey = "memberKey";
-        List<Long> foodIds = List.of(1L,2L);
+        List<Long> foodIds = List.of(1L, 2L);
 
         List<FoodEntity> foodEntities = List.of(FoodFixture.createFoodEntity(1L), FoodFixture.createFoodEntity(2L));
 
         given(foodRepository.findImminentFoods(memberKey))
                 .willReturn(foodEntities);
 
-        SelectedFoodCategoryEntity selectedEntity = SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L,1L);
+        SelectedFoodCategoryEntity selectedEntity = SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 1L);
         given(selectedFoodCategoryRepository.findByFoodIdIn(foodIds))
                 .willReturn(List.of(selectedEntity));
 
@@ -270,5 +271,30 @@ public class FoodServiceTest {
         foodService.removeFood(foodId, memberKey);
         //then
         assertThat(food.getStatus()).isEqualTo(EntityStatus.DELETED);
+        assertThat(food.getStatus()).isEqualTo(EntityStatus.DELETED);
+    }
+
+    @Test
+    @DisplayName("식재료 수정시 null 로 들어오면 기존의 데이터로 저장")
+    void updateFood_SUCCESS() {
+        //given
+        Long foodId = 1L;
+        MultipartFile mockFile = mock(MultipartFile.class);
+        FoodRegister foodRegister = new FoodRegister(
+                "음료", List.of(1L, 2L), StorageMethod.FROZEN, null, null, null);
+        FoodEntity foodEntity = FoodFixture.createFoodEntity(foodId);
+
+        given(foodRepository.findById(foodId)).willReturn(Optional.ofNullable(foodEntity));
+        given(foodRepository.findByIdAndMemberKey(foodId, FoodFixture.MEMBER_KEY)).willReturn(Optional.of(foodEntity));
+
+        given(imageManager.fileUpload(any())).willReturn(CompletableFuture.completedFuture("파일 경로"));
+        willDoNothing().given(imageManager).deleteFile(any());
+        willDoNothing().given(selectedFoodCategoryRepository).deleteAllByFoodId(foodId);
+        given(selectedFoodCategoryRepository.saveAll(any())).willReturn(List.of());
+        //when
+        Long id = foodService.updateFood(foodId, foodRegister, mockFile, FoodFixture.MEMBER_KEY);
+        //then
+        assertThat(foodEntity.getName()).isEqualTo(foodRegister.name());
+        assertThat(foodEntity.getMemo()).isEqualTo(FoodFixture.MEMO);
     }
 }

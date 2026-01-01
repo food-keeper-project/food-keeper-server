@@ -77,4 +77,17 @@ public class FoodService {
     public Long bookmarkFood(Long foodId, String memberKey) {
         return foodBookmarker.bookmark(foodReader.find(foodId), memberKey);
     }
+
+    @Transactional
+    public Long updateFood(Long foodId, FoodRegister register, MultipartFile imageUrl, String memberKey) {
+        Food food = foodReader.find(foodId);
+        String newImage = null;
+        if (imageUrl != null) {
+            newImage = imageManager.fileUpload(imageUrl).join();
+            imageManager.deleteFile(food.imageUrl());
+        }
+        Food updatedFood = food.update(register, newImage);
+        foodManager.updateFood(updatedFood, register.categoryIds(), memberKey);
+        return food.id();
+    }
 }

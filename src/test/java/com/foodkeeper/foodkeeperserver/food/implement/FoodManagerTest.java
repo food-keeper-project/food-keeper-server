@@ -29,6 +29,7 @@ public class FoodManagerTest {
 
     @InjectMocks
     FoodManager foodManager;
+
     @Mock
     FoodRepository foodRepository;
     @Mock
