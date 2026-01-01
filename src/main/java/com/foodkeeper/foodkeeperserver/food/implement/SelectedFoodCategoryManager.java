@@ -26,6 +26,11 @@ public class SelectedFoodCategoryManager {
         selectedFoodCategoryRepository.deleteAllByFoodId(foodId);
     }
 
+    @Transactional
+    public void removeAllByFoodIds(List<Long> foodIds) {
+        selectedFoodCategoryRepository.deleteAllByFoodIds(foodIds);
+    }
+
     // 다 지우고 다시 생성
     @Transactional
     public void update(Long foodId, List<Long> categoryIds) {

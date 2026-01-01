@@ -79,5 +79,18 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
         }
     }
 
+    @Override
+    public List<Long> removeFoods(String memberKey) {
+        List<Long> foodIds = select(foodEntity.id)
+                .from(foodEntity)
+                .where(foodEntity.memberKey.eq(memberKey), foodEntity.status.ne(EntityStatus.DELETED))
+                .fetch();
 
+        update(foodEntity)
+                .set(foodEntity.status, EntityStatus.DELETED)
+                .where(foodEntity.memberKey.eq(memberKey), foodEntity.status.ne(EntityStatus.DELETED))
+                .execute();
+
+        return foodIds;
+    }
 }

@@ -63,4 +63,8 @@ public class CategoryManager {
         foodCategoryEntity.delete();
     }
 
+    @Transactional
+    public void removeCategories(String memberKey) {
+        foodCategoryRepository.deleteFoodCategories(memberKey);
+    }
 }

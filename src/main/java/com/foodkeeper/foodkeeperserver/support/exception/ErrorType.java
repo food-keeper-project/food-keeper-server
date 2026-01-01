@@ -12,6 +12,13 @@ public enum ErrorType {
     INVALID_ACCESS_PATH(HttpStatus.BAD_REQUEST, ErrorCode.E400, "잘못된 접근 경로입니다.", LogLevel.WARN),
     NOT_FOUND_DATA(HttpStatus.BAD_REQUEST, ErrorCode.E400, "해당 데이터를 찾을 수 없습니다.", LogLevel.WARN),
 
+    // Food
+    FOOD_DATA_NOT_FOUND(HttpStatus.BAD_REQUEST, ErrorCode.E1000, "해당 식재료가 존재하지 않습니다.", LogLevel.WARN),
+
+    // Recipe
+    RECIPE_DATA_NOT_FOUND(HttpStatus.BAD_REQUEST, ErrorCode.E2000, "해당 레시피가 존재하지 않습니다.", LogLevel.WARN),
+
+    // Auth
     INVALID_OAUTH_USER(HttpStatus.BAD_REQUEST, ErrorCode.E3000, "존재하지 않는 OAuth 유저입니다.", LogLevel.WARN),
     MALFORMED_JWT(HttpStatus.BAD_REQUEST, ErrorCode.E3001, "JWT가 손상되었습니다.", LogLevel.WARN),
     UNSUPPORTED_JWT(HttpStatus.BAD_REQUEST, ErrorCode.E3002, "지원하지 않는 JWT 형식입니다.", LogLevel.WARN),
@@ -22,26 +29,28 @@ public enum ErrorType {
     OAUTH_ACCESS_TOKEN_IS_NULL(HttpStatus.BAD_REQUEST, ErrorCode.E3007, "OAuth 엑세스 토큰은 null일 수 없습니다.", LogLevel.WARN),
     FCM_TOKEN_IS_NULL(HttpStatus.BAD_REQUEST, ErrorCode.E3008, "FCM 토큰은 null일 수 없습니다.", LogLevel.WARN),
 
-    // 식재료
-    FOOD_DATA_NOT_FOUND(HttpStatus.BAD_REQUEST, ErrorCode.E1000, "해당 식재료가 존재하지 않습니다.", LogLevel.WARN),
-
-    CATEGORY_DATA_NOT_FOUND(HttpStatus.BAD_REQUEST, ErrorCode.E8000, "존재하지 않는 카테고리 입니다.",LogLevel.WARN),
-
+    // S3
     S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E5000, "이미지 업로드에 실패했습니다.", LogLevel.ERROR),
     S3_DELETE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E5001, "이미지 삭제에 실패했습니다.", LogLevel.ERROR),
 
-    // 네이버
+    // Naver Clova
     NAVER_CLOVA_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E6000, "네이버 클로바 AI 서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.", LogLevel.ERROR),
     NAVER_CLOVA_PROMPT_ERROR(HttpStatus.NOT_FOUND, ErrorCode.E6001, "실행할 프롬프트 업로드에 오류가 발생했습니다.", LogLevel.ERROR),
 
+    // FCM
+    FCM_TOKEN_INITIALIZE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E7000, "Firebase 초기화 중 오류가 발생하였습니다.", LogLevel.ERROR),
+    FCM_TOKEN_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E7001, "알림 메시지 전송에 실패했습니다.", LogLevel.ERROR),
 
+    // Food Category
+    CATEGORY_DATA_NOT_FOUND(HttpStatus.BAD_REQUEST, ErrorCode.E8000, "존재하지 않는 카테고리 입니다.",LogLevel.WARN),
+
+    // Member
     INVALID_MEMBER_KEY(HttpStatus.BAD_REQUEST, ErrorCode.E9000, "멤버 key가 유효하지 않습니다.", LogLevel.WARN),
     INVALID_NICKNAME_LENGTH(HttpStatus.BAD_REQUEST, ErrorCode.E9001, "멤버 닉네임은 20자를 넘을 수 없습니다.", LogLevel.WARN),
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, ErrorCode.E9002, "이메일이 유효하지 않습니다.", LogLevel.WARN),
     INVALID_IMAGE_URL(HttpStatus.BAD_REQUEST, ErrorCode.E9003, "이미지 URL이 유효하지 않습니다.", LogLevel.WARN),
 
-    FCM_TOKEN_INITIALIZE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E7000, "Firebase 초기화 중 오류가 발생하였습니다.", LogLevel.ERROR),
-    FCM_TOKEN_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E7001, "알림 메시지 전송에 실패했습니다.", LogLevel.ERROR);
+    ;
     private final HttpStatus status;
     private final ErrorCode errorCode;
     private final String message;

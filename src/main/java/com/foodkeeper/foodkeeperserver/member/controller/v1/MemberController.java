@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,5 +28,13 @@ public class MemberController {
     public ResponseEntity<ApiResponse<ProfileResponse>> getProfile(@AuthMember Member authMember) {
         Member member = memberService.findMember(authMember.memberKey());
         return ResponseEntity.ok(ApiResponse.success(new ProfileResponse(member.nickname(), member.imageUrl())));
+    }
+
+    @NullMarked
+    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 API")
+    @DeleteMapping("/me/withdraw")
+    public ResponseEntity<ApiResponse<Void>> withdraw(@AuthMember Member member) {
+        memberService.withdrawMember(member.memberKey());
+        return ResponseEntity.ok(ApiResponse.success());
     }
 }
