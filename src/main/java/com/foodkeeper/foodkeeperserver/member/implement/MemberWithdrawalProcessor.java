@@ -6,6 +6,7 @@ import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.BaseEntity;
 import com.foodkeeper.foodkeeperserver.food.implement.CategoryManager;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
+import com.foodkeeper.foodkeeperserver.notification.implement.FcmManager;
 import com.foodkeeper.foodkeeperserver.recipe.implement.RecipeManager;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
@@ -22,6 +23,7 @@ public class MemberWithdrawalProcessor {
     private final FoodManager foodManager;
     private final CategoryManager foodCategoryManager;
     private final RecipeManager recipeManager;
+    private final FcmManager fcmManager;
 
     @Transactional
     public void withdraw(String memberKey) {
@@ -33,5 +35,6 @@ public class MemberWithdrawalProcessor {
         foodManager.removeFoods(memberKey);
         recipeManager.removeRecipes(memberKey);
         foodCategoryManager.removeCategories(memberKey);
+        fcmManager.removeFcmTokens(memberKey);
     }
 }

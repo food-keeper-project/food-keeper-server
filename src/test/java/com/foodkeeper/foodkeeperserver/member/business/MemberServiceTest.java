@@ -1,14 +1,15 @@
 package com.foodkeeper.foodkeeperserver.member.business;
 
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.MemberRoleRepository;
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
 import com.foodkeeper.foodkeeperserver.food.implement.CategoryManager;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
-import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberWithdrawalProcessor;
+import com.foodkeeper.foodkeeperserver.notification.implement.FcmManager;
 import com.foodkeeper.foodkeeperserver.recipe.implement.RecipeManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,19 +27,27 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
 
-    @Mock MemberRepository memberRepository;
-    @Mock MemberRoleRepository memberRoleRepository;
-    @Mock OauthRepository oauthRepository;
-    @Mock FoodManager foodManager;
-    @Mock CategoryManager categoryManager;
-    @Mock RecipeManager recipeManager;
+    @Mock
+    MemberRepository memberRepository;
+    @Mock
+    MemberRoleRepository memberRoleRepository;
+    @Mock
+    OauthRepository oauthRepository;
+    @Mock
+    FoodManager foodManager;
+    @Mock
+    CategoryManager categoryManager;
+    @Mock
+    RecipeManager recipeManager;
+    @Mock
+    FcmManager fcmManager;
     MemberService memberService;
 
     @BeforeEach
     void setUp() {
         MemberFinder memberFinder = new MemberFinder(memberRepository, oauthRepository);
         MemberWithdrawalProcessor memberWithdrawalProcessor = new MemberWithdrawalProcessor(memberRepository,
-                memberRoleRepository, oauthRepository, foodManager, categoryManager, recipeManager);
+                memberRoleRepository, oauthRepository, foodManager, categoryManager, recipeManager, fcmManager);
         memberService = new MemberService(memberFinder, memberWithdrawalProcessor);
     }
 
