@@ -43,15 +43,16 @@ public class FoodController {
                                                         @AuthMember Member authMember) {
         FoodRegister register = FoodRegisterRequest.toRegister(request);
         Long foodId = foodService.registerFood(register, image, authMember.memberKey());
-        return ResponseEntity.created(URI.create("/api/v1/foods" + foodId)).build();
+        return ResponseEntity.created(URI.create("/api/v1/foods" + foodId)).body(ApiResponse.success());
     }
 
     @NullMarked
     @Operation(summary = "식재료 즐겨찾기 추가", description = "식재료 즐겨찾기 추가 API")
     @PostMapping("/{foodId}/bookmark")
-    public ResponseEntity<Void> bookmarkFood(@PathVariable Long foodId, @AuthMember Member authMember) {
+    public ResponseEntity<ApiResponse<Void>> bookmarkFood(@PathVariable Long foodId, @AuthMember Member authMember) {
         Long bookmarkedFoodId = foodService.bookmarkFood(foodId, authMember.memberKey());
-        return ResponseEntity.created(URI.create("/api/v1/bookmarked-foods/" + bookmarkedFoodId)).build();
+        return ResponseEntity.created(URI.create("/api/v1/bookmarked-foods/" + bookmarkedFoodId))
+                .body(ApiResponse.success());
     }
 
     @NullMarked
@@ -61,7 +62,7 @@ public class FoodController {
                                                                              @CursorDefault Cursorable<Long> cursorable,
                                                                              @AuthMember Member authMember) {
         SliceObject<RegisteredFood> foods = foodService.findFoodList(cursorable, request.categoryId(), authMember.memberKey());
-        List<FoodResponse> foodResponses = foods.content().stream().map(FoodResponse::toFoodResponse).toList();
+        List<FoodResponse> foodResponses = foods.content().stream().map(FoodResponse::from).toList();
         return ResponseEntity.ok(ApiResponse.success(new PageResponse<>(foodResponses, foods.hasNext())));
     }
 
@@ -70,7 +71,7 @@ public class FoodController {
     @GetMapping("/{foodId}")
     public ResponseEntity<ApiResponse<FoodResponse>> findFood(@PathVariable Long foodId, @AuthMember Member authMember) {
         RegisteredFood registeredFood = foodService.findFood(foodId, authMember.memberKey());
-        return ResponseEntity.ok(ApiResponse.success(FoodResponse.toFoodResponse(registeredFood)));
+        return ResponseEntity.ok(ApiResponse.success(FoodResponse.from(registeredFood)));
     }
 
     @NullMarked

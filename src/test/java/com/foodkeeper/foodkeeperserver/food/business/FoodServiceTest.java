@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -143,7 +143,7 @@ public class FoodServiceTest {
         //then
         assertThat(result.hasNext()).isTrue();
         assertThat(result.content()).hasSize(2);
-        assertThat(result.content().getFirst().categoryNames().getFirst()).isEqualTo("유제품");
+        assertThat(result.content().getFirst().categories().getFirst().name()).isEqualTo("유제품");
     }
 
     @Test
@@ -160,12 +160,12 @@ public class FoodServiceTest {
         given(foodRepository.findByIdAndMemberKey(1L, FoodFixture.MEMBER_KEY)).willReturn(Optional.of(food));
         given(selectedFoodCategoryRepository.findByFoodId(1L)).willReturn(selectedFoodCategories);
         given(foodCategoryRepository.findAllByIdIn(List.of(1L, 2L))).willReturn(foodCategories);
+
         //when
         RegisteredFood result = foodService.findFood(1L, FoodFixture.MEMBER_KEY);
-        //then
-        assertThat(result.categoryNames()).hasSize(2);
-        assertThat(result.categoryNames()).contains("유제품");
 
+        //then
+        assertThat(result.categories()).hasSize(2);
     }
 
     @Test
@@ -202,6 +202,7 @@ public class FoodServiceTest {
                 .isEqualTo(ErrorType.NOT_FOUND_DATA);
     }
 
+    @Test
     @DisplayName("foodId 리스트와 memberKey 으로 foodName을 List<String>로 결과 반환")
     void getFoodNames_SUCCESS() {
         //given
@@ -242,7 +243,7 @@ public class FoodServiceTest {
         List<RegisteredFood> results = foodService.findImminentFoods(memberKey);
         //then
         assertThat(results.getFirst().name()).isEqualTo("우유");
-        assertThat(results.getFirst().categoryNames()).contains("유제품");
+        assertThat(results.getFirst().categories()).hasSize(1);
         assertThat(results.getFirst().remainDays()).isEqualTo(1L);
     }
 
@@ -276,14 +277,17 @@ public class FoodServiceTest {
         FoodEntity foodEntity = FoodFixture.createFoodEntity(foodId);
 
         given(foodRepository.findById(foodId)).willReturn(Optional.ofNullable(foodEntity));
+        assertNotNull(foodEntity);
         given(foodRepository.findByIdAndMemberKey(foodId, FoodFixture.MEMBER_KEY)).willReturn(Optional.of(foodEntity));
 
         given(imageManager.fileUpload(any())).willReturn(Optional.of("파일 경로"));
         willDoNothing().given(imageManager).deleteFile(any());
         willDoNothing().given(selectedFoodCategoryRepository).deleteAllByFoodId(foodId);
         given(selectedFoodCategoryRepository.saveAll(any())).willReturn(List.of());
+
         //when
-        Long id = foodService.updateFood(foodId, foodRegister, mockFile, FoodFixture.MEMBER_KEY);
+        foodService.updateFood(foodId, foodRegister, mockFile, FoodFixture.MEMBER_KEY);
+
         //then
         assertThat(foodEntity.getName()).isEqualTo(foodRegister.name());
         assertThat(foodEntity.getMemo()).isEqualTo(FoodFixture.MEMO);

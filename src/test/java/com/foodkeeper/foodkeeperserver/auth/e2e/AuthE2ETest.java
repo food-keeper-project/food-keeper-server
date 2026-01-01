@@ -7,7 +7,6 @@ import com.foodkeeper.foodkeeperserver.support.e2e.E2ETest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 
 public class AuthE2ETest extends E2ETest {
 
@@ -21,7 +20,6 @@ public class AuthE2ETest extends E2ETest {
 
         client.get()
                 .uri("/api/v1/members/me")
-                .accept(MediaType.APPLICATION_JSON)
                 .header(AUTHORIZATION, getAccessToken(member.getMemberKey()))
                 .exchange()
                 .expectStatus().isOk()
