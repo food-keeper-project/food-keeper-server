@@ -69,3 +69,6 @@ clova:
 
 client:
   url: ${CLIENT_URL}
+
+firebase:
+  key: ${FIREBASE_KEY}

@@ -5,13 +5,9 @@ import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
-import com.querydsl.core.types.Ops;
-import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 
-import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 
 import static com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QFoodEntity.foodEntity;
@@ -65,7 +61,6 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
     }
 
 
-    // 유통기한 임박한 식재료 조회
     @Override
     public List<FoodEntity> findImminentFoods(String memberKey) {
         return selectFrom(foodEntity)
@@ -76,8 +71,6 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
                 .fetch();
     }
 
-
-    // 카테고리 선택했을 시 필터링 조회
     private void applyCategoryFilter(JPAQuery<FoodEntity> query, Long categoryId) {
         if (categoryId != null) {
             query.join(selectedFoodCategoryEntity)

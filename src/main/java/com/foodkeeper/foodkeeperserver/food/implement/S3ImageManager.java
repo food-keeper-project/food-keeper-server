@@ -6,7 +6,6 @@ import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,8 +14,8 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -28,11 +27,10 @@ public class S3ImageManager implements ImageManager {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    @Async
     @Override
-    public CompletableFuture<String> fileUpload(MultipartFile file) {
+    public Optional<String> fileUpload(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            return CompletableFuture.completedFuture("");
+            return Optional.empty();
         }
         String url = toUrls(file);
 
@@ -42,7 +40,7 @@ public class S3ImageManager implements ImageManager {
             metadata.setContentLength(file.getSize());
             metadata.setContentType(file.getContentType());
             amazonS3.putObject(bucket, url, inputStream, metadata);
-            return CompletableFuture.completedFuture(url);
+            return Optional.of(url);
         } catch (IOException e) {
             throw new AppException(ErrorType.S3_UPLOAD_ERROR);
         }
@@ -53,13 +51,12 @@ public class S3ImageManager implements ImageManager {
         return amazonS3.getUrl(bucket, fileName).toString();
     }
 
-    @Async
     @Override
     public void deleteFile(String fileName) {
         try {
             amazonS3.deleteObject(bucket, fileName);
         } catch (Exception e) {
-            throw new AppException(ErrorType.S3_UPLOAD_ERROR);
+            throw new AppException(ErrorType.S3_DELETE_ERROR);
         }
     }
 

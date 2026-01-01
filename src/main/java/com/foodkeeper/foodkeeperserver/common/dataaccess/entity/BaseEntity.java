@@ -38,4 +38,8 @@ public class BaseEntity {
     public boolean isDeleted() {
         return status == EntityStatus.DELETED;
     }
+
+    public void update() {
+        updatedAt = LocalDateTime.now();
+    }
 }

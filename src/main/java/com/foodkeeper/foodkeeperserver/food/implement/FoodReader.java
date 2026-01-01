@@ -27,33 +27,38 @@ public class FoodReader {
     public SliceObject<RegisteredFood> findFoodList(Cursorable<Long> cursorable, Long categoryId, String memberKey) {
         SliceObject<Food> foods = foodRepository.findFoodCursorList(cursorable, categoryId, memberKey).map(FoodEntity::toDomain);
         FoodCategories foodCategories = foodCategoryReader.findNamesByFoodIds(foods.content().stream().map(Food::id).toList());
-        return foods.map(food -> food.toRegisteredFood(foodCategories.getCategoryNames(food.id())));
+        return foods.map(food -> food.toRegisteredFood(foodCategories.getCategories(food.id())));
     }
 
     public RegisteredFood findFood(Long id, String memberKey) {
         Food food = foodRepository.findByIdAndMemberKey(id, memberKey).orElseThrow(() -> new AppException(ErrorType.FOOD_DATA_NOT_FOUND)).toDomain();
         FoodCategories foodCategories = foodCategoryReader.findNamesFoodById(food.id());
-        return food.toRegisteredFood(foodCategories.getCategoryNames(food.id()));
+        return food.toRegisteredFood(foodCategories.getCategories(food.id()));
     }
 
-    // 1) 이름 정렬 2) 최신순
     public List<RegisteredFood> findAll(String memberKey) {
         List<Food> foods = foodRepository.findAllByMemberKey(memberKey).stream()
                 .map(FoodEntity::toDomain).toList();
         FoodCategories foodCategories = foodCategoryReader.findNamesByFoodIds(foods.stream().map(Food::id).toList());
-        return foods.stream().map(food -> food.toRegisteredFood(foodCategories.getCategoryNames(food.id()))).toList();
+        return foods.stream().map(food -> food.toRegisteredFood(foodCategories.getCategories(food.id()))).toList();
     }
 
-    // 알림 설정 리스트 조회
     public List<RegisteredFood> findImminentFoods(LocalDate toady, String memberKey) {
         List<Food> foods = foodRepository.findImminentFoods(memberKey).stream()
                 .filter(food -> food.isImminent(toady))
                 .map(FoodEntity::toDomain).toList();
         FoodCategories foodCategories = foodCategoryReader.findNamesByFoodIds(foods.stream().map(Food::id).toList());
-        return foods.stream().map(food -> food.toRegisteredFood(foodCategories.getCategoryNames(food.id()))).toList();
+        return foods.stream().map(food -> food.toRegisteredFood(foodCategories.getCategories(food.id()))).toList();
     }
 
     public Food find(Long foodId) {
         return foodRepository.findById(foodId).orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_DATA)).toDomain();
+    }
+
+    public List<Food> findFoodsToNotify(LocalDate today) {
+        return foodRepository.findAll().stream()
+                .filter(food -> food.isNotificationDay(today))
+                .map(FoodEntity::toDomain)
+                .toList();
     }
 }

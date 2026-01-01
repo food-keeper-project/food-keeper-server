@@ -5,6 +5,7 @@ import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.business.FoodService;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodRegisterRequest;
+import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodUpdateRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodsRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponse;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponses;
@@ -42,15 +43,16 @@ public class FoodController {
                                                         @AuthMember Member authMember) {
         FoodRegister register = FoodRegisterRequest.toRegister(request);
         Long foodId = foodService.registerFood(register, image, authMember.memberKey());
-        return ResponseEntity.created(URI.create("/api/v1/foods" + foodId)).build();
+        return ResponseEntity.created(URI.create("/api/v1/foods" + foodId)).body(ApiResponse.success());
     }
 
     @NullMarked
     @Operation(summary = "식재료 즐겨찾기 추가", description = "식재료 즐겨찾기 추가 API")
     @PostMapping("/{foodId}/bookmark")
-    public ResponseEntity<Void> bookmarkFood(@PathVariable Long foodId, @AuthMember Member authMember) {
+    public ResponseEntity<ApiResponse<Void>> bookmarkFood(@PathVariable Long foodId, @AuthMember Member authMember) {
         Long bookmarkedFoodId = foodService.bookmarkFood(foodId, authMember.memberKey());
-        return ResponseEntity.created(URI.create("/api/v1/bookmarked-foods/" + bookmarkedFoodId)).build();
+        return ResponseEntity.created(URI.create("/api/v1/bookmarked-foods/" + bookmarkedFoodId))
+                .body(ApiResponse.success());
     }
 
     @NullMarked
@@ -60,7 +62,7 @@ public class FoodController {
                                                                              @CursorDefault Cursorable<Long> cursorable,
                                                                              @AuthMember Member authMember) {
         SliceObject<RegisteredFood> foods = foodService.findFoodList(cursorable, request.categoryId(), authMember.memberKey());
-        List<FoodResponse> foodResponses = foods.content().stream().map(FoodResponse::toFoodResponse).toList();
+        List<FoodResponse> foodResponses = foods.content().stream().map(FoodResponse::from).toList();
         return ResponseEntity.ok(ApiResponse.success(new PageResponse<>(foodResponses, foods.hasNext())));
     }
 
@@ -69,7 +71,7 @@ public class FoodController {
     @GetMapping("/{foodId}")
     public ResponseEntity<ApiResponse<FoodResponse>> findFood(@PathVariable Long foodId, @AuthMember Member authMember) {
         RegisteredFood registeredFood = foodService.findFood(foodId, authMember.memberKey());
-        return ResponseEntity.ok(ApiResponse.success(FoodResponse.toFoodResponse(registeredFood)));
+        return ResponseEntity.ok(ApiResponse.success(FoodResponse.from(registeredFood)));
     }
 
     @NullMarked
@@ -83,8 +85,8 @@ public class FoodController {
     @NullMarked
     @Operation(summary = "유통기한 임박 식재료 리스트 조회", description = "유통기한 임박 식재료 조회 API")
     @GetMapping("/imminent")
-    public ResponseEntity<ApiResponse<FoodResponses>> findImminentFoods() {
-        List<RegisteredFood> imminentFoods = foodService.findImminentFoods("membre");
+    public ResponseEntity<ApiResponse<FoodResponses>> findImminentFoods(@AuthMember Member member) {
+        List<RegisteredFood> imminentFoods = foodService.findImminentFoods(member.memberKey());
         return ResponseEntity.ok(ApiResponse.success(new FoodResponses(FoodResponse.toFoodListResponse(imminentFoods))));
     }
 
@@ -95,5 +97,18 @@ public class FoodController {
         Long resultId = foodService.removeFood(foodId, member.memberKey());
         return ResponseEntity.created(URI.create("/api/v1/foods" + resultId)).build();
     }
+
+    @NullMarked
+    @Operation(summary = "식재료 수정", description = "식재료 수정 API")
+    @PatchMapping("/{foodId}")
+    public ResponseEntity<ApiResponse<Void>> updateFood(@PathVariable Long foodId,
+                                                        @RequestPart @Valid FoodUpdateRequest request,
+                                                        @RequestPart(required = false) MultipartFile image,
+                                                        @AuthMember Member authMember) {
+        FoodRegister foodRegister = FoodUpdateRequest.toRegister(request);
+        Long resultId = foodService.updateFood(foodId, foodRegister, image, authMember.memberKey());
+        return ResponseEntity.created(URI.create("/api/v1/foods" + resultId)).build();
+    }
+
 }
 

@@ -13,7 +13,7 @@ public record RegisteredFood(
         Integer expiryAlarm,
         String memo,
         LocalDateTime createdAt,
-        List<String> categoryNames,
+        List<FoodCategory> categories,
         Long remainDays
 ) {
 }

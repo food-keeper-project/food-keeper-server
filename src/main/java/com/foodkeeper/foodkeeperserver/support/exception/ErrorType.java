@@ -31,6 +31,7 @@ public enum ErrorType {
 
     // S3
     S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E5000, "이미지 업로드에 실패했습니다.", LogLevel.ERROR),
+    S3_DELETE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E5001, "이미지 삭제에 실패했습니다.", LogLevel.ERROR),
 
     // Naver Clova
     NAVER_CLOVA_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E6000, "네이버 클로바 AI 서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.", LogLevel.ERROR),

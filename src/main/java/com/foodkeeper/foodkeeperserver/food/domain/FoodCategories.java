@@ -7,22 +7,22 @@ import java.util.stream.Collectors;
 
 public class FoodCategories {
 
-    private final Map<Long, List<String>> categoryNames;
+    private final Map<Long, List<FoodCategory>> categories;
 
     public FoodCategories(List<SelectedFoodCategory> selectedFoodCategories, List<FoodCategory> foodCategories) {
-        Map<Long, String> categoryNameMap = foodCategories.stream()
-                .collect(Collectors.toMap(FoodCategory::id, FoodCategory::name));
+        Map<Long, FoodCategory> categoryMap = foodCategories.stream()
+                .collect(Collectors.toMap(FoodCategory::id, foodCategory -> foodCategory));
 
-        this.categoryNames = selectedFoodCategories.stream()
+        this.categories = selectedFoodCategories.stream()
                 .collect(Collectors.groupingBy(
                         SelectedFoodCategory::foodId,
                         Collectors.mapping(
-                                selectedFoodCategory -> categoryNameMap.get(selectedFoodCategory.foodCategoryId()),
+                                selectedFoodCategory -> categoryMap.get(selectedFoodCategory.foodCategoryId()),
                                 Collectors.toList()
                         )
                 ));
     }
-    public List<String> getCategoryNames(Long foodId) {
-        return categoryNames.getOrDefault(foodId, Collections.emptyList());
+    public List<FoodCategory> getCategories(Long foodId) {
+        return categories.getOrDefault(foodId, Collections.emptyList());
     }
 }

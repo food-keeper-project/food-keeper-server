@@ -1,6 +1,5 @@
 package com.foodkeeper.foodkeeperserver.food.domain.request;
 
-import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
 
 import java.time.LocalDate;
@@ -10,19 +9,6 @@ public record FoodRegister(String name,
                            List<Long> categoryIds,
                            StorageMethod storageMethod,
                            LocalDate expiryDate,
-                           Integer expiryAlarm,
+                           Integer expiryAlarmDays,
                            String memo) {
-
-    public Food toFood(String imageUrl, String memberKey) {
-        return Food.builder()
-                .name(this.name)
-                .imageUrl(imageUrl)
-                .storageMethod(this.storageMethod)
-                .expiryDate(this.expiryDate)
-                .expiryAlarm(this.expiryAlarm)
-                .memo(this.memo)
-                .selectedCategoryCount(this.categoryIds.size())
-                .memberKey(memberKey)
-                .build();
-    }
 }

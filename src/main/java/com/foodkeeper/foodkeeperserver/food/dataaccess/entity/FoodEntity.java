@@ -3,6 +3,7 @@ package com.foodkeeper.foodkeeperserver.food.dataaccess.entity;
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.BaseEntity;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -68,16 +69,16 @@ public class FoodEntity extends BaseEntity {
         this.memberKey = memberKey;
     }
 
-    public static FoodEntity from(Food food) {
+    public static FoodEntity from(FoodRegister food, String imageUrl, String memberKey) {
         return FoodEntity.builder()
                 .name(food.name())
-                .imageUrl(food.imageUrl())
+                .imageUrl(imageUrl)
                 .storageMethod(food.storageMethod())
                 .expiryDate(food.expiryDate())
-                .expiryAlarmDays(food.expiryAlarm())
+                .expiryAlarmDays(food.expiryAlarmDays())
                 .memo(food.memo())
-                .selectedCategoryCount(food.selectedCategoryCount())
-                .memberKey(food.memberKey())
+                .selectedCategoryCount(food.categoryIds().size())
+                .memberKey(memberKey)
                 .build();
     }
 
@@ -96,10 +97,25 @@ public class FoodEntity extends BaseEntity {
         );
     }
 
+    public void update(Food food) {
+        this.name = food.name();
+        this.storageMethod = food.storageMethod();
+        this.imageUrl = food.imageUrl();
+        this.expiryDate = food.expiryDate();
+        this.expiryAlarmDays = food.expiryAlarmDays();
+        this.memo = food.memo();
+    }
+
     public boolean isImminent(LocalDate today) {
-        if(expiryDate.isBefore(today)) return false;
+        if (expiryDate.isBefore(today)) return false;
         LocalDate alarmLimitDate = today.plusDays(this.expiryAlarmDays);
         return !expiryDate.isAfter(alarmLimitDate);
     }
+
+    public boolean isNotificationDay(LocalDate today) {
+        LocalDate alarmDay = this.expiryDate.minusDays(this.expiryAlarmDays);
+        return alarmDay.isEqual(today);
+    }
+
 
 }

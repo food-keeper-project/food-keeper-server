@@ -3,6 +3,7 @@ package com.foodkeeper.foodkeeperserver.food.implement;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +20,18 @@ public class FoodManager {
     private final SelectedFoodCategoryManager selectedFoodCategoryManager;
 
     @Transactional
-    public Food register(Food food) {
-        FoodEntity foodEntity = foodRepository.save(FoodEntity.from(food));
+    public Food register(FoodRegister food, String imageUrl, String memberKey) {
+        FoodEntity foodEntity = foodRepository.save(FoodEntity.from(food, imageUrl, memberKey));
         return foodEntity.toDomain();
+    }
+
+    @Transactional
+    public void updateFood(Food food, List<Long> categoryIds, String memberKey) {
+        FoodEntity foodEntity = foodRepository.findByIdAndMemberKey(food.id(), memberKey).orElseThrow(() -> new AppException(ErrorType.FOOD_DATA_NOT_FOUND));
+        foodEntity.update(food);
+        if (categoryIds != null) {
+            selectedFoodCategoryManager.update(food.id(), categoryIds);
+        }
     }
 
     @Transactional
