@@ -31,6 +31,7 @@ public class MemberController {
     }
 
     @NullMarked
+    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 API")
     @DeleteMapping("/me/withdraw")
     public ResponseEntity<ApiResponse<Void>> withdraw(@AuthMember Member member) {
         memberService.withdrawMember(member.memberKey());
