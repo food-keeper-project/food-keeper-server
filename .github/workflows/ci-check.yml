@@ -1,4 +1,4 @@
-name: LetsRecordIt Server CI with Gradle
+name: Kitchen Log Server CI with Gradle
 
 on:
   pull_request:
