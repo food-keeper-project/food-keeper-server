@@ -41,7 +41,7 @@ public class FoodFixture {
                 .imageUrl(IMAGE_URL)
                 .storageMethod(STORAGE_METHOD)
                 .expiryDate(EXPIRY_DATE)
-                .expiryAlarm(EXPIRY_ALARM)
+                .expiryAlarmDays(EXPIRY_ALARM)
                 .memo(MEMO)
                 .selectedCategoryCount(1)
                 .memberKey(MEMBER_KEY)

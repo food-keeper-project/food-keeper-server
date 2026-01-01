@@ -282,9 +282,11 @@ public class FoodServiceTest {
         MultipartFile mockFile = mock(MultipartFile.class);
         FoodRegister foodRegister = new FoodRegister(
                 "음료", List.of(1L, 2L), StorageMethod.FROZEN, null, null, null);
-        FoodEntity foodEntity = FoodFixture.createFoodEntity(1L);
+        FoodEntity foodEntity = FoodFixture.createFoodEntity(foodId);
 
+        given(foodRepository.findById(foodId)).willReturn(Optional.ofNullable(foodEntity));
         given(foodRepository.findByIdAndMemberKey(foodId, FoodFixture.MEMBER_KEY)).willReturn(Optional.of(foodEntity));
+
         given(imageManager.fileUpload(any())).willReturn(CompletableFuture.completedFuture("파일 경로"));
         willDoNothing().given(imageManager).deleteFile(any());
         willDoNothing().given(selectedFoodCategoryRepository).deleteAllByFoodId(foodId);

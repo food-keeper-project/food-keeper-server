@@ -36,7 +36,6 @@ public class FoodReader {
         return food.toRegisteredFood(foodCategories.getCategoryNames(food.id()));
     }
 
-    // 1) 이름 정렬 2) 최신순
     public List<RegisteredFood> findAll(String memberKey) {
         List<Food> foods = foodRepository.findAllByMemberKey(memberKey).stream()
                 .map(FoodEntity::toDomain).toList();
@@ -44,7 +43,6 @@ public class FoodReader {
         return foods.stream().map(food -> food.toRegisteredFood(foodCategories.getCategoryNames(food.id()))).toList();
     }
 
-    // 알림 설정 리스트 조회
     public List<RegisteredFood> findImminentFoods(LocalDate toady, String memberKey) {
         List<Food> foods = foodRepository.findImminentFoods(memberKey).stream()
                 .filter(food -> food.isImminent(toady))

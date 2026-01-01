@@ -14,7 +14,7 @@ public record Food(
         String imageUrl,
         StorageMethod storageMethod,
         LocalDate expiryDate,
-        Integer expiryAlarm,
+        Integer expiryAlarmDays,
         String memo,
         Integer selectedCategoryCount,
         String memberKey,
@@ -28,7 +28,7 @@ public record Food(
                 this.imageUrl,
                 this.storageMethod,
                 this.expiryDate,
-                this.expiryAlarm != null ? this.expiryAlarm : 2,
+                this.expiryAlarmDays != null ? this.expiryAlarmDays : 2,
                 this.memo,
                 this.createdAt,
                 categoryNames,
@@ -42,7 +42,7 @@ public record Food(
                 .name(request.name() != null ? request.name() : this.name)
                 .storageMethod(request.storageMethod() != null ? request.storageMethod() : this.storageMethod)
                 .expiryDate(request.expiryDate() != null ? request.expiryDate() : this.expiryDate)
-                .expiryAlarm(request.expiryAlarm() != null ? request.expiryAlarm() : this.expiryAlarm)
+                .expiryAlarmDays(request.expiryAlarm() != null ? request.expiryAlarm() : this.expiryAlarmDays)
                 .memo(request.memo() != null ? request.memo() : this.memo)
                 .imageUrl(imageUrl != null ? imageUrl : this.imageUrl)
                 .build();

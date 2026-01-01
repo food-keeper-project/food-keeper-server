@@ -13,13 +13,13 @@ public record FoodRegister(String name,
                            Integer expiryAlarm,
                            String memo) {
 
-    public Food toNewFood(String imageUrl, String memberKey) {
+    public Food toFood(String imageUrl, String memberKey) {
         return Food.builder()
                 .name(this.name)
                 .imageUrl(imageUrl)
                 .storageMethod(this.storageMethod)
                 .expiryDate(this.expiryDate)
-                .expiryAlarm(this.expiryAlarm)
+                .expiryAlarmDays(this.expiryAlarm)
                 .memo(this.memo)
                 .selectedCategoryCount(this.categoryIds.size())
                 .memberKey(memberKey)
