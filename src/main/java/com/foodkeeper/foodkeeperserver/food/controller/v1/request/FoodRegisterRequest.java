@@ -2,6 +2,7 @@ package com.foodkeeper.foodkeeperserver.food.controller.v1.request;
 
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -14,7 +15,7 @@ public record FoodRegisterRequest(
         @NotNull @Size(min = 1, max = 3) List<Long> categoryIds,
         @NotNull StorageMethod storageMethod,
         @NotNull LocalDateTime expiryDate,
-        @NotNull @Size(max = 14) Integer expiryAlarm,
+        @NotNull @Max(14) Integer expiryAlarm,
         @NotNull String memo
 ) {
     public static FoodRegister toRegister(FoodRegisterRequest request) {
