@@ -43,3 +43,6 @@ clova:
 
 client:
   url: http://localhost:8080
+
+firebase:
+  key: testtesttesttesttesttesttesttest
