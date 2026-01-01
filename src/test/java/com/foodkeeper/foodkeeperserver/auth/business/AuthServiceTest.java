@@ -51,6 +51,8 @@ class AuthServiceTest {
     @Mock
     SignInLogRepository signInLogRepository;
     @Mock
+    FoodCategoryManager foodCategoryManager;
+    @Mock
     FcmManager fcmManager;
     SecretKey secretKey;
     AuthService authService;

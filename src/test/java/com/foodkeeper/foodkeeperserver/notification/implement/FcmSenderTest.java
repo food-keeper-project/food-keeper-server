@@ -1,9 +1,7 @@
-package com.foodkeeper.foodkeeperserver.notification.business;
+package com.foodkeeper.foodkeeperserver.notification.implement;
 
 import com.foodkeeper.foodkeeperserver.notification.dataaccess.repository.FcmRepository;
 import com.foodkeeper.foodkeeperserver.notification.domain.FcmMessage;
-import com.foodkeeper.foodkeeperserver.notification.implement.FcmManager;
-import com.foodkeeper.foodkeeperserver.notification.implement.FcmSender;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;

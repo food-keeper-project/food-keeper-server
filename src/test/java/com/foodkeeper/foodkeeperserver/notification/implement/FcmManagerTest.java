@@ -2,6 +2,7 @@ package com.foodkeeper.foodkeeperserver.notification.implement;
 
 import com.foodkeeper.foodkeeperserver.notification.dataaccess.entity.FcmTokenEntity;
 import com.foodkeeper.foodkeeperserver.notification.dataaccess.repository.FcmRepository;
+import com.foodkeeper.foodkeeperserver.notification.domain.MemberFcmTokens;
 import com.foodkeeper.foodkeeperserver.notification.fixture.FcmFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,21 +33,28 @@ public class FcmManagerTest {
     @Test
     @DisplayName("memberKey 리스트에 매핑되는 fcm 토큰 리스트 조회 후 Map 에 저장")
     void findTokens_SUCCESS() throws Exception {
-        //given
+        // given
         Set<String> memberKeys = Set.of("key1", "key2");
-        List<FcmTokenEntity> tokens = List.of(
+        List<FcmTokenEntity> tokenEntities = List.of(
                 FcmFixture.createEntity(1L, "token1", "key1"),
                 FcmFixture.createEntity(2L, "token2", "key1"),
                 FcmFixture.createEntity(3L, "token3", "key2")
         );
-        given(fcmRepository.findAllByMemberKeyIn(memberKeys)).willReturn(tokens);
+        given(fcmRepository.findAllByMemberKeyIn(memberKeys)).willReturn(tokenEntities);
 
-        //when
-        Map<String, List<String>> result = fcmManager.findTokens(memberKeys);
-        //then
-        assertThat(result).hasSize(2);
-        assertThat(result.get("key1")).containsExactlyInAnyOrder("token1", "token2");
-        assertThat(result.get("key2")).containsExactly("token3");
+        // when
+        MemberFcmTokens result = fcmManager.findTokens(memberKeys);
+
+        // then
+        assertThat(result).isNotNull();
+
+        List<String> key1Tokens = result.getTokensByMember("key1");
+        assertThat(key1Tokens).hasSize(2)
+                .containsExactlyInAnyOrder("token1", "token2");
+        List<String> key2Tokens = result.getTokensByMember("key2");
+        assertThat(key2Tokens).hasSize(1)
+                .containsExactly("token3");
+        assertThat(result.getTokensByMember("key3")).isEmpty();
     }
 
     @Test

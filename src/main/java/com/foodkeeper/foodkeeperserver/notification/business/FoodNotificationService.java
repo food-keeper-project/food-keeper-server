@@ -3,10 +3,12 @@ package com.foodkeeper.foodkeeperserver.notification.business;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
 import com.foodkeeper.foodkeeperserver.notification.domain.FcmMessage;
+import com.foodkeeper.foodkeeperserver.notification.domain.MemberFcmTokens;
 import com.foodkeeper.foodkeeperserver.notification.implement.FcmManager;
 import com.foodkeeper.foodkeeperserver.notification.implement.FcmSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -25,7 +27,9 @@ public class FoodNotificationService {
     private final FcmManager fcmManager;
     private final String TITLE = "유통기한 임박 알림";
 
-    public void sendExpiryAlarm(LocalDate today) {
+    @Scheduled(cron = "0 0 12 * * *")
+    public void sendExpiryAlarm() {
+        LocalDate today = LocalDate.now();
         log.info("[Expiry Alarm] 유통기한 알림 전송 시작");
 
         List<Food> foods = foodManager.findFoodsToNotify(today);
@@ -37,12 +41,12 @@ public class FoodNotificationService {
         Map<String, List<Food>> foodsByMember = foods.stream()
                 .collect(Collectors.groupingBy(Food::memberKey));
 
-        Map<String, List<String>> tokenMap = fcmManager.findTokens(foodsByMember.keySet());
+        MemberFcmTokens memberFcmTokens = fcmManager.findTokens(foodsByMember.keySet());
 
         foodsByMember.forEach((memberKey, memberFoods) -> {
-            List<String> tokens = tokenMap.getOrDefault(memberKey, Collections.emptyList());
+            if (!memberFcmTokens.hasTokens(memberKey)) return;
+            List<String> tokens = memberFcmTokens.getTokensByMember(memberKey);
 
-            if (tokens.isEmpty()) return;
             FcmMessage message = createFcmMessage(memberFoods, tokens.get(0), today);
 
             tokens.forEach(token -> {

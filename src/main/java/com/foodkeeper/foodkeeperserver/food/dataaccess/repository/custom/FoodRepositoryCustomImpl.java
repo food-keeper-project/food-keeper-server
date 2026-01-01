@@ -84,7 +84,7 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
                 .where(
                         foodEntity.expiryDate.eq(
                                 Expressions.dateTemplate(LocalDate.class,
-                                        "DATE_ADD({0}, INTERVAL {1} DAY)", today, foodEntity.expiryAlarmDays))).fetch();
+                                        "DATE_ADD({0}, INTERVAL {1} DAY)", today, foodEntity.expiryAlarm))).fetch();
     }
 
     // 카테고리 선택했을 시 필터링 조회

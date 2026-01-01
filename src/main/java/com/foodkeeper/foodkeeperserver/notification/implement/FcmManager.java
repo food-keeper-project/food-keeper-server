@@ -3,6 +3,7 @@ package com.foodkeeper.foodkeeperserver.notification.implement;
 import com.foodkeeper.foodkeeperserver.notification.dataaccess.entity.FcmTokenEntity;
 import com.foodkeeper.foodkeeperserver.notification.dataaccess.repository.FcmRepository;
 import com.foodkeeper.foodkeeperserver.notification.domain.FcmToken;
+import com.foodkeeper.foodkeeperserver.notification.domain.MemberFcmTokens;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,14 +19,15 @@ public class FcmManager {
 
     private final FcmRepository fcmRepository;
 
-    public Map<String, List<String>> findTokens(Set<String> memberKeys) {
+    public MemberFcmTokens findTokens(Set<String> memberKeys) {
         List<FcmTokenEntity> tokens = fcmRepository.findAllByMemberKeyIn(memberKeys);
-        return tokens.stream()
+        Map<String, List<String>> groupedTokens = tokens.stream()
                 .map(FcmTokenEntity::toDomain)
                 .collect(Collectors.groupingBy(
                         FcmToken::memberKey,
                         Collectors.mapping(FcmToken::fcmToken, Collectors.toList())
                 ));
+        return new MemberFcmTokens(groupedTokens);
     }
 
     @Transactional
