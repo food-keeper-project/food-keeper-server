@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -201,6 +202,7 @@ public class FoodServiceTest {
                 .isEqualTo(ErrorType.NOT_FOUND_DATA);
     }
 
+    @Test
     @DisplayName("foodId 리스트와 memberKey 으로 foodName을 List<String>로 결과 반환")
     void getFoodNames_SUCCESS() {
         //given
@@ -275,14 +277,17 @@ public class FoodServiceTest {
         FoodEntity foodEntity = FoodFixture.createFoodEntity(foodId);
 
         given(foodRepository.findById(foodId)).willReturn(Optional.ofNullable(foodEntity));
+        assertNotNull(foodEntity);
         given(foodRepository.findByIdAndMemberKey(foodId, FoodFixture.MEMBER_KEY)).willReturn(Optional.of(foodEntity));
 
         given(imageManager.fileUpload(any())).willReturn(Optional.of("파일 경로"));
         willDoNothing().given(imageManager).deleteFile(any());
         willDoNothing().given(selectedFoodCategoryRepository).deleteAllByFoodId(foodId);
         given(selectedFoodCategoryRepository.saveAll(any())).willReturn(List.of());
+
         //when
-        Long id = foodService.updateFood(foodId, foodRegister, mockFile, FoodFixture.MEMBER_KEY);
+        foodService.updateFood(foodId, foodRegister, mockFile, FoodFixture.MEMBER_KEY);
+
         //then
         assertThat(foodEntity.getName()).isEqualTo(foodRegister.name());
         assertThat(foodEntity.getMemo()).isEqualTo(FoodFixture.MEMO);

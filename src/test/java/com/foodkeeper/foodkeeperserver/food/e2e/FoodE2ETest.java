@@ -40,7 +40,8 @@ public class FoodE2ETest extends E2ETest {
 
         client.post()
                 .uri("/api/v1/foods")
-                .accept(MediaType.MULTIPART_FORM_DATA)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
                 .header(AUTHORIZATION, getAccessToken(member.getMemberKey()))
                 .body(builder.build())
                 .exchange()
@@ -70,7 +71,7 @@ public class FoodE2ETest extends E2ETest {
 
         client.post()
                 .uri("/api/v1/foods")
-                .accept(MediaType.MULTIPART_FORM_DATA)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
                 .header(AUTHORIZATION, getAccessToken(member.getMemberKey()))
                 .body(builder.build())
                 .exchange()
@@ -97,7 +98,7 @@ public class FoodE2ETest extends E2ETest {
 
         client.post()
                 .uri("/api/v1/foods")
-                .accept(MediaType.MULTIPART_FORM_DATA)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
                 .header(AUTHORIZATION, getAccessToken(member.getMemberKey()))
                 .body(builder.build())
                 .exchange()
@@ -124,7 +125,7 @@ public class FoodE2ETest extends E2ETest {
 
         client.post()
                 .uri("/api/v1/foods")
-                .accept(MediaType.MULTIPART_FORM_DATA)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
                 .header(AUTHORIZATION, getAccessToken(member.getMemberKey()))
                 .body(builder.build())
                 .exchange()
