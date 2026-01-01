@@ -7,7 +7,6 @@ import com.foodkeeper.foodkeeperserver.food.business.FoodService;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodRegisterRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodUpdateRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodsRequest;
-import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodIdResponse;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponse;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponses;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
@@ -85,8 +84,8 @@ public class FoodController {
     @NullMarked
     @Operation(summary = "유통기한 임박 식재료 리스트 조회", description = "유통기한 임박 식재료 조회 API")
     @GetMapping("/imminent")
-    public ResponseEntity<ApiResponse<FoodResponses>> findImminentFoods() {
-        List<RegisteredFood> imminentFoods = foodService.findImminentFoods("membre");
+    public ResponseEntity<ApiResponse<FoodResponses>> findImminentFoods(@AuthMember Member member) {
+        List<RegisteredFood> imminentFoods = foodService.findImminentFoods(member.memberKey());
         return ResponseEntity.ok(ApiResponse.success(new FoodResponses(FoodResponse.toFoodListResponse(imminentFoods))));
     }
 

@@ -35,6 +35,6 @@ public class BookmarkedFoodE2ETest extends E2ETest {
                 .expectBody()
                 .jsonPath("$.data.content[0].name").isEqualTo(bookmarkedFood.getName())
                 .jsonPath("$.data.content[0].imageUrl").isEqualTo(bookmarkedFood.getImageUrl())
-                .jsonPath("$.data.content[0].storageMethod").isEqualTo(bookmarkedFood.getStorageMethod().name());
+                .jsonPath("$.data.content[0].storageMethod").isEqualTo(bookmarkedFood.getStorageMethod().getValue());
     }
 }
