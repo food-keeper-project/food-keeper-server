@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -143,7 +142,7 @@ public class FoodServiceTest {
         //then
         assertThat(result.hasNext()).isTrue();
         assertThat(result.content()).hasSize(2);
-        assertThat(result.content().getFirst().categoryNames().getFirst()).isEqualTo("유제품");
+        assertThat(result.content().getFirst().categories().getFirst().name()).isEqualTo("유제품");
     }
 
     @Test
@@ -160,12 +159,12 @@ public class FoodServiceTest {
         given(foodRepository.findByIdAndMemberKey(1L, FoodFixture.MEMBER_KEY)).willReturn(Optional.of(food));
         given(selectedFoodCategoryRepository.findByFoodId(1L)).willReturn(selectedFoodCategories);
         given(foodCategoryRepository.findAllByIdIn(List.of(1L, 2L))).willReturn(foodCategories);
+
         //when
         RegisteredFood result = foodService.findFood(1L, FoodFixture.MEMBER_KEY);
-        //then
-        assertThat(result.categoryNames()).hasSize(2);
-        assertThat(result.categoryNames()).contains("유제품");
 
+        //then
+        assertThat(result.categories()).hasSize(2);
     }
 
     @Test
@@ -242,7 +241,7 @@ public class FoodServiceTest {
         List<RegisteredFood> results = foodService.findImminentFoods(memberKey);
         //then
         assertThat(results.getFirst().name()).isEqualTo("우유");
-        assertThat(results.getFirst().categoryNames()).contains("유제품");
+        assertThat(results.getFirst().categories()).hasSize(1);
         assertThat(results.getFirst().remainDays()).isEqualTo(1L);
     }
 

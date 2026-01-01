@@ -15,10 +15,10 @@ public record FoodResponse(
         Integer expiryAlarm,
         String memo,
         LocalDateTime createdAt,
-        List<String> categoryNames,
+        List<FoodCategoryResponse> categories,
         Long remainDays
 ) {
-    public static FoodResponse toFoodResponse(RegisteredFood food) {
+    public static FoodResponse from(RegisteredFood food) {
         return new FoodResponse(
                 food.id(),
                 food.name(),
@@ -28,14 +28,14 @@ public record FoodResponse(
                 food.expiryAlarm(),
                 food.memo(),
                 food.createdAt(),
-                food.categoryNames(),
+                food.categories().stream().map(FoodCategoryResponse::from).toList(),
                 food.remainDays()
         );
     }
 
     public static List<FoodResponse> toFoodListResponse(List<RegisteredFood> foods) {
         return foods.stream()
-                .map(FoodResponse::toFoodResponse)
+                .map(FoodResponse::from)
                 .toList();
     }
 

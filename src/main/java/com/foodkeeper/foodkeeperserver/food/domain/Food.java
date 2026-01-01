@@ -21,7 +21,7 @@ public record Food(
         LocalDateTime createdAt
 ) {
 
-    public RegisteredFood toRegisteredFood(List<String> categoryNames) {
+    public RegisteredFood toRegisteredFood(List<FoodCategory> categories) {
         return new RegisteredFood(
                 this.id,
                 this.name,
@@ -31,7 +31,7 @@ public record Food(
                 this.expiryAlarmDays != null ? this.expiryAlarmDays : 2,
                 this.memo,
                 this.createdAt,
-                categoryNames,
+                categories,
                 this.calculateRemainDay(LocalDate.now())
         );
     }

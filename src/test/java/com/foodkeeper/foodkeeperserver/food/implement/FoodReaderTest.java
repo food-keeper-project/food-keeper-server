@@ -6,6 +6,7 @@ import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.domain.FoodCategories;
+import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,7 +53,9 @@ class FoodReaderTest {
         SliceObject<FoodEntity> foodSlice = new SliceObject<>(foodEntities, cursorable, false);
 
         FoodCategories mockFoodCategories = mock(FoodCategories.class);
-        given(mockFoodCategories.getCategoryNames(anyLong())).willReturn(List.of("유제품", "냉동"));
+        FoodCategory category1 = new FoodCategory(1L, "유제품", memberKey, LocalDateTime.now());
+        FoodCategory category2 = new FoodCategory(1L, "냉동", memberKey, LocalDateTime.now());
+        given(mockFoodCategories.getCategories(anyLong())).willReturn(List.of(category1, category2));
 
         given(foodRepository.findFoodCursorList(cursorable, categoryId, memberKey)).willReturn(foodSlice);
         given(foodCategoryReader.findNamesByFoodIds(anyList())).willReturn(mockFoodCategories);
@@ -62,7 +66,7 @@ class FoodReaderTest {
         // then
         assertThat(result.content()).hasSize(2);
         assertThat(result.content().getFirst()).isInstanceOf(RegisteredFood.class);
-        assertThat(result.content().getFirst().categoryNames()).contains("유제품");
+        assertThat(result.content().getFirst().categories()).contains(category1);
     }
 
     @Test
@@ -74,7 +78,8 @@ class FoodReaderTest {
         FoodEntity foodEntity = FoodFixture.createFoodEntity(foodId);
 
         FoodCategories mockFoodCategories = mock(FoodCategories.class);
-        given(mockFoodCategories.getCategoryNames(foodId)).willReturn(List.of("채소"));
+        FoodCategory category = new FoodCategory(1L, "채소", memberKey, LocalDateTime.now());
+        given(mockFoodCategories.getCategories(foodId)).willReturn(List.of(category));
 
         given(foodRepository.findByIdAndMemberKey(foodId, memberKey)).willReturn(Optional.of(foodEntity));
         given(foodCategoryReader.findNamesFoodById(foodId)).willReturn(mockFoodCategories);
@@ -84,7 +89,7 @@ class FoodReaderTest {
 
         // then
         assertThat(result.name()).isEqualTo(FoodFixture.NAME);
-        assertThat(result.categoryNames()).contains("채소");
+        assertThat(result.categories()).contains(category);
     }
 
     @Test
@@ -98,7 +103,8 @@ class FoodReaderTest {
         );
 
         FoodCategories mockFoodCategories = mock(FoodCategories.class);
-        given(mockFoodCategories.getCategoryNames(anyLong())).willReturn(List.of("기타"));
+        FoodCategory category = new FoodCategory(1L, "채소", memberKey, LocalDateTime.now());
+        given(mockFoodCategories.getCategories(anyLong())).willReturn(List.of(category));
 
         given(foodRepository.findAllByMemberKey(memberKey)).willReturn(foodEntities);
         given(foodCategoryReader.findNamesByFoodIds(anyList())).willReturn(mockFoodCategories);
@@ -119,7 +125,8 @@ class FoodReaderTest {
         List<FoodEntity> foodEntities = List.of(FoodFixture.createFoodEntity(1L));
         LocalDate today = LocalDate.now();
         FoodCategories mockFoodCategories = mock(FoodCategories.class);
-        given(mockFoodCategories.getCategoryNames(anyLong())).willReturn(List.of("임박식품"));
+        FoodCategory category = new FoodCategory(1L, "유제품", memberKey, LocalDateTime.now());
+        given(mockFoodCategories.getCategories(anyLong())).willReturn(List.of(category));
 
         given(foodRepository.findImminentFoods(memberKey)).willReturn(foodEntities);
         given(foodCategoryReader.findNamesByFoodIds(anyList())).willReturn(mockFoodCategories);
@@ -129,7 +136,7 @@ class FoodReaderTest {
 
         // then
         assertThat(results).hasSize(1);
-        assertThat(results.getFirst().categoryNames()).contains("임박식품");
+        assertThat(results.getFirst().categories()).contains(category);
     }
 
     @Test
