@@ -27,7 +27,8 @@ public class FoodManager {
 
     @Transactional
     public void updateFood(Food food, List<Long> categoryIds, String memberKey) {
-        FoodEntity foodEntity = foodRepository.findByIdAndMemberKey(food.id(), memberKey).orElseThrow(() -> new AppException(ErrorType.FOOD_DATA_NOT_FOUND));
+        FoodEntity foodEntity = foodRepository.findByIdAndMemberKey(food.id(), memberKey)
+                .orElseThrow(() -> new AppException(ErrorType.FOOD_DATA_NOT_FOUND));
         foodEntity.update(food);
         if (categoryIds != null) {
             selectedFoodCategoryManager.update(food.id(), categoryIds);
@@ -36,7 +37,8 @@ public class FoodManager {
 
     @Transactional
     public Food removeFood(Long id, String memberKey) {
-        FoodEntity foodEntity = foodRepository.findByIdAndMemberKey(id, memberKey).orElseThrow(() -> new AppException(ErrorType.FOOD_DATA_NOT_FOUND));
+        FoodEntity foodEntity = foodRepository.findByIdAndMemberKey(id, memberKey)
+                .orElseThrow(() -> new AppException(ErrorType.FOOD_DATA_NOT_FOUND));
         foodEntity.delete();
         selectedFoodCategoryManager.removeAllByFoodId(id);
         return foodEntity.toDomain();

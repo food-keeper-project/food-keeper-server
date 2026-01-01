@@ -94,8 +94,8 @@ public class FoodController {
     @Operation(summary = "식재료 소비완료", description = "식재료 소비완료 API")
     @DeleteMapping("/{foodId}")
     public ResponseEntity<ApiResponse<Void>> removeFood(@PathVariable Long foodId, @AuthMember Member member) {
-        Long resultId = foodService.removeFood(foodId, member.memberKey());
-        return ResponseEntity.created(URI.create("/api/v1/foods" + resultId)).build();
+        foodService.removeFood(foodId, member.memberKey());
+        return ResponseEntity.ok(ApiResponse.success());
     }
 
     @NullMarked
