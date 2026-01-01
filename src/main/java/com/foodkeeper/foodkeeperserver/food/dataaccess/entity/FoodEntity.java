@@ -3,6 +3,7 @@ package com.foodkeeper.foodkeeperserver.food.dataaccess.entity;
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.BaseEntity;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
+import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 
 @Entity
@@ -74,7 +76,7 @@ public class FoodEntity extends BaseEntity {
                 .imageUrl(food.imageUrl())
                 .storageMethod(food.storageMethod())
                 .expiryDate(food.expiryDate())
-                .expiryAlarmDays(food.expiryAlarm())
+                .expiryAlarmDays(food.expiryAlarmDays())
                 .memo(food.memo())
                 .selectedCategoryCount(food.selectedCategoryCount())
                 .memberKey(food.memberKey())
@@ -94,6 +96,15 @@ public class FoodEntity extends BaseEntity {
                 this.memberKey,
                 this.getCreatedAt()
         );
+    }
+
+    public void update(Food food) {
+        this.name = food.name();
+        this.storageMethod = food.storageMethod();
+        this.imageUrl = food.imageUrl();
+        this.expiryDate = food.expiryDate();
+        this.expiryAlarmDays = food.expiryAlarmDays();
+        this.memo = food.memo();
     }
 
     public boolean isImminent(LocalDate today) {

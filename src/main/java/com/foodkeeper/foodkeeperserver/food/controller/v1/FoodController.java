@@ -5,6 +5,7 @@ import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.business.FoodService;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodRegisterRequest;
+import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodUpdateRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodsRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponse;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponses;
@@ -83,8 +84,8 @@ public class FoodController {
     @NullMarked
     @Operation(summary = "유통기한 임박 식재료 리스트 조회", description = "유통기한 임박 식재료 조회 API")
     @GetMapping("/imminent")
-    public ResponseEntity<ApiResponse<FoodResponses>> findImminentFoods() {
-        List<RegisteredFood> imminentFoods = foodService.findImminentFoods("membre");
+    public ResponseEntity<ApiResponse<FoodResponses>> findImminentFoods(@AuthMember Member member) {
+        List<RegisteredFood> imminentFoods = foodService.findImminentFoods(member.memberKey());
         return ResponseEntity.ok(ApiResponse.success(new FoodResponses(FoodResponse.toFoodListResponse(imminentFoods))));
     }
 
@@ -95,5 +96,18 @@ public class FoodController {
         Long resultId = foodService.removeFood(foodId, member.memberKey());
         return ResponseEntity.created(URI.create("/api/v1/foods" + resultId)).build();
     }
+
+    @NullMarked
+    @Operation(summary = "식재료 수정", description = "식재료 수정 API")
+    @PatchMapping("/{foodId}")
+    public ResponseEntity<ApiResponse<Void>> updateFood(@PathVariable Long foodId,
+                                                        @RequestPart @Valid FoodUpdateRequest request,
+                                                        @RequestPart(required = false) MultipartFile image,
+                                                        @AuthMember Member authMember) {
+        FoodRegister foodRegister = FoodUpdateRequest.toRegister(request);
+        Long resultId = foodService.updateFood(foodId, foodRegister, image, authMember.memberKey());
+        return ResponseEntity.created(URI.create("/api/v1/foods" + resultId)).build();
+    }
+
 }
 

@@ -19,10 +19,11 @@ public record FoodRegister(String name,
                 .imageUrl(imageUrl)
                 .storageMethod(this.storageMethod)
                 .expiryDate(this.expiryDate)
-                .expiryAlarm(this.expiryAlarm)
+                .expiryAlarmDays(this.expiryAlarm)
                 .memo(this.memo)
                 .selectedCategoryCount(this.categoryIds.size())
                 .memberKey(memberKey)
                 .build();
     }
+
 }
