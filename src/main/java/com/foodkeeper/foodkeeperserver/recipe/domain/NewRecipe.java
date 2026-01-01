@@ -10,4 +10,14 @@ public record NewRecipe(String menuName,
                         Integer cookMinutes,
                         List<RecipeIngredient> ingredients,
                         List<RecipeStep> steps) {
+
+    public NewRecipe {
+        if (ingredients == null) {
+            ingredients = List.of();
+        }
+
+        if (steps == null) {
+            steps = List.of();
+        }
+    }
 }
