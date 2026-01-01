@@ -1,4 +1,4 @@
 package com.foodkeeper.foodkeeperserver.food.controller.v1.response;
 
-public record FoodRegisterResponse(Long id) {
+public record FoodIdResponse(Long id) {
 }

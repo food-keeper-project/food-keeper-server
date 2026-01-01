@@ -21,25 +21,18 @@ public record Food(
         LocalDateTime createdAt
 ) {
 
-    public RecipeFood toRecipe() {
-        return new RecipeFood(
-                this.id,
-                this.name,
-                this.calculateRemainDay(LocalDate.now())
-        );
-    }
-
-    public RegisteredFood toRegisteredFood(List<Long> categoryIds) {
+    public RegisteredFood toRegisteredFood(List<String> categoryNames) {
         return new RegisteredFood(
                 this.id,
                 this.name,
                 this.imageUrl,
                 this.storageMethod,
                 this.expiryDate,
-                this.expiryAlarm,
+                this.expiryAlarm != null ? this.expiryAlarm : 2,
                 this.memo,
                 this.createdAt,
-                categoryIds
+                categoryNames,
+                this.calculateRemainDay(LocalDate.now())
         );
     }
 
