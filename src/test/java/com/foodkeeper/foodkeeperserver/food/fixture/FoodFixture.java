@@ -22,7 +22,7 @@ public class FoodFixture {
     public static final String MEMBER_KEY = "memberKey";
 
 
-    public static FoodRegister createRegisterDto(List<Long> categoryIds) {
+    public static FoodRegister createRegister(List<Long> categoryIds) {
         return new FoodRegister(
                 NAME,
                 categoryIds,
@@ -50,7 +50,7 @@ public class FoodFixture {
     }
 
     public static FoodEntity createFoodEntity(Long id) {
-        FoodEntity foodEntity = FoodEntity.from(createFood(1L));
+        FoodEntity foodEntity = FoodEntity.from(createRegister(List.of(1L)), IMAGE_URL, MEMBER_KEY);
         ReflectionTestUtils.setField(foodEntity, "id", id);
         return foodEntity;
     }

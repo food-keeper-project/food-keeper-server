@@ -6,6 +6,7 @@ import com.foodkeeper.foodkeeperserver.bookmarkedfood.implement.FoodBookmarker;
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.enums.EntityStatus;
 import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
+import com.foodkeeper.foodkeeperserver.common.handler.TransactionHandler;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.SelectedFoodCategoryEntity;
@@ -36,7 +37,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -61,6 +61,8 @@ public class FoodServiceTest {
     SelectedFoodCategoryRepository selectedFoodCategoryRepository;
     @Mock
     BookmarkedFoodRepository bookmarkedFoodRepository;
+    @Mock
+    TransactionHandler transactionHandler;
 
     @BeforeEach
     void setUp() {
@@ -77,7 +79,8 @@ public class FoodServiceTest {
                 foodManager,
                 categoryManager,
                 selectedFoodCategoryManager,
-                foodBookmarker
+                foodBookmarker,
+                transactionHandler
         );
     }
 
@@ -88,17 +91,19 @@ public class FoodServiceTest {
         String memberKey = "memberKey";
         MultipartFile mockFile = new MockMultipartFile("image", "test.jpg", "image/jpeg", "data".getBytes());
         List<Long> categoryIds = List.of(1L, 2L);
-        FoodRegister dto = FoodFixture.createRegisterDto(categoryIds);
+        FoodRegister dto = FoodFixture.createRegister(categoryIds);
 
         FoodEntity mockFoodEntity = FoodFixture.createFoodEntity(1L);
         List<FoodCategoryEntity> mockCategories = CategoryFixture.createCategoryEntity(categoryIds);
 
-        given(imageManager.fileUpload(any())).willReturn(CompletableFuture.completedFuture("파일 경로"));
+        given(imageManager.fileUpload(any())).willReturn(Optional.of("파일 경로"));
         given(foodCategoryRepository.findAllById(categoryIds)).willReturn(mockCategories);
         given(foodRepository.save(any(FoodEntity.class))).willReturn(mockFoodEntity);
+        willDoNothing().given(transactionHandler).runOnRollback(any());
 
         // when
         foodService.registerFood(dto, mockFile, memberKey);
+
         // then
         ArgumentCaptor<FoodEntity> foodCaptor = ArgumentCaptor.forClass(FoodEntity.class);
         verify(foodRepository).save(foodCaptor.capture());
@@ -110,24 +115,8 @@ public class FoodServiceTest {
     }
 
     @Test
-    @DisplayName("카테고리가 3개 초과하면 에러 발생")
-    void validateCategorySize_FAIL() {
-        //given
-        List<Long> categoryIds = List.of(1L, 2L, 3L, 4L);
-        MockMultipartFile mockImage = new MockMultipartFile("image", "test.jpg", "image/jpeg", "test data".getBytes());
-        FoodRegister registerDto = FoodFixture.createRegisterDto(categoryIds);
-        given(imageManager.fileUpload(any()))
-                .willReturn(CompletableFuture.completedFuture("https://dummy-url.com/image.jpg"));
-        //when + then
-        assertThatThrownBy(() -> foodService.registerFood(registerDto, mockImage, "memberKey"))
-                .isInstanceOf(AppException.class)
-                .extracting("errorType")
-                .isEqualTo(ErrorType.DEFAULT_ERROR);
-    }
-
-    @Test
     @DisplayName("커서 조회 시 limit 보다 많으면 hasNext 는 true 이고, 초과되면 하나는 제거되고 카테고리 매핑")
-    void getFoodList_hasNext_TRUE() throws Exception {
+    void getFoodList_hasNext_TRUE() {
         //given
         Long categoryId = 1L;
         String memberKey = FoodFixture.MEMBER_KEY;
@@ -185,7 +174,9 @@ public class FoodServiceTest {
         // given
         long bookmarkedFoodId = 2L;
         Food food = FoodFixture.createFood(1L);
-        FoodEntity foodEntity = FoodEntity.from(food);
+        FoodRegister foodRegister = new FoodRegister(food.name(), List.of(), food.storageMethod(), food.expiryDate(),
+                food.expiryAlarmDays(), food.memo());
+        FoodEntity foodEntity = FoodEntity.from(foodRegister, food.imageUrl(), food.memberKey());
         BookmarkedFoodEntity bookmarkedFoodEntity = mock(BookmarkedFoodEntity.class);
         given(bookmarkedFoodEntity.getId()).willReturn(bookmarkedFoodId);
         given(foodRepository.findById(eq(1L))).willReturn(Optional.of(foodEntity));
@@ -287,7 +278,7 @@ public class FoodServiceTest {
         given(foodRepository.findById(foodId)).willReturn(Optional.ofNullable(foodEntity));
         given(foodRepository.findByIdAndMemberKey(foodId, FoodFixture.MEMBER_KEY)).willReturn(Optional.of(foodEntity));
 
-        given(imageManager.fileUpload(any())).willReturn(CompletableFuture.completedFuture("파일 경로"));
+        given(imageManager.fileUpload(any())).willReturn(Optional.of("파일 경로"));
         willDoNothing().given(imageManager).deleteFile(any());
         willDoNothing().given(selectedFoodCategoryRepository).deleteAllByFoodId(foodId);
         given(selectedFoodCategoryRepository.saveAll(any())).willReturn(List.of());

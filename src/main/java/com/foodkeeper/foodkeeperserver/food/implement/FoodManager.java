@@ -20,8 +20,8 @@ public class FoodManager {
     private final SelectedFoodCategoryManager selectedFoodCategoryManager;
 
     @Transactional
-    public Food register(Food food) {
-        FoodEntity foodEntity = foodRepository.save(FoodEntity.from(food));
+    public Food register(FoodRegister food, String imageUrl, String memberKey) {
+        FoodEntity foodEntity = foodRepository.save(FoodEntity.from(food, imageUrl, memberKey));
         return foodEntity.toDomain();
     }
 

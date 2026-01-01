@@ -3,6 +3,7 @@ package com.foodkeeper.foodkeeperserver.food.business;
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.implement.FoodBookmarker;
 import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
+import com.foodkeeper.foodkeeperserver.common.handler.TransactionHandler;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
@@ -14,6 +15,8 @@ import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -30,21 +33,22 @@ public class FoodService {
     private final CategoryManager categoryManager;
     private final SelectedFoodCategoryManager selectedFoodCategoryManager;
     private final FoodBookmarker foodBookmarker;
+    private final TransactionHandler transactionHandler;
 
     @Transactional
     public Long registerFood(FoodRegister register, MultipartFile file, String memberKey) {
-        CompletableFuture<String> imageUrlFuture = imageManager.fileUpload(file);
-        Food food = register.toFood(imageUrlFuture.join(), memberKey);
-        try {
-            Food savedFood = foodManager.register(food);
-            List<FoodCategory> foodCategories = categoryManager.findAllByIds(register.categoryIds());
-            foodCategories.forEach(category ->
-                    selectedFoodCategoryManager.save(SelectedFoodCategory.create(savedFood.id(), category.id())));
-            return savedFood.id();
-        } catch (RuntimeException e) { // DB 롤백 시 사진 삭제
-            imageManager.deleteFile(imageUrlFuture.join());
-            throw new AppException(ErrorType.DEFAULT_ERROR, e);
-        }
+        String imageUrl = imageManager.fileUpload(file).orElse("");
+        transactionHandler.runOnRollback(() -> {
+            if (!imageUrl.isEmpty()) {
+                imageManager.deleteFile(imageUrl);
+            }
+        });
+
+        Food food = foodManager.register(register, imageUrl, memberKey);
+        categoryManager.findAllByIds(register.categoryIds()).forEach(category ->
+                selectedFoodCategoryManager.save(SelectedFoodCategory.create(food.id(), category.id())));
+
+        return food.id();
     }
 
     public SliceObject<RegisteredFood> findFoodList(Cursorable<Long> cursorable, Long categoryId, String memberKey) {
@@ -77,14 +81,14 @@ public class FoodService {
     }
 
     @Transactional
-    public Long updateFood(Long foodId, FoodRegister register, MultipartFile imageUrl, String memberKey) {
+    public Long updateFood(Long foodId, FoodRegister register, MultipartFile newImage, String memberKey) {
         Food food = foodReader.find(foodId);
-        String newImage = null;
-        if (imageUrl != null) {
-            newImage = imageManager.fileUpload(imageUrl).join();
+        String imageUrl = null;
+        if (newImage != null) {
+            imageUrl = imageManager.fileUpload(newImage).orElse(null);
             imageManager.deleteFile(food.imageUrl());
         }
-        Food updatedFood = food.update(register, newImage);
+        Food updatedFood = food.update(register, imageUrl);
         foodManager.updateFood(updatedFood, register.categoryIds(), memberKey);
         return food.id();
     }
