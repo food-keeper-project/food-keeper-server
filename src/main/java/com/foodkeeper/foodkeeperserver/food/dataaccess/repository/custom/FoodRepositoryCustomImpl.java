@@ -5,10 +5,12 @@ import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
+import com.querydsl.core.types.Ops;
+import com.querydsl.core.types.dsl.*;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -23,7 +25,7 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
 
     // 카테고리 분류 조회
     @Override
-    public SliceObject<FoodEntity> findFoodCursorList(Cursorable<LocalDateTime> cursorable,
+    public SliceObject<FoodEntity> findFoodCursorList(Cursorable<Long> cursorable,
                                                       Long categoryId,
                                                       String memberKey) {
         JPAQuery<FoodEntity> query = selectFrom(foodEntity);
@@ -33,14 +35,18 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
         List<FoodEntity> content = query
                 .where(
                         foodEntity.memberKey.eq(memberKey),
-                        foodEntity.createdAt.lt(cursorable.cursor()),
-                        foodEntity.status.ne(EntityStatus.DELETED)
+                        foodEntity.status.ne(EntityStatus.DELETED),
+                        ltCursor(cursorable.cursor())
                 )
-                .orderBy(foodEntity.createdAt.desc(), foodEntity.id.desc())
+                .orderBy(foodEntity.id.desc(), foodEntity.createdAt.desc())
                 .limit(cursorable.limit() + 1)
                 .fetch();
 
         return new SliceObject<>(content, cursorable, hasNext(cursorable, content));
+    }
+
+    private static BooleanExpression ltCursor(Long cursor) {
+        return cursor == null ? null : foodEntity.id.lt(cursor);
     }
 
     @Override
@@ -48,7 +54,8 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
 
         return selectFrom(foodEntity)
                 .where(
-                        foodEntity.memberKey.eq(memberKey)
+                        foodEntity.memberKey.eq(memberKey),
+                        foodEntity.status.ne(EntityStatus.DELETED)
                 )
                 .orderBy(
                         foodEntity.name.asc(),
@@ -61,16 +68,14 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
     // 유통기한 임박한 식재료 조회
     @Override
     public List<FoodEntity> findImminentFoods(String memberKey) {
-        List<FoodEntity> foods = selectFrom(foodEntity)
-                .where(foodEntity.memberKey.eq(memberKey))
+        return selectFrom(foodEntity)
+                .where(
+                        foodEntity.memberKey.eq(memberKey),
+                        foodEntity.status.ne(EntityStatus.DELETED))
+                .orderBy(foodEntity.expiryDate.asc())
                 .fetch();
-
-        LocalDate today = LocalDate.now();
-        return foods.stream()
-                .filter(food -> food.isImminent(today))
-                .sorted(Comparator.comparing(FoodEntity::getExpiryDate)) // 유통기한순
-                .toList();
     }
+
 
     // 카테고리 선택했을 시 필터링 조회
     private void applyCategoryFilter(JPAQuery<FoodEntity> query, Long categoryId) {
@@ -80,6 +85,7 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
                     .where(selectedFoodCategoryEntity.foodCategoryId.eq(categoryId));
         }
     }
+
 
 
 }

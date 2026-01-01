@@ -1,21 +1,20 @@
 package com.foodkeeper.foodkeeperserver.food.controller.v1.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record FoodRegisterRequest(
         @NotBlank String name,
         @NotNull @Size(min = 1, max = 3) List<Long> categoryIds,
         @NotNull StorageMethod storageMethod,
-        @NotNull @JsonFormat(pattern = "yyyy-MM-dd") LocalDate expiryDate,
-        @NotNull @Size(min = 1, max = 14) Integer expiryAlarm,
+        @NotNull LocalDateTime expiryDate,
+        @NotNull @Size(max = 14) Integer expiryAlarm,
         @NotNull String memo
 ) {
     public static FoodRegister toRegister(FoodRegisterRequest request) {
@@ -23,7 +22,7 @@ public record FoodRegisterRequest(
                 request.name(),
                 request.categoryIds,
                 request.storageMethod,
-                request.expiryDate,
+                request.expiryDate.toLocalDate(),
                 request.expiryAlarm,
                 request.memo
         );

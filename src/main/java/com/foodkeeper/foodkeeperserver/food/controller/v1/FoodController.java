@@ -7,9 +7,9 @@ import com.foodkeeper.foodkeeperserver.food.business.FoodService;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodRegisterRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodUpdateRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodsRequest;
+import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponses;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodIdResponse;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponse;
-import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponses;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
@@ -26,6 +26,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import java.util.List;
 
 @Tag(name = "Food", description = "식재료 관련 API")
@@ -39,12 +42,12 @@ public class FoodController {
     @NullMarked
     @Operation(summary = "식재료 추가", description = "식재료 추가 API")
     @PostMapping
-    public ResponseEntity<ApiResponse<FoodIdResponse>> createFood(@RequestPart @Valid FoodRegisterRequest request,
+    public ResponseEntity<ApiResponse<Void>> createFood(@RequestPart @Valid FoodRegisterRequest request,
                                                                   @RequestPart(required = false) MultipartFile image,
                                                                   @AuthMember Member authMember) {
         FoodRegister register = FoodRegisterRequest.toRegister(request);
         Long foodId = foodService.registerFood(register, image, authMember.memberKey());
-        return ResponseEntity.ok(ApiResponse.success(new FoodIdResponse(foodId)));
+        return ResponseEntity.created(URI.create("/api/v1/foods" + foodId)).build();
     }
 
     @NullMarked
@@ -59,8 +62,8 @@ public class FoodController {
     @Operation(summary = "식재료 전체 조회", description = "식재료 전체 조회 API")
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<FoodResponse>>> findFoods(@ModelAttribute FoodsRequest request,
-                                                                             @CursorDefault Cursorable<Long> cursorable,
-                                                                             @AuthMember Member authMember) {
+                                                                            @CursorDefault Cursorable<Long> cursorable,
+                                                                            @AuthMember Member authMember) {
         SliceObject<RegisteredFood> foods = foodService.findFoodList(cursorable, request.categoryId(), authMember.memberKey());
         List<FoodResponse> foodResponses = foods.content().stream().map(FoodResponse::toFoodResponse).toList();
         return ResponseEntity.ok(ApiResponse.success(new PageResponse<>(foodResponses, foods.hasNext())));
@@ -85,19 +88,18 @@ public class FoodController {
     @NullMarked
     @Operation(summary = "유통기한 임박 식재료 리스트 조회", description = "유통기한 임박 식재료 조회 API")
     @GetMapping("/imminent")
-    public ResponseEntity<ApiResponse<FoodResponses>> findImminentFoods(@AuthMember Member authMember) {
-        List<RegisteredFood> imminentFoods = foodService.findImminentFoods(authMember.memberKey());
+    public ResponseEntity<ApiResponse<FoodResponses>> findImminentFoods() {
+        List<RegisteredFood> imminentFoods = foodService.findImminentFoods("membre");
         return ResponseEntity.ok(ApiResponse.success(new FoodResponses(FoodResponse.toFoodListResponse(imminentFoods))));
     }
 
     @NullMarked
     @Operation(summary = "식재료 소비완료", description = "식재료 소비완료 API")
     @DeleteMapping("/{foodId}")
-    public ResponseEntity<ApiResponse<FoodIdResponse>> removeFood(@PathVariable Long foodId, @AuthMember Member authMember) {
-        Long resultId = foodService.removeFood(foodId, authMember.memberKey());
-        return ResponseEntity.ok(ApiResponse.success(new FoodIdResponse(resultId)));
+    public ResponseEntity<ApiResponse<Void>> removeFood(@PathVariable Long foodId, @AuthMember Member member) {
+        Long resultId = foodService.removeFood(foodId, member.memberKey());
+        return ResponseEntity.created(URI.create("/api/v1/foods" + resultId)).build();
     }
-
     @NullMarked
     @Operation(summary = "식재료 수정", description = "식재료 수정 API")
     @PatchMapping("/{foodId}")

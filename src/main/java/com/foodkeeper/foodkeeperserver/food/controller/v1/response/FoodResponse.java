@@ -3,7 +3,6 @@ package com.foodkeeper.foodkeeperserver.food.controller.v1.response;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,10 +11,12 @@ public record FoodResponse(
         String name,
         String imageUrl,
         StorageMethod storageMethod,
-        LocalDate expiryDate,
+        LocalDateTime expiryDate,
+        Integer expiryAlarm,
         String memo,
         LocalDateTime createdAt,
-        List<Long> categoryIds
+        List<String> categoryNames,
+        Long remainDays
 ) {
     public static FoodResponse toFoodResponse(RegisteredFood food) {
         return new FoodResponse(
@@ -23,10 +24,19 @@ public record FoodResponse(
                 food.name(),
                 food.imageUrl(),
                 food.storageMethod(),
-                food.expiryDate(),
+                food.expiryDate().atStartOfDay(),
+                food.expiryAlarm(),
                 food.memo(),
                 food.createdAt(),
-                food.categoryIds()
+                food.categoryNames(),
+                food.remainDays()
         );
     }
+
+    public static List<FoodResponse> toFoodListResponse(List<RegisteredFood> foods) {
+        return foods.stream()
+                .map(FoodResponse::toFoodResponse)
+                .toList();
+    }
+
 }

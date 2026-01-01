@@ -5,7 +5,8 @@ import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodCategoryRe
 import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCategoryRegister;
 import com.foodkeeper.foodkeeperserver.food.fixture.CategoryFixture;
-import com.foodkeeper.foodkeeperserver.food.implement.FoodCategoryManager;
+import com.foodkeeper.foodkeeperserver.food.implement.CategoryManager;
+import com.foodkeeper.foodkeeperserver.food.implement.FoodCategoryReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,15 +34,15 @@ public class FoodCategoryServiceTest {
 
     @BeforeEach
     void setUp() {
-        FoodCategoryManager foodCategoryManager =  new FoodCategoryManager(foodCategoryRepository);
-        foodCategoryService = new FoodCategoryService(foodCategoryManager);
+        CategoryManager categoryManager = new CategoryManager(foodCategoryRepository);
+        foodCategoryService = new FoodCategoryService(categoryManager);
     }
 
     @Test
     @DisplayName("카테고리 등록")
     void registerFoodCategory_SUCCESS() {
         // given
-        FoodCategoryRegister request = new FoodCategoryRegister("카테고리1", "memberKey");
+        FoodCategoryRegister request = new FoodCategoryRegister("유제품", "memberKey");
         FoodCategoryEntity entity = CategoryFixture.createCategoryEntity(1L);
         given(foodCategoryRepository.save(any(FoodCategoryEntity.class))).willReturn(entity);
         // when

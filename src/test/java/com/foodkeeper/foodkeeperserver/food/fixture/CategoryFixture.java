@@ -26,7 +26,7 @@ public class CategoryFixture {
 
     // 단일 도메인 생성
     public static FoodCategory createCategory(Long id) {
-        return new FoodCategory(id, "카테고리" + id, MEMBER_ID, null);
+        return new FoodCategory(id, "유제품", MEMBER_ID, null);
     }
 
     // 단일 엔티티 생성
