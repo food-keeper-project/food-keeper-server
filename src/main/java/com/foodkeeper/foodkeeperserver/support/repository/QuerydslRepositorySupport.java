@@ -2,6 +2,8 @@ package com.foodkeeper.foodkeeperserver.support.repository;
 
 import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -39,6 +41,14 @@ public abstract class QuerydslRepositorySupport {
 
         this.querydsl = new Querydsl(entityManager, new PathBuilder<>(path.getType(), path.getMetadata()));
         this.jpaQueryFactory = new JPAQueryFactory(entityManager);
+    }
+
+    protected <T> JPAQuery<T> select(EntityPath<T> select) {
+        return this.jpaQueryFactory.select(select);
+    }
+
+    protected <T> JPAQuery<T> select(Expression<T> select) {
+        return this.jpaQueryFactory.select(select);
     }
 
     protected <T> JPAQuery<T> selectFrom(EntityPath<T> from) {

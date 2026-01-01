@@ -1,10 +1,15 @@
 package com.foodkeeper.foodkeeperserver.member.business;
 
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.MemberRoleRepository;
+import com.foodkeeper.foodkeeperserver.food.implement.CategoryManager;
+import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
+import com.foodkeeper.foodkeeperserver.member.implement.MemberWithdrawalProcessor;
+import com.foodkeeper.foodkeeperserver.recipe.implement.RecipeManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,13 +27,19 @@ import static org.mockito.Mockito.mock;
 class MemberServiceTest {
 
     @Mock MemberRepository memberRepository;
+    @Mock MemberRoleRepository memberRoleRepository;
     @Mock OauthRepository oauthRepository;
+    @Mock FoodManager foodManager;
+    @Mock CategoryManager categoryManager;
+    @Mock RecipeManager recipeManager;
     MemberService memberService;
 
     @BeforeEach
     void setUp() {
         MemberFinder memberFinder = new MemberFinder(memberRepository, oauthRepository);
-        memberService = new MemberService(memberFinder);
+        MemberWithdrawalProcessor memberWithdrawalProcessor = new MemberWithdrawalProcessor(memberRepository,
+                memberRoleRepository, oauthRepository, foodManager, categoryManager, recipeManager);
+        memberService = new MemberService(memberFinder, memberWithdrawalProcessor);
     }
 
     @Test

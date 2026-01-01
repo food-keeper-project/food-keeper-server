@@ -29,6 +29,21 @@ public class RecipeCustomRepositoryImpl extends QuerydslRepositorySupport implem
         return new SliceObject<>(content, cursorable, hasNext(cursorable, content));
     }
 
+    @Override
+    public List<Long> deleteRecipes(String memberKey) {
+        List<Long> recipeIds = select(recipeEntity.id)
+                .from(recipeEntity)
+                .where(recipeEntity.memberKey.eq(memberKey), recipeEntity.status.ne(EntityStatus.DELETED))
+                .fetch();
+
+        update(recipeEntity)
+                .set(recipeEntity.status, EntityStatus.DELETED)
+                .where(recipeEntity.memberKey.eq(memberKey), recipeEntity.status.ne(EntityStatus.DELETED))
+                .execute();
+
+        return recipeIds;
+    }
+
     private static BooleanExpression ltCursor(Long cursor) {
         return cursor == null ? null : recipeEntity.id.lt(cursor);
     }

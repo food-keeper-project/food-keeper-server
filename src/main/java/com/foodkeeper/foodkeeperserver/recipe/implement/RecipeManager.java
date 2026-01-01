@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class RecipeManager {
@@ -36,10 +38,18 @@ public class RecipeManager {
     @Transactional
     public void remove(Long recipeId, String memberKey) {
         RecipeEntity recipeEntity = recipeRepository.findByIdAndMemberKey(recipeId, memberKey)
-                .orElseThrow(() -> new AppException(ErrorType.DEFAULT_ERROR));
+                .orElseThrow(() -> new AppException(ErrorType.RECIPE_DATA_NOT_FOUND));
 
         recipeIngredientRepository.findByRecipeId(recipeId).forEach(BaseEntity::delete);
         recipeStepRepository.findByRecipeId(recipeId).forEach(BaseEntity::delete);
         recipeEntity.delete();
+    }
+
+    @Transactional
+    public void removeRecipes(String memberKey) {
+        List<Long> recipeIds = recipeRepository.deleteRecipes(memberKey);
+
+        recipeIngredientRepository.deleteAllByRecipeIds(recipeIds);
+        recipeStepRepository.deleteAllByRecipeIds(recipeIds);
     }
 }

@@ -1,6 +1,7 @@
 package com.foodkeeper.foodkeeperserver.auth.dataaccess.entity;
 
 import com.foodkeeper.foodkeeperserver.auth.domain.enums.MemberRole;
+import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "member_role")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberRoleEntity {
+public class MemberRoleEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

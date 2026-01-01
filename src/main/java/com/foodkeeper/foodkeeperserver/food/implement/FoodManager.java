@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class FoodManager {
@@ -33,5 +35,11 @@ public class FoodManager {
 
     public Food find(Long foodId) {
         return foodRepository.findById(foodId).orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_DATA)).toDomain();
+    }
+
+    @Transactional
+    public void removeFoods(String memberKey) {
+        List<Long> foodIds = foodRepository.removeFoods(memberKey);
+        selectedFoodCategoryManager.removeAllByFoodIds(foodIds);
     }
 }

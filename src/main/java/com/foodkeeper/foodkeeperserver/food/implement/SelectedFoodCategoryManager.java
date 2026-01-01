@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class SelectedFoodCategoryManager {
@@ -24,4 +26,8 @@ public class SelectedFoodCategoryManager {
         selectedFoodCategoryRepository.deleteAllByFoodId(foodId);
     }
 
+    @Transactional
+    public void removeAllByFoodIds(List<Long> foodIds) {
+        selectedFoodCategoryRepository.deleteAllByFoodIds(foodIds);
+    }
 }
