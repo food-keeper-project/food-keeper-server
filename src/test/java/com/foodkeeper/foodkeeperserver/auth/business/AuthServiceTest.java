@@ -18,6 +18,7 @@ import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberReposi
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
+import com.foodkeeper.foodkeeperserver.notification.implement.FcmManager;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,6 +46,7 @@ class AuthServiceTest {
     @Mock KakaoAuthenticator kakaoAuthenticator;
     @Mock SignInLogRepository signInLogRepository;
     @Mock CategoryManager foodCategoryManager;
+    @Mock FcmManager fcmManager;
     SecretKey secretKey;
     AuthService authService;
 
@@ -58,7 +60,7 @@ class AuthServiceTest {
                 foodCategoryManager);
         RefreshTokenManager refreshTokenManager = new RefreshTokenManager(memberRepository);
         authService = new AuthService(kakaoAuthenticator, memberFinder, memberRegistrar, signInLogAppender,
-                jwtGenerator, refreshTokenManager);
+                jwtGenerator, refreshTokenManager, fcmManager);
     }
 
     @Test

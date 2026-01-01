@@ -54,4 +54,11 @@ public class FoodReader {
     public Food find(Long foodId) {
         return foodRepository.findById(foodId).orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_DATA)).toDomain();
     }
+
+    public List<Food> findFoodsToNotify(LocalDate today) {
+        return foodRepository.findAll().stream()
+                .filter(food -> food.isNotificationDay(today))
+                .map(FoodEntity::toDomain)
+                .toList();
+    }
 }

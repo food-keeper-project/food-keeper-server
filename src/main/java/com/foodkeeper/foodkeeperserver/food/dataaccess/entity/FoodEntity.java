@@ -112,4 +112,11 @@ public class FoodEntity extends BaseEntity {
         LocalDate alarmLimitDate = today.plusDays(this.expiryAlarmDays);
         return !expiryDate.isAfter(alarmLimitDate);
     }
+
+    public boolean isNotificationDay(LocalDate today) {
+        LocalDate alarmDay = this.expiryDate.minusDays(this.expiryAlarmDays);
+        return alarmDay.isEqual(today);
+    }
+
+
 }

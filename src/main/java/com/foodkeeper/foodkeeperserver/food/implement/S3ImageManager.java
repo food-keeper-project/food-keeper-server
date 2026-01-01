@@ -28,7 +28,7 @@ public class S3ImageManager implements ImageManager {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    @Async
+    @Async("imageExecutor")
     @Override
     public CompletableFuture<String> fileUpload(MultipartFile file) {
         if (file == null || file.isEmpty()) {

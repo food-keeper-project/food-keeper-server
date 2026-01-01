@@ -51,7 +51,6 @@ public class FoodService {
         return foodReader.findFoodList(cursorable, categoryId, memberKey);
     }
 
-    // 단일 조회
     public RegisteredFood findFood(Long foodId, String memberKey) {
         return foodReader.findFood(foodId, memberKey);
     }
@@ -61,7 +60,6 @@ public class FoodService {
         return foodReader.findAll(memberKey);
     }
 
-    // 유통기한 임박 재료 리스트 조회
     public List<RegisteredFood> findImminentFoods(String memberKey) {
         LocalDate today = LocalDate.now();
         return foodReader.findImminentFoods(today, memberKey);
