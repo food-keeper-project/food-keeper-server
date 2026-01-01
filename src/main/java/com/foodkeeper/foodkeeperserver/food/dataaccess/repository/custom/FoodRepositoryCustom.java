@@ -15,6 +15,5 @@ public interface FoodRepositoryCustom {
 
     List<FoodEntity> findImminentFoods(String memberKey);
 
-    List<FoodEntity> findFoodsToNotify(LocalDate today);
 
 }

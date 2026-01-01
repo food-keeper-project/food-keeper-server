@@ -19,7 +19,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class SelectedFoodCategoryManagerTest {
+public class SelectedFoodCategoryReaderTest {
 
     @InjectMocks
     SelectedFoodCategoryManager selectedFoodCategoryManager;

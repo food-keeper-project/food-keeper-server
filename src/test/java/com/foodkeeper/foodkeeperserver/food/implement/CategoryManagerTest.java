@@ -22,13 +22,11 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class FoodCategoryManagerTest {
+public class CategoryManagerTest {
 
-    @InjectMocks
-    FoodCategoryManager foodCategoryManager;
+    @InjectMocks CategoryManager categoryManager;
 
-    @Mock
-    FoodCategoryRepository foodCategoryRepository;
+    @Mock FoodCategoryRepository foodCategoryRepository;
 
     @Test
     @DisplayName("식재료 카테고리Id 리스트를 받아서 조회")
@@ -39,7 +37,7 @@ public class FoodCategoryManagerTest {
 
         given(foodCategoryRepository.findAllById(categoryIds)).willReturn(foodCategoryEntities);
         //when
-        List<FoodCategory> foodCategoryList = foodCategoryManager.findAllByIds(categoryIds);
+        List<FoodCategory> foodCategoryList = categoryManager.findAllByIds(categoryIds);
         //then
         List<FoodCategory> expectedDomains = foodCategoryEntities.stream()
                 .map(FoodCategoryEntity::toDomain)
@@ -59,7 +57,7 @@ public class FoodCategoryManagerTest {
         FoodCategoryEntity entity = FoodCategoryEntity.from(foodCategory);
         given(foodCategoryRepository.save(any(FoodCategoryEntity.class))).willReturn(entity);
         //when
-        foodCategoryManager.addCategory(foodCategory.name(), foodCategory.memberKey());
+        categoryManager.addCategory(foodCategory.name(), foodCategory.memberKey());
         //then
         ArgumentCaptor<FoodCategoryEntity> captor = ArgumentCaptor.forClass(FoodCategoryEntity.class);
         verify(foodCategoryRepository).save(captor.capture());
@@ -75,7 +73,7 @@ public class FoodCategoryManagerTest {
         List<FoodCategoryEntity> foodCategoryEntities = CategoryFixture.createCategoryEntity(categoryIds);
         given(foodCategoryRepository.findAllByMemberKey(memberKey)).willReturn(foodCategoryEntities);
         //when
-        List<FoodCategory> foodCategories = foodCategoryManager.findAllByMemberKey(memberKey);
+        List<FoodCategory> foodCategories = categoryManager.findAllByMemberKey(memberKey);
         //then
         assertThat(foodCategories.getFirst().id()).isEqualTo(1L);
         assertThat(foodCategories.getFirst().memberKey()).isEqualTo(memberKey);
@@ -90,7 +88,7 @@ public class FoodCategoryManagerTest {
         FoodCategoryEntity entity = FoodCategoryEntity.from(CategoryFixture.createCategory(1L));
         given(foodCategoryRepository.findByIdAndMemberKey(1L, memberKey)).willReturn(Optional.ofNullable(entity));
         //when
-        foodCategoryManager.updateCategory(1L, updateName, memberKey);
+        categoryManager.updateCategory(1L, updateName, memberKey);
         //then
         assertThat(entity.getName()).isEqualTo(updateName);
     }
@@ -103,7 +101,7 @@ public class FoodCategoryManagerTest {
         FoodCategoryEntity entity = FoodCategoryEntity.from(CategoryFixture.createCategory(1L));
         given(foodCategoryRepository.findByIdAndMemberKey(1L, memberKey)).willReturn(Optional.ofNullable(entity));
         //when
-        foodCategoryManager.removeCategory(1L,memberKey);
+        categoryManager.removeCategory(1L,memberKey);
         //then
         assertThat(entity.getStatus()).isEqualTo(EntityStatus.DELETED);
     }

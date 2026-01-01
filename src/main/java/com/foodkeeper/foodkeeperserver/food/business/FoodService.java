@@ -3,20 +3,20 @@ package com.foodkeeper.foodkeeperserver.food.business;
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.implement.FoodBookmarker;
 import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
-import com.foodkeeper.foodkeeperserver.food.domain.*;
+import com.foodkeeper.foodkeeperserver.food.domain.Food;
+import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
+import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
+import com.foodkeeper.foodkeeperserver.food.domain.SelectedFoodCategory;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
-import com.foodkeeper.foodkeeperserver.food.implement.FoodCategoryManager;
-import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
-import com.foodkeeper.foodkeeperserver.food.implement.ImageManager;
-import com.foodkeeper.foodkeeperserver.food.implement.SelectedFoodCategoryManager;
+import com.foodkeeper.foodkeeperserver.food.implement.*;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
-import com.foodkeeper.foodkeeperserver.food.domain.RecipeFood;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -24,9 +24,10 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class FoodService {
 
+    private final FoodReader foodReader;
     private final ImageManager imageManager;
     private final FoodManager foodManager;
-    private final FoodCategoryManager foodCategoryManager;
+    private final CategoryManager categoryManager;
     private final SelectedFoodCategoryManager selectedFoodCategoryManager;
     private final FoodBookmarker foodBookmarker;
 
@@ -36,7 +37,7 @@ public class FoodService {
         Food food = register.toFood(imageUrlFuture.join(), memberKey);
         try {
             Food savedFood = foodManager.register(food);
-            List<FoodCategory> foodCategories = foodCategoryManager.findAllByIds(register.categoryIds());
+            List<FoodCategory> foodCategories = categoryManager.findAllByIds(register.categoryIds());
             foodCategories.forEach(category ->
                     selectedFoodCategoryManager.save(SelectedFoodCategory.create(savedFood.id(), category.id())));
             return savedFood.id();
@@ -46,53 +47,33 @@ public class FoodService {
         }
     }
 
-    // 커서 리스트 조회
-    public SliceObject<RegisteredFood> getFoodList(Cursorable<Long> cursorable, Long categoryId, String memberKey) {
-        SliceObject<Food> foods = foodManager.findFoodList(cursorable, categoryId, memberKey);
-        SelectedFoodCategories categories = selectedFoodCategoryManager.findByFoodIds(
-                foods.content().stream().map(Food::id).toList());
-        return foods.map(food -> food.toRegisteredFood(categories.getCategoryIdsByFoodId(food.id())));
+    public SliceObject<RegisteredFood> findFoodList(Cursorable<Long> cursorable, Long categoryId, String memberKey) {
+        return foodReader.findFoodList(cursorable, categoryId, memberKey);
     }
 
-    // 단일 조회
-    public RegisteredFood getFood(Long id, String memberKey) {
-        Food food = foodManager.findFood(id, memberKey);
-        List<SelectedFoodCategory> mappings = selectedFoodCategoryManager.findByFoodId(id);
-        List<Long> categoryIds = mappings.stream()
-                .map(SelectedFoodCategory::foodCategoryId)
-                .toList();
-        return food.toRegisteredFood(categoryIds);
+    public RegisteredFood findFood(Long foodId, String memberKey) {
+        return foodReader.findFood(foodId, memberKey);
     }
 
 
-    public List<RecipeFood> getAllByMemberKey(String memberKey) {
-        List<Food> foods = foodManager.findAllByMemberKey(memberKey);
-        return foods.stream()
-                .map(Food::toRecipe)
-                .toList();
+    public List<RegisteredFood> findAllFoods(String memberKey) {
+        return foodReader.findAll(memberKey);
     }
 
-    // 유통기한 임박 재료 리스트 조회
-    public List<RegisteredFood> getImminentFoods(String memberKey) {
-        List<Food> foods = foodManager.findImminentFoods(memberKey);
-        SelectedFoodCategories categories = selectedFoodCategoryManager.findByFoodIds(
-                foods.stream().map(Food::id).toList());
-        return foods.stream()
-                .map(food -> food.toRegisteredFood(categories.getCategoryIdsByFoodId(food.id())))
-                .toList();
+    public List<RegisteredFood> findImminentFoods(String memberKey) {
+        LocalDate today = LocalDate.now();
+        return foodReader.findImminentFoods(today, memberKey);
     }
 
     @Transactional
-    public void removeFood(Long foodId, String memberKey) {
-        Food food = foodManager.findFood(foodId, memberKey);
-        selectedFoodCategoryManager.removeAllByFoodId(foodId);
-        foodManager.removeFood(food);
-
+    public Long removeFood(Long foodId, String memberKey) {
+        Food food = foodManager.removeFood(foodId, memberKey);
         imageManager.deleteFile(food.imageUrl());
+        return food.id();
     }
 
     public Long bookmarkFood(Long foodId, String memberKey) {
-        return foodBookmarker.bookmark(foodManager.find(foodId), memberKey);
+        return foodBookmarker.bookmark(foodReader.find(foodId), memberKey);
     }
 
 }

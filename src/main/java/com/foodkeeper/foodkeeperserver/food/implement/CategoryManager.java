@@ -16,7 +16,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class FoodCategoryManager {
+public class CategoryManager {
 
     private final FoodCategoryRepository foodCategoryRepository;
 
@@ -38,18 +38,18 @@ public class FoodCategoryManager {
                 .toList();
     }
 
-    @Transactional
-    public void addCategory(String name, String memberKey) {
-        FoodCategory foodCategory = FoodCategory.create(name, memberKey);
-        foodCategoryRepository.save(FoodCategoryEntity.from(foodCategory));
-    }
-
     @Transactional(readOnly = true)
     public List<FoodCategory> findAllByMemberKey(String memberKey) {
         List<FoodCategoryEntity> foodCategories = ListUtil.getOrElseThrowList(foodCategoryRepository.findAllByMemberKey(memberKey));
         return foodCategories.stream()
                 .map(FoodCategoryEntity::toDomain)
                 .toList();
+    }
+
+    @Transactional
+    public void addCategory(String name, String memberKey) {
+        FoodCategory foodCategory = FoodCategory.create(name, memberKey);
+        foodCategoryRepository.save(FoodCategoryEntity.from(foodCategory));
     }
 
     @Transactional

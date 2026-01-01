@@ -41,6 +41,7 @@ public class FoodFixture {
                 .imageUrl(IMAGE_URL)
                 .storageMethod(STORAGE_METHOD)
                 .expiryDate(EXPIRY_DATE)
+                .expiryAlarm(EXPIRY_ALARM)
                 .memo(MEMO)
                 .selectedCategoryCount(1)
                 .memberKey(MEMBER_KEY)
@@ -49,7 +50,7 @@ public class FoodFixture {
     }
 
     public static FoodEntity createFoodEntity(Long id) {
-        FoodEntity foodEntity = FoodEntity.from(createFood(id));
+        FoodEntity foodEntity = FoodEntity.from(createFood(1L));
         ReflectionTestUtils.setField(foodEntity, "id", id);
         return foodEntity;
     }

@@ -6,11 +6,8 @@ import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 
-import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 
 import static com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QFoodEntity.foodEntity;
@@ -53,7 +50,8 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
 
         return selectFrom(foodEntity)
                 .where(
-                        foodEntity.memberKey.eq(memberKey)
+                        foodEntity.memberKey.eq(memberKey),
+                        foodEntity.status.ne(EntityStatus.DELETED)
                 )
                 .orderBy(
                         foodEntity.name.asc(),
@@ -63,31 +61,16 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
     }
 
 
-    // 유통기한 임박한 식재료 조회
     @Override
     public List<FoodEntity> findImminentFoods(String memberKey) {
-        List<FoodEntity> foods = selectFrom(foodEntity)
-                .where(foodEntity.memberKey.eq(memberKey))
-                .fetch();
-
-        LocalDate today = LocalDate.now();
-        return foods.stream()
-                .filter(food -> food.isImminent(today))
-                .sorted(Comparator.comparing(FoodEntity::getExpiryDate)) // 유통기한순
-                .toList();
-    }
-
-
-    // imminent 와 동이랗게 적용
-    public List<FoodEntity> findFoodsToNotify(LocalDate today) {
         return selectFrom(foodEntity)
                 .where(
-                        foodEntity.expiryDate.eq(
-                                Expressions.dateTemplate(LocalDate.class,
-                                        "DATE_ADD({0}, INTERVAL {1} DAY)", today, foodEntity.expiryAlarm))).fetch();
+                        foodEntity.memberKey.eq(memberKey),
+                        foodEntity.status.ne(EntityStatus.DELETED))
+                .orderBy(foodEntity.expiryDate.asc())
+                .fetch();
     }
 
-    // 카테고리 선택했을 시 필터링 조회
     private void applyCategoryFilter(JPAQuery<FoodEntity> query, Long categoryId) {
         if (categoryId != null) {
             query.join(selectedFoodCategoryEntity)

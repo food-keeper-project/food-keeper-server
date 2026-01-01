@@ -1,7 +1,7 @@
 package com.foodkeeper.foodkeeperserver.notification.business;
 
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
-import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
+import com.foodkeeper.foodkeeperserver.food.implement.FoodReader;
 import com.foodkeeper.foodkeeperserver.notification.domain.FcmMessage;
 import com.foodkeeper.foodkeeperserver.notification.domain.MemberFcmTokens;
 import com.foodkeeper.foodkeeperserver.notification.implement.FcmManager;
@@ -12,7 +12,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
 public class FoodNotificationService {
 
     private final FcmSender fcmSender;
-    private final FoodManager foodManager;
+    private final FoodReader foodReader;
     private final FcmManager fcmManager;
     private final String TITLE = "유통기한 임박 알림";
 
@@ -32,7 +31,7 @@ public class FoodNotificationService {
         LocalDate today = LocalDate.now();
         log.info("[Expiry Alarm] 유통기한 알림 전송 시작");
 
-        List<Food> foods = foodManager.findFoodsToNotify(today);
+        List<Food> foods = foodReader.findFoodsToNotify(today);
         if (foods.isEmpty()) {
             log.info("[Expiry Alarm] 보낼 알림이 없습니다.");
             return;

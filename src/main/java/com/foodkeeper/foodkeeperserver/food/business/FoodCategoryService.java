@@ -2,7 +2,7 @@ package com.foodkeeper.foodkeeperserver.food.business;
 
 import com.foodkeeper.foodkeeperserver.food.domain.FoodCategory;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodCategoryRegister;
-import com.foodkeeper.foodkeeperserver.food.implement.FoodCategoryManager;
+import com.foodkeeper.foodkeeperserver.food.implement.CategoryManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,21 +12,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FoodCategoryService {
 
-    private final FoodCategoryManager foodCategoryManager;
+    private final CategoryManager categoryManager;
 
     public void registerFoodCategory(FoodCategoryRegister foodCategoryRegister) {
-        foodCategoryManager.addCategory(foodCategoryRegister.name(), foodCategoryRegister.memberKey());
+        categoryManager.addCategory(foodCategoryRegister.name(), foodCategoryRegister.memberKey());
     }
 
     public List<FoodCategory> findAllByMemberKey(String memberKey) {
-        return foodCategoryManager.findAllByMemberKey(memberKey);
+        return categoryManager.findAllByMemberKey(memberKey);
     }
 
     public void updateCategory(Long id, String name, String memberKey) {
-        foodCategoryManager.updateCategory(id, name, memberKey);
+        categoryManager.updateCategory(id, name, memberKey);
     }
 
     public void removeCategory(Long id, String memberKey) {
-        foodCategoryManager.removeCategory(id, memberKey);
+        categoryManager.removeCategory(id, memberKey);
     }
 }

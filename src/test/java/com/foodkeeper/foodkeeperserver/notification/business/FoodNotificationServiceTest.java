@@ -4,6 +4,7 @@ import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
+import com.foodkeeper.foodkeeperserver.food.implement.FoodReader;
 import com.foodkeeper.foodkeeperserver.notification.domain.FcmMessage;
 import com.foodkeeper.foodkeeperserver.notification.domain.MemberFcmTokens;
 import com.foodkeeper.foodkeeperserver.notification.implement.FcmManager;
@@ -29,7 +30,7 @@ import static org.mockito.Mockito.verify;
 public class FoodNotificationServiceTest {
 
     @InjectMocks FoodNotificationService foodNotificationService;
-    @Mock FoodManager foodManager;
+    @Mock FoodReader foodReader;
     @Mock FcmManager fcmManager;
     @Mock FcmSender fcmSender;
 
@@ -41,7 +42,7 @@ public class FoodNotificationServiceTest {
         String token = "token";
         LocalDate today = LocalDate.now();
         Food food = FoodFixture.createFood(1L);
-        given(foodManager.findFoodsToNotify(today)).willReturn(List.of(food));
+        given(foodReader.findFoodsToNotify(today)).willReturn(List.of(food));
 
         MemberFcmTokens memberFcmTokens =new MemberFcmTokens(Map.of(memberKey, List.of(token)));
         given(fcmManager.findTokens(anySet())).willReturn(memberFcmTokens);
@@ -66,7 +67,7 @@ public class FoodNotificationServiceTest {
         Food food1 = FoodFixture.createFood(1L);
         Food food2 = FoodFixture.createFood(2L);
 
-        given(foodManager.findFoodsToNotify(today)).willReturn(List.of(food1, food2));
+        given(foodReader.findFoodsToNotify(today)).willReturn(List.of(food1, food2));
 
         MemberFcmTokens fcmTokens = new MemberFcmTokens(Map.of(memberKey, List.of(token)));
         given(fcmManager.findTokens(anySet())).willReturn(fcmTokens);

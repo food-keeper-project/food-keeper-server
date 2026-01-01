@@ -13,7 +13,7 @@ public record RegisteredFood(
         Integer expiryAlarm,
         String memo,
         LocalDateTime createdAt,
-        List<Long> categoryIds
+        List<String> categoryNames,
+        Long remainDays
 ) {
 }
-// todo 남은 일수도 같이 응답
