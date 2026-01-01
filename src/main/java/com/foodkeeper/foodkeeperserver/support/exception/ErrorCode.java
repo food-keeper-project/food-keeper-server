@@ -19,13 +19,13 @@ public enum ErrorCode {
     E4000,
 
     // S3
-    E5000,
+    E5000, E5001,
 
     // naver
     E6000, E6001,
 
     // fcm
-    E7000,E7001,
+    E7000, E7001,
 
     // category
     E8000,

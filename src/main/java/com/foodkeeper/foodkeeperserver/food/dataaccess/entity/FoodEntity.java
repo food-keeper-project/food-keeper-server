@@ -11,7 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 
 
 @Entity
@@ -70,16 +69,16 @@ public class FoodEntity extends BaseEntity {
         this.memberKey = memberKey;
     }
 
-    public static FoodEntity from(Food food) {
+    public static FoodEntity from(FoodRegister food, String imageUrl, String memberKey) {
         return FoodEntity.builder()
                 .name(food.name())
-                .imageUrl(food.imageUrl())
+                .imageUrl(imageUrl)
                 .storageMethod(food.storageMethod())
                 .expiryDate(food.expiryDate())
                 .expiryAlarmDays(food.expiryAlarmDays())
                 .memo(food.memo())
-                .selectedCategoryCount(food.selectedCategoryCount())
-                .memberKey(food.memberKey())
+                .selectedCategoryCount(food.categoryIds().size())
+                .memberKey(memberKey)
                 .build();
     }
 

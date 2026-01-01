@@ -42,7 +42,7 @@ public record Food(
                 .name(request.name() != null ? request.name() : this.name)
                 .storageMethod(request.storageMethod() != null ? request.storageMethod() : this.storageMethod)
                 .expiryDate(request.expiryDate() != null ? request.expiryDate() : this.expiryDate)
-                .expiryAlarmDays(request.expiryAlarm() != null ? request.expiryAlarm() : this.expiryAlarmDays)
+                .expiryAlarmDays(request.expiryAlarmDays() != null ? request.expiryAlarmDays() : this.expiryAlarmDays)
                 .memo(request.memo() != null ? request.memo() : this.memo)
                 .imageUrl(imageUrl != null ? imageUrl : this.imageUrl)
                 .build();
