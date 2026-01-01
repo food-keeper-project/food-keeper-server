@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -17,7 +18,7 @@ public class FcmManager {
 
     private final FcmRepository fcmRepository;
 
-    public Map<String, List<String>> findTokens(List<String> memberKeys) {
+    public Map<String, List<String>> findTokens(Set<String> memberKeys) {
         List<FcmTokenEntity> tokens = fcmRepository.findAllByMemberKeyIn(memberKeys);
         return tokens.stream()
                 .map(FcmTokenEntity::toDomain)

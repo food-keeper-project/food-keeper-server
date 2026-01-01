@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,7 +33,7 @@ public class FcmManagerTest {
     @DisplayName("memberKey 리스트에 매핑되는 fcm 토큰 리스트 조회 후 Map 에 저장")
     void findTokens_SUCCESS() throws Exception {
         //given
-        List<String> memberKeys = List.of("key1", "key2");
+        Set<String> memberKeys = Set.of("key1", "key2");
         List<FcmTokenEntity> tokens = List.of(
                 FcmFixture.createEntity(1L, "token1", "key1"),
                 FcmFixture.createEntity(2L, "token2", "key1"),
