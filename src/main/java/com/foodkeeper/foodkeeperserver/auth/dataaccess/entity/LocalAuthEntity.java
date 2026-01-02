@@ -31,10 +31,10 @@ public class LocalAuthEntity extends BaseEntity {
     @Column(nullable = false)
     private String memberKey;
 
-    public LocalAuthEntity(String account, String password, LocalDateTime passwordUpdatedAt, String memberKey) {
+    public LocalAuthEntity(String account, String password, String memberKey) {
         this.account = account;
         this.password = password;
-        this.passwordUpdatedAt = passwordUpdatedAt;
+        this.passwordUpdatedAt = LocalDateTime.now();
         this.memberKey = memberKey;
     }
 }

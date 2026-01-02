@@ -2,10 +2,7 @@ package com.foodkeeper.foodkeeperserver.auth.controller.v1;
 
 import com.foodkeeper.foodkeeperserver.auth.business.AuthService;
 import com.foodkeeper.foodkeeperserver.auth.business.TokenRefreshService;
-import com.foodkeeper.foodkeeperserver.auth.controller.v1.request.AccountDuplicationCheckRequest;
-import com.foodkeeper.foodkeeperserver.auth.controller.v1.request.EmailDuplicationCheckRequest;
-import com.foodkeeper.foodkeeperserver.auth.controller.v1.request.SignInRequest;
-import com.foodkeeper.foodkeeperserver.auth.controller.v1.request.TokenRefreshRequest;
+import com.foodkeeper.foodkeeperserver.auth.controller.v1.request.*;
 import com.foodkeeper.foodkeeperserver.auth.controller.v1.response.AccountDuplicationCheckResponse;
 import com.foodkeeper.foodkeeperserver.auth.controller.v1.response.AuthTokenResponse;
 import com.foodkeeper.foodkeeperserver.auth.controller.v1.response.EmailDuplicationCheckResponse;
@@ -77,5 +74,12 @@ public class AuthController {
             @RequestBody EmailDuplicationCheckRequest request) {
         return ResponseEntity.ok(ApiResponse.success(new EmailDuplicationCheckResponse(
                 authService.isDuplicatedEmail(request.email()))));
+    }
+
+    @NullMarked
+    @PostMapping("/sign-up")
+    public ResponseEntity<ApiResponse<Void>> signUp(@RequestBody LocalSignUpRequest request) {
+        authService.signUp(request.toContext());
+        return ResponseEntity.ok(ApiResponse.success());
     }
 }

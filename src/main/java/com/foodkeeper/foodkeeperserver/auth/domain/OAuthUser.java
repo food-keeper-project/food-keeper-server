@@ -1,10 +1,13 @@
 package com.foodkeeper.foodkeeperserver.auth.domain;
 
+import com.foodkeeper.foodkeeperserver.auth.domain.enums.MemberRole;
 import com.foodkeeper.foodkeeperserver.member.domain.NewMember;
 import com.foodkeeper.foodkeeperserver.member.domain.NewOAuthMember;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.SignUpType;
 import lombok.Builder;
+
+import java.util.List;
 
 @Builder
 public record OAuthUser(String account,
@@ -13,14 +16,14 @@ public record OAuthUser(String account,
                         String email,
                         String profileImageUrl) {
 
-    public NewOAuthMember toNewOAuthMember(SignUpType signUpType, String signUpIpAddress, MemberRoles memberRoles) {
+    public NewOAuthMember toNewOAuthMember(String signUpIpAddress) {
         NewMember newMember = NewMember.builder()
                 .email(email)
                 .nickname(nickname)
                 .imageUrl(profileImageUrl)
-                .signUpType(signUpType)
+                .signUpType(SignUpType.OAUTH)
                 .signUpIpAddress(signUpIpAddress)
-                .memberRoles(memberRoles)
+                .memberRoles(new MemberRoles(List.of(MemberRole.ROLE_USER)))
                 .build();
         return NewOAuthMember.builder()
                 .member(newMember)
