@@ -6,16 +6,16 @@ positions:
   filename: /var/lib/promtail/positions.yaml
 
 clients:
-  - url: http://10.0.4.7:3100/loki/api/v1/push
+  - url: http://10.178.0.4:3100/loki/api/v1/push
 
 scrape_configs:
-  - job_name: food-keeper-dev-log
+  - job_name: kitchen-log-dev-log
     static_configs:
       - targets:
-          - food-keeper-dev
+          - kitchen-log-dev
         labels:
-          job: food-keeper-app
-          host: food-keeper-dev
+          job: kitchen-log-app
+          host: kitchen-log-dev
           env: dev
           __path__: /var/log/app/*.log
     pipeline_stages:
