@@ -52,7 +52,6 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(mvc.matcher("/api/v1/auth/sign-in/**")).permitAll()
-                        .requestMatchers(mvc.matcher("/api/v1/foods/imminent/**")).permitAll()
                         .requestMatchers(mvc.matcher("/actuator")).permitAll()
                         .requestMatchers(mvc.matcher("/actuator/**")).permitAll()
                         .anyRequest().authenticated())
