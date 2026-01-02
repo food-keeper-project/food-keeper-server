@@ -28,7 +28,7 @@ public record RecipeResponse(String title,
                 .title(recipe.menuName())
                 .description(recipe.description())
                 .cookMinutes(recipe.cookMinutes())
-                .ingredients(recipe.ingredients().stream().map(IngredientResponse::from).toList())
+                .ingredients(recipe.recipeIngredients().stream().map(IngredientResponse::from).toList())
                 .steps(recipe.steps().stream().map(RecipeStepResponse::from).toList())
                 .build();
     }

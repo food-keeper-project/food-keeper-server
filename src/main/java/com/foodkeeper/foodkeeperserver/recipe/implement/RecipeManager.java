@@ -27,7 +27,7 @@ public class RecipeManager {
     @Transactional
     public Long register(NewRecipe recipe, String memberKey) {
         RecipeEntity recipeEntity = recipeRepository.save(RecipeEntity.of(recipe, memberKey));
-        recipe.ingredients().forEach(ingredient ->
+        recipe.recipeIngredients().forEach(ingredient ->
                 recipeIngredientRepository.save(RecipeIngredientEntity.of(ingredient, recipeEntity.getId())));
         recipe.steps().forEach(recipeStep ->
                 recipeStepRepository.save(RecipeStepEntity.of(recipeStep, recipeEntity.getId())));
