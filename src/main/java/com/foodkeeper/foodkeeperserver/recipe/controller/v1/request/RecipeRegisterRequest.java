@@ -18,7 +18,7 @@ public record RecipeRegisterRequest(@NotBlank String menuName,
                 .menuName(menuName)
                 .description(description)
                 .cookMinutes(cookMinutes)
-                .ingredients(ingredients.stream().map(IngredientRegisterRequest::toIngredient).toList())
+                .recipeIngredients(ingredients.stream().map(IngredientRegisterRequest::toIngredient).toList())
                 .steps(steps.stream().map(RecipeStepRegisterRequest::toRecipeStep).toList())
                 .build();
     }

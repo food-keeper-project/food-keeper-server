@@ -44,7 +44,7 @@ class AiRecipeRecommenderTest {
                   "menuName": "요리 이름",
                   "description": "요리에 대한 매력적인 한 줄 소개",
                   "cookMinutes": 20,
-                  "ingredients": [
+                  "recipeIngredients": [
                     { "name": "재료명", "quantity": "정량" }
                   ],
                   "steps": [
@@ -73,9 +73,9 @@ class AiRecipeRecommenderTest {
         assertThat(recipe.menuName()).isEqualTo("요리 이름");
         assertThat(recipe.description()).isEqualTo("요리에 대한 매력적인 한 줄 소개");
         assertThat(recipe.cookMinutes()).isEqualTo(20);
-        assertThat(recipe.ingredients()).hasSize(1);
-        assertThat(recipe.ingredients().getFirst().name()).isEqualTo("재료명");
-        assertThat(recipe.ingredients().getFirst().quantity()).isEqualTo("정량");
+        assertThat(recipe.recipeIngredients()).hasSize(1);
+        assertThat(recipe.recipeIngredients().getFirst().name()).isEqualTo("재료명");
+        assertThat(recipe.recipeIngredients().getFirst().quantity()).isEqualTo("정량");
         assertThat(recipe.steps()).hasSize(2);
         assertThat(recipe.steps().getFirst().title()).isEqualTo("단계별 핵심 요약");
         assertThat(recipe.steps().getFirst().content()).isEqualTo("상세 조리법");

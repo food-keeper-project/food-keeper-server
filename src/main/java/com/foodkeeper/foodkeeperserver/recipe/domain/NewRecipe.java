@@ -8,12 +8,12 @@ import java.util.List;
 public record NewRecipe(String menuName,
                         String description,
                         Integer cookMinutes,
-                        List<RecipeIngredient> ingredients,
+                        List<RecipeIngredient> recipeIngredients,
                         List<RecipeStep> steps) {
 
     public NewRecipe {
-        if (ingredients == null) {
-            ingredients = List.of();
+        if (recipeIngredients == null) {
+            recipeIngredients = List.of();
         }
 
         if (steps == null) {
