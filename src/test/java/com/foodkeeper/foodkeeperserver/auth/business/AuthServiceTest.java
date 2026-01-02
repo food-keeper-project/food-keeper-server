@@ -1,24 +1,22 @@
 package com.foodkeeper.foodkeeperserver.auth.business;
 
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.OauthEntity;
-import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.SignInLogEntity;
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.LocalAuthRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.MemberRoleRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
-import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.SignInLogRepository;
 import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
 import com.foodkeeper.foodkeeperserver.auth.domain.OAuthUser;
 import com.foodkeeper.foodkeeperserver.auth.domain.SignInContext;
 import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
 import com.foodkeeper.foodkeeperserver.auth.implement.KakaoAuthenticator;
+import com.foodkeeper.foodkeeperserver.auth.implement.LocalAuthAuthenticator;
 import com.foodkeeper.foodkeeperserver.auth.implement.RefreshTokenManager;
-import com.foodkeeper.foodkeeperserver.auth.implement.SignInLogAppender;
 import com.foodkeeper.foodkeeperserver.food.implement.CategoryManager;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
-import com.foodkeeper.foodkeeperserver.notification.implement.FcmManager;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +24,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -44,9 +44,11 @@ class AuthServiceTest {
     @Mock OauthRepository oauthRepository;
     @Mock MemberRoleRepository memberRoleRepository;
     @Mock KakaoAuthenticator kakaoAuthenticator;
-    @Mock SignInLogRepository signInLogRepository;
     @Mock CategoryManager foodCategoryManager;
-    @Mock FcmManager fcmManager;
+    @Mock LocalAuthRepository localAuthRepository;
+    @Mock LocalAuthAuthenticator localAuthAuthenticator;
+    @Mock ApplicationEventPublisher eventPublisher;
+    @Mock PasswordEncoder passwordEncoder;
     SecretKey secretKey;
     AuthService authService;
 
@@ -54,13 +56,12 @@ class AuthServiceTest {
     void setUp() {
         secretKey = Keys.hmacShaKeyFor("this_is_a_test_secret_key_abcdefghijtlmnopqr".getBytes(StandardCharsets.UTF_8));
         JwtGenerator jwtGenerator = new JwtGenerator(secretKey);
-        SignInLogAppender signInLogAppender = new SignInLogAppender(signInLogRepository);
         MemberFinder memberFinder = new MemberFinder(memberRepository, oauthRepository);
-        MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, oauthRepository, memberRoleRepository,
-                foodCategoryManager);
+        MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, oauthRepository, localAuthRepository,
+                memberRoleRepository, foodCategoryManager);
         RefreshTokenManager refreshTokenManager = new RefreshTokenManager(memberRepository);
-        authService = new AuthService(kakaoAuthenticator, memberFinder, memberRegistrar, signInLogAppender,
-                jwtGenerator, refreshTokenManager, fcmManager);
+        authService = new AuthService(kakaoAuthenticator, localAuthAuthenticator, memberFinder, memberRegistrar,
+                jwtGenerator, refreshTokenManager, eventPublisher, passwordEncoder);
     }
 
     @Test
@@ -83,10 +84,8 @@ class AuthServiceTest {
                 .profileImageUrl("https://test.com/image.jpg")
                 .build();
         OauthEntity oauthEntity = new OauthEntity(OAuthProvider.KAKAO, account, memberKey);
-        SignInLogEntity signInLogEntity = mock(SignInLogEntity.class);
         given(kakaoAuthenticator.authenticate(eq(accessToken))).willReturn(oauthUser);
         given(oauthRepository.findByAccount(eq(account))).willReturn(Optional.of(oauthEntity));
-        given(signInLogRepository.save(any(SignInLogEntity.class))).willReturn(signInLogEntity);
 
         // when
         Jwt jwt = authService.signInByOAuth(register);
@@ -119,12 +118,10 @@ class AuthServiceTest {
                 .build();
         OauthEntity oauthEntity = new OauthEntity(OAuthProvider.KAKAO, account, memberKey);
         MemberEntity memberEntity = mock(MemberEntity.class);
-        SignInLogEntity signInLogEntity = mock(SignInLogEntity.class);
         given(memberEntity.getMemberKey()).willReturn(memberKey);
         given(kakaoAuthenticator.authenticate(eq(accessToken))).willReturn(oauthUser);
         given(memberRepository.save(any(MemberEntity.class))).willReturn(memberEntity);
         given(oauthRepository.save(any(OauthEntity.class))).willReturn(oauthEntity);
-        given(signInLogRepository.save(any(SignInLogEntity.class))).willReturn(signInLogEntity);
 
         // when
         Jwt jwt = authService.signInByOAuth(register);

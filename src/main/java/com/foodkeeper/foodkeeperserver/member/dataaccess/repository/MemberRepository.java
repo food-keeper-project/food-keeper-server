@@ -23,4 +23,6 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
     @Modifying(clearAutomatically = true)
     @Query("UPDATE MemberEntity m SET m.refreshToken = null WHERE m.memberKey = :memberKey")
     void deleteRefreshTokenByMemberKey(@Param("memberKey") String memberKey);
+
+    boolean existsByEmail(String email);
 }
