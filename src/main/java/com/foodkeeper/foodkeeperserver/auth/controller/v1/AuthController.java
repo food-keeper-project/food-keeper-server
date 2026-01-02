@@ -2,9 +2,13 @@ package com.foodkeeper.foodkeeperserver.auth.controller.v1;
 
 import com.foodkeeper.foodkeeperserver.auth.business.AuthService;
 import com.foodkeeper.foodkeeperserver.auth.business.TokenRefreshService;
+import com.foodkeeper.foodkeeperserver.auth.controller.v1.request.AccountDuplicationCheckRequest;
+import com.foodkeeper.foodkeeperserver.auth.controller.v1.request.EmailDuplicationCheckRequest;
 import com.foodkeeper.foodkeeperserver.auth.controller.v1.request.SignInRequest;
 import com.foodkeeper.foodkeeperserver.auth.controller.v1.request.TokenRefreshRequest;
+import com.foodkeeper.foodkeeperserver.auth.controller.v1.response.AccountDuplicationCheckResponse;
 import com.foodkeeper.foodkeeperserver.auth.controller.v1.response.AuthTokenResponse;
+import com.foodkeeper.foodkeeperserver.auth.controller.v1.response.EmailDuplicationCheckResponse;
 import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
 import com.foodkeeper.foodkeeperserver.common.aspect.annotation.SignInLog;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
@@ -57,5 +61,21 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Void>> signOut(@AuthMember Member member) {
         authService.signOut(member.memberKey());
         return ResponseEntity.ok(ApiResponse.success());
+    }
+
+    @NullMarked
+    @PostMapping("/check/account")
+    public ResponseEntity<ApiResponse<AccountDuplicationCheckResponse>> checkAccountDuplication(
+            @RequestBody AccountDuplicationCheckRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(new AccountDuplicationCheckResponse(
+                authService.isDuplicatedAccount(request.account()))));
+    }
+
+    @NullMarked
+    @PostMapping("/check/email")
+    public ResponseEntity<ApiResponse<EmailDuplicationCheckResponse>> checkEmailDuplication(
+            @RequestBody EmailDuplicationCheckRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(new EmailDuplicationCheckResponse(
+                authService.isDuplicatedEmail(request.email()))));
     }
 }

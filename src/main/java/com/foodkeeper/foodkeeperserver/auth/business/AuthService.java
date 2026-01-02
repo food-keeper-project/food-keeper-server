@@ -5,10 +5,7 @@ import com.foodkeeper.foodkeeperserver.auth.domain.MemberRoles;
 import com.foodkeeper.foodkeeperserver.auth.domain.OAuthUser;
 import com.foodkeeper.foodkeeperserver.auth.domain.SignInContext;
 import com.foodkeeper.foodkeeperserver.auth.domain.enums.MemberRole;
-import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
-import com.foodkeeper.foodkeeperserver.auth.implement.OAuthAuthenticator;
-import com.foodkeeper.foodkeeperserver.auth.implement.RefreshTokenManager;
-import com.foodkeeper.foodkeeperserver.auth.implement.SignInLogAppender;
+import com.foodkeeper.foodkeeperserver.auth.implement.*;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.SignUpType;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
@@ -28,6 +25,7 @@ public class AuthService {
     private final JwtGenerator jwtGenerator;
     private final RefreshTokenManager refreshTokenManager;
     private final FcmManager fcmManager;
+    private final LocalAuthAuthenticator localAuthAuthenticator;
 
     public Jwt signInByOAuth(SignInContext context) {
         OAuthUser oAuthUser = oauthAuthenticator.authenticate(context.accessToken());
@@ -49,5 +47,13 @@ public class AuthService {
 
     public void signOut(String memberKey) {
         refreshTokenManager.remove(memberKey);
+    }
+
+    public boolean isDuplicatedAccount(String account) {
+        return localAuthAuthenticator.isDuplicatedAccount(account);
+    }
+
+    public boolean isDuplicatedEmail(String email) {
+        return localAuthAuthenticator.isDuplicatedEmail(email);
     }
 }
