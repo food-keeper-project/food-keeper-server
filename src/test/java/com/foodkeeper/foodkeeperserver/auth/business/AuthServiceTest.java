@@ -4,11 +4,13 @@ import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.OauthEntity;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.LocalAuthRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.MemberRoleRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
-import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.SignInLogRepository;
 import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
 import com.foodkeeper.foodkeeperserver.auth.domain.OAuthUser;
 import com.foodkeeper.foodkeeperserver.auth.domain.SignInContext;
-import com.foodkeeper.foodkeeperserver.auth.implement.*;
+import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
+import com.foodkeeper.foodkeeperserver.auth.implement.KakaoAuthenticator;
+import com.foodkeeper.foodkeeperserver.auth.implement.LocalAuthAuthenticator;
+import com.foodkeeper.foodkeeperserver.auth.implement.RefreshTokenManager;
 import com.foodkeeper.foodkeeperserver.food.implement.CategoryManager;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
@@ -42,7 +44,6 @@ class AuthServiceTest {
     @Mock OauthRepository oauthRepository;
     @Mock MemberRoleRepository memberRoleRepository;
     @Mock KakaoAuthenticator kakaoAuthenticator;
-    @Mock SignInLogRepository signInLogRepository;
     @Mock CategoryManager foodCategoryManager;
     @Mock LocalAuthRepository localAuthRepository;
     @Mock LocalAuthAuthenticator localAuthAuthenticator;
@@ -55,7 +56,6 @@ class AuthServiceTest {
     void setUp() {
         secretKey = Keys.hmacShaKeyFor("this_is_a_test_secret_key_abcdefghijtlmnopqr".getBytes(StandardCharsets.UTF_8));
         JwtGenerator jwtGenerator = new JwtGenerator(secretKey);
-        SignInLogAppender signInLogAppender = new SignInLogAppender(signInLogRepository);
         MemberFinder memberFinder = new MemberFinder(memberRepository, oauthRepository);
         MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, oauthRepository, localAuthRepository,
                 memberRoleRepository, foodCategoryManager);
