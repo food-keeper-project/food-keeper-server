@@ -95,7 +95,7 @@ public class FoodController {
     @DeleteMapping("/{foodId}")
     public ResponseEntity<ApiResponse<Void>> removeFood(@PathVariable Long foodId, @AuthMember Member member) {
         foodService.removeFood(foodId, member.memberKey());
-        return ResponseEntity.created(URI.create("/api/v1/foods" + foodId)).build();
+        return ResponseEntity.ok(ApiResponse.success());
     }
 
     @NullMarked
