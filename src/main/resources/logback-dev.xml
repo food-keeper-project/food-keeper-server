@@ -2,7 +2,7 @@
 <configuration>
 
     <!-- Properties -->
-    <property name="APP_NAME" value="food-keeper"/>
+    <property name="APP_NAME" value="kitchen-log"/>
     <property name="LOG_PATH" value="/var/log/${APP_NAME}"/>
     <property name="LOG_FILE" value="${APP_NAME}"/>
     <property name="ERR_LOG_FILE" value="err-${APP_NAME}"/>

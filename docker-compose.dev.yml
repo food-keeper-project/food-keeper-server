@@ -16,7 +16,7 @@ services:
     depends_on:
       - certbot
     networks:
-      - food-keeper
+      - kitchen-log
 
   certbot:
     image: certbot/certbot
@@ -28,8 +28,8 @@ services:
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
   spring:
-    image: seoarc/food-keeper-server:latest
-    container_name: food-keeper-api-server
+    image: seoarc/kitchen-log-server:latest
+    container_name: kitchen-log-api-server
     restart: on-failure:3
     environment:
       SPRING_PROFILES_ACTIVE: dev
@@ -48,10 +48,10 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - food-keeper
+      - kitchen-log
     volumes:
       - ./:/app/local
-      - /var/log/food-keeper:/var/log/food-keeper
+      - /var/log/kitchen-log:/var/log/kitchen-log
 
   mysql:
     image: mysql:8.0.44-debian
@@ -73,18 +73,18 @@ services:
        "--collation-server=utf8mb4_unicode_ci"
     ]
     networks:
-      - food-keeper
+      - kitchen-log
   promtail:
     image: grafana/promtail:latest
     container_name: promtail
     volumes:
       - ./promtail-config.dev.yml:/etc/promtail/config.yml
-      - /var/log/food-keeper:/var/log/app
+      - /var/log/kitchen-log:/var/log/app
       - /var/lib/promtail:/var/lib/promtail
     command: -config.file=/etc/promtail/config.yml
     networks:
-      - food-keeper
+      - kitchen-log
 
 networks:
-  food-keeper:
+  kitchen-log:
     driver: bridge
