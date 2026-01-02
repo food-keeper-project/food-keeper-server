@@ -45,7 +45,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           source: "infra/promtail/promtail-config.dev.yml"
-          target: "/root/"
+          target: ${{ secrets.DEPLOY_DIR }}
           strip_components: 2
 
       - name: Copy docker-compose to server
@@ -55,7 +55,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           source: "docker-compose.dev.yml"
-          target: "/root/"
+          target: ${{ secrets.DEPLOY_DIR }}
 
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
