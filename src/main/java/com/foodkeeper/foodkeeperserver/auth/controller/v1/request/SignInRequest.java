@@ -11,7 +11,7 @@ public record SignInRequest(@NotBlank String accessToken, @NotBlank String fcmTo
         return SignInContext.builder()
                 .accessToken(accessToken)
                 .oAuthProvider(provider)
-                .fcmToken(accessToken)
+                .fcmToken(fcmToken)
                 .ipAddress(new IpAddress(ipAddress))
                 .build();
     }
