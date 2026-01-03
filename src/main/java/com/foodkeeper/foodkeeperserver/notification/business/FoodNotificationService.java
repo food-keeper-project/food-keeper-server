@@ -26,7 +26,7 @@ public class FoodNotificationService {
     private final FcmManager fcmManager;
     private static final String TITLE = "유통기한 임박 알림";
 
-    @Scheduled(cron = "0 0 12 * * *")
+    @Scheduled(cron = "0 0/5 * * * *")
     public void sendExpiryAlarm() {
         LocalDate today = LocalDate.now();
         log.info("[Expiry Alarm] 유통기한 알림 전송 시작");
