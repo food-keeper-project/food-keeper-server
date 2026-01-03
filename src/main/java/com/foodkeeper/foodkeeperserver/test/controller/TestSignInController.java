@@ -5,8 +5,7 @@ import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
 import com.foodkeeper.foodkeeperserver.auth.domain.MemberRoles;
 import com.foodkeeper.foodkeeperserver.auth.domain.enums.MemberRole;
 import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
-import com.foodkeeper.foodkeeperserver.member.domain.NewMember;
-import com.foodkeeper.foodkeeperserver.member.domain.NewOAuthMember;
+import com.foodkeeper.foodkeeperserver.member.domain.*;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.SignUpType;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
@@ -37,10 +36,10 @@ public class TestSignInController {
     @PostMapping
     public ResponseEntity<ApiResponse<AuthTokenResponse>> testSignIn(@RequestBody TestSingInRequest request) {
         NewMember newMember = NewMember.builder()
-                .email(request.email())
-                .nickname("test")
+                .email(new Email(request.email()))
+                .nickname(new Nickname("test"))
                 .signUpType(SignUpType.OAUTH)
-                .signUpIpAddress("127.0.0.1")
+                .ipAddress(new IpAddress("127.0.0.1"))
                 .memberRoles(new MemberRoles(List.of(MemberRole.ROLE_USER)))
                 .build();
 

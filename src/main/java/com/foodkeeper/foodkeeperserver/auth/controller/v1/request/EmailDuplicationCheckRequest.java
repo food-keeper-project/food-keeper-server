@@ -1,4 +1,6 @@
 package com.foodkeeper.foodkeeperserver.auth.controller.v1.request;
 
-public record EmailDuplicationCheckRequest(String email) {
+import jakarta.validation.constraints.Email;
+
+public record EmailDuplicationCheckRequest(@Email String email) {
 }
