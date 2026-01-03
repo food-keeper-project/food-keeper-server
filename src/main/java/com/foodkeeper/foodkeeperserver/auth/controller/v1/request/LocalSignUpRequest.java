@@ -6,13 +6,14 @@ import com.foodkeeper.foodkeeperserver.auth.domain.SignUpContext;
 import com.foodkeeper.foodkeeperserver.member.domain.Email;
 import com.foodkeeper.foodkeeperserver.member.domain.Nickname;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.Gender;
+import com.foodkeeper.foodkeeperserver.support.validation.MemberEmail;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
 public record LocalSignUpRequest(@Size(max = 20) String account,
                                  @Size(max = 20) String password,
-                                 String email,
+                                 @MemberEmail String email,
                                  @Size(max = 20) String nickname,
                                  Gender gender,
                                  List<String> preferFoods) {
