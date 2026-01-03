@@ -1,5 +1,8 @@
 package com.foodkeeper.foodkeeperserver.auth.domain;
 
+import com.foodkeeper.foodkeeperserver.member.domain.Email;
+import com.foodkeeper.foodkeeperserver.member.domain.Nickname;
+import com.foodkeeper.foodkeeperserver.member.domain.ProfileImageUrl;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import tools.jackson.databind.PropertyNamingStrategies;
 import tools.jackson.databind.annotation.JsonNaming;
@@ -13,9 +16,9 @@ public record KakaoUser(Long id, LocalDateTime connectedAt, KakaoAccount kakaoAc
         return OAuthUser.builder()
                 .account(id.toString())
                 .provider(OAuthProvider.KAKAO)
-                .nickname(kakaoAccount.profile().nickname())
-                .email(kakaoAccount.email())
-                .profileImageUrl(kakaoAccount.profile().profileImageUrl())
+                .nickname(new Nickname(kakaoAccount.profile().nickname()))
+                .email(new Email(kakaoAccount.email()))
+                .profileImageUrl(new ProfileImageUrl(kakaoAccount.profile().profileImageUrl()))
                 .build();
     }
 }

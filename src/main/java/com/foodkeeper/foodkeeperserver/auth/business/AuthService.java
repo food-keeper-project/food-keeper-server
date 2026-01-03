@@ -36,7 +36,7 @@ public class AuthService {
         refreshTokenManager.updateRefreshToken(memberKey, jwt.refreshToken());
 
         eventPublisher.publishEvent(
-                new SignInEvent(context.ipAddress(), context.fcmToken(), memberKey));
+                new SignInEvent(context.getIpAddress(), context.fcmToken(), memberKey));
 
         return jwt;
     }
@@ -46,7 +46,7 @@ public class AuthService {
     }
 
     public void signUp(SignUpContext context) {
-        memberRegistrar.register(context.toNewLocalMember(passwordEncoder.encode(context.password())));
+        memberRegistrar.register(context.toNewLocalMember(passwordEncoder.encode(context.getPassword())));
     }
 
     public boolean isDuplicatedAccount(String account) {

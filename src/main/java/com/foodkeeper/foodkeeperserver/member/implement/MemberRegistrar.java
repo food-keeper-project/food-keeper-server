@@ -41,7 +41,7 @@ public class MemberRegistrar {
     public String register(NewLocalMember newLocalMember) {
         MemberEntity memberEntity = memberRepository.save(MemberEntity.from(newLocalMember.member()));
         localAuthRepository.save(
-                new LocalAuthEntity(newLocalMember.account(), newLocalMember.password(), memberEntity.getMemberKey()));
+                new LocalAuthEntity(newLocalMember.getAccount(), newLocalMember.getPassword(), memberEntity.getMemberKey()));
         newLocalMember.member().memberRoles().forEach(role ->
                 memberRoleRepository.save(new MemberRoleEntity(role, memberEntity.getMemberKey())));
 
