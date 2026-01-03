@@ -1,7 +1,7 @@
 package com.foodkeeper.foodkeeperserver.member.fixture;
 
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
-import com.foodkeeper.foodkeeperserver.member.domain.NewMember;
+import com.foodkeeper.foodkeeperserver.member.domain.*;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.Gender;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.SignUpType;
 
@@ -37,11 +37,11 @@ public enum MemberEntityFixture {
 
     public MemberEntity get() {
         return MemberEntity.from(NewMember.builder()
-                .email(email)
-                .nickname(nickname)
-                .imageUrl(imageUrl)
+                .email(new Email(email))
+                .nickname(new Nickname(nickname))
+                .imageUrl(new ProfileImageUrl(imageUrl))
                 .signUpType(signUpType)
-                .signUpIpAddress(signUpIp)
+                .ipAddress(new IpAddress(signUpIp))
                 .build());
     }
 }
