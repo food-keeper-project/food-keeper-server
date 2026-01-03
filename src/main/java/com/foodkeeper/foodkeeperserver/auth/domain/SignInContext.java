@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.auth.domain;
 
+import com.foodkeeper.foodkeeperserver.member.domain.IpAddress;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
@@ -9,7 +10,7 @@ import lombok.Builder;
 public record SignInContext(String accessToken,
                             OAuthProvider oAuthProvider,
                             String fcmToken,
-                            String ipAddress) {
+                            IpAddress ipAddress) {
 
     public SignInContext {
         if (accessToken == null) {
@@ -20,8 +21,12 @@ public record SignInContext(String accessToken,
             throw new AppException(ErrorType.FCM_TOKEN_IS_NULL);
         }
 
-        if (oAuthProvider == null || ipAddress == null) {
+        if (oAuthProvider == null) {
             throw new AppException(ErrorType.DEFAULT_ERROR);
         }
+    }
+
+    public String getIpAddress() {
+        return ipAddress.ipAddress();
     }
 }

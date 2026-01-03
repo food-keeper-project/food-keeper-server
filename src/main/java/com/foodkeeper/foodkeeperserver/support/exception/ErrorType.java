@@ -28,6 +28,10 @@ public enum ErrorType {
     NOT_FOUND_SUBJECT(HttpStatus.BAD_REQUEST, ErrorCode.E3006, "Subject를 찾을 수 없습니다.", LogLevel.WARN),
     OAUTH_ACCESS_TOKEN_IS_NULL(HttpStatus.BAD_REQUEST, ErrorCode.E3007, "OAuth 엑세스 토큰은 null일 수 없습니다.", LogLevel.WARN),
     FCM_TOKEN_IS_NULL(HttpStatus.BAD_REQUEST, ErrorCode.E3008, "FCM 토큰은 null일 수 없습니다.", LogLevel.WARN),
+    ACCOUNT_IS_NULL(HttpStatus.BAD_REQUEST, ErrorCode.E3009, "계정은 null일 수 없습니다.", LogLevel.WARN),
+    INVALID_ACCOUNT_LENGTH(HttpStatus.BAD_REQUEST, ErrorCode.E3010, "계정 길이가 너무 깁니다.", LogLevel.WARN),
+    PASSWORD_IS_NULL(HttpStatus.BAD_REQUEST, ErrorCode.E3011, "비밀번호는 null일 수 없습니다.", LogLevel.WARN),
+    INVALID_PASSWORD_LENGTH(HttpStatus.BAD_REQUEST, ErrorCode.E3012, "비밀번호 길이가 너무 깁니다.", LogLevel.WARN),
 
     // S3
     S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E5000, "이미지 업로드에 실패했습니다.", LogLevel.ERROR),
@@ -46,7 +50,7 @@ public enum ErrorType {
 
     // Member
     INVALID_MEMBER_KEY(HttpStatus.BAD_REQUEST, ErrorCode.E9000, "멤버 key가 유효하지 않습니다.", LogLevel.WARN),
-    INVALID_NICKNAME_LENGTH(HttpStatus.BAD_REQUEST, ErrorCode.E9001, "멤버 닉네임은 20자를 넘을 수 없습니다.", LogLevel.WARN),
+    INVALID_NICKNAME_LENGTH(HttpStatus.BAD_REQUEST, ErrorCode.E9001, "닉네임이 너무 깁니다.", LogLevel.WARN),
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, ErrorCode.E9002, "이메일이 유효하지 않습니다.", LogLevel.WARN),
     INVALID_IMAGE_URL(HttpStatus.BAD_REQUEST, ErrorCode.E9003, "이미지 URL이 유효하지 않습니다.", LogLevel.WARN),
 
