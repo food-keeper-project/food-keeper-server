@@ -14,6 +14,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 @Configuration
 public class FirebaseInitializer {
@@ -27,7 +28,8 @@ public class FirebaseInitializer {
             if (!FirebaseApp.getApps().isEmpty()) {
                 return;
             }
-            InputStream serviceAccount = new ByteArrayInputStream(key.getBytes(StandardCharsets.UTF_8));
+            byte[] decodedKey = Base64.getDecoder().decode(key);
+            InputStream serviceAccount = new ByteArrayInputStream(decodedKey);
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
