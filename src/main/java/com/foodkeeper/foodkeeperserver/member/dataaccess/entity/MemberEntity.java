@@ -51,12 +51,12 @@ public class MemberEntity extends BaseEntity {
     public static MemberEntity from(NewMember member) {
         MemberEntity memberEntity = new MemberEntity();
         memberEntity.memberKey = UUID.randomUUID().toString();
-        memberEntity.email = member.email();
-        memberEntity.nickname = member.nickname();
-        memberEntity.imageUrl = member.imageUrl();
+        memberEntity.email = member.getEmail();
+        memberEntity.nickname = member.getNickname();
+        memberEntity.imageUrl = member.getImageUrl();
         memberEntity.gender = Gender.N;
         memberEntity.signUpType = member.signUpType();
-        memberEntity.signUpIpAddress = member.signUpIpAddress();
+        memberEntity.signUpIpAddress = member.getIpAddress();
         return memberEntity;
     }
 

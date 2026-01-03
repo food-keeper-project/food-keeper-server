@@ -65,9 +65,9 @@ class KakaoAuthenticatorTest {
         // then
         assertThat(oauthUser.account()).isEqualTo("123456789");
         assertThat(oauthUser.provider()).isEqualTo(OAuthProvider.KAKAO);
-        assertThat(oauthUser.email()).isEqualTo("test@kakao.com");
-        assertThat(oauthUser.nickname()).isEqualTo("kakao");
-        assertThat(oauthUser.profileImageUrl())
+        assertThat(oauthUser.email().email()).isEqualTo("test@kakao.com");
+        assertThat(oauthUser.nickname().nickname()).isEqualTo("kakao");
+        assertThat(oauthUser.profileImageUrl().imageUrl())
                 .isEqualTo("https://image.kakao.com/profile.jpg");
     }
 

@@ -8,8 +8,7 @@ import com.foodkeeper.foodkeeperserver.auth.domain.enums.MemberRole;
 import com.foodkeeper.foodkeeperserver.food.implement.CategoryManager;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
-import com.foodkeeper.foodkeeperserver.member.domain.NewMember;
-import com.foodkeeper.foodkeeperserver.member.domain.NewOAuthMember;
+import com.foodkeeper.foodkeeperserver.member.domain.*;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -46,9 +45,11 @@ class MemberRegistrarTest {
     void registerMember() {
         // given
         NewMember newMember = NewMember.builder()
-                .signUpIpAddress("127.0.0.1")
+                .ipAddress(new IpAddress("127.0.0.1"))
                 .memberRoles(new MemberRoles(List.of(MemberRole.ROLE_USER)))
-                .email("test@mail.com")
+                .email(new Email("test@mail.com"))
+                .nickname(new Nickname("nickname"))
+                .imageUrl(new ProfileImageUrl("https://test.com/image.jpg"))
                 .build();
         NewOAuthMember newOAuthMember = NewOAuthMember.builder()
                 .member(newMember)
