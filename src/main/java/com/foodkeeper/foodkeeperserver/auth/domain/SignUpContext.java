@@ -4,13 +4,9 @@ import com.foodkeeper.foodkeeperserver.auth.domain.enums.MemberRole;
 import com.foodkeeper.foodkeeperserver.member.domain.*;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.Gender;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.SignUpType;
-import com.foodkeeper.foodkeeperserver.support.exception.AppException;
-import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.Builder;
-import org.apache.logging.log4j.util.Strings;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 @Builder
 public record SignUpContext(Account account,
