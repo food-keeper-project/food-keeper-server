@@ -24,6 +24,7 @@ public class FoodNotificationService {
     private final FcmSender fcmSender;
     private final FoodReader foodReader;
     private final FcmManager fcmManager;
+    private static final String type = "EXPIRATION";
 
     @Scheduled(cron = "0 0 12 * * *")
     public void sendExpiryAlarm() {
@@ -48,7 +49,7 @@ public class FoodNotificationService {
             FcmMessage message = createFcmMessage(memberFoods, tokens.getFirst(), today);
 
             tokens.forEach(token -> {
-                FcmMessage tokenMessage = new FcmMessage(token, message.title(), message.body());
+                FcmMessage tokenMessage = new FcmMessage(token, message.title(), message.foodName(), message.remainingDays(), message.type());
                 fcmSender.sendNotification(tokenMessage);
             });
         });
@@ -57,18 +58,15 @@ public class FoodNotificationService {
     }
 
     private FcmMessage createFcmMessage(List<Food> foods, String token, LocalDate today) {
-        String body;
         String title;
         Food firstFood = foods.getFirst();
         long remainDays = firstFood.calculateRemainDay(today);
 
         if (foods.size() == 1) {
             title = "%s D-%d".formatted(firstFood.name(), remainDays);
-            body = "%s 유통기한까지 %d일 남았어요.\n낭비되지 않도록 미리 확인해보세요!".formatted(firstFood.name(), remainDays);
         } else {
             title = "%s 외 %d건".formatted(firstFood.name(), foods.size() - 1);
-            body = "%s 외 %d건의 식품이 곧 유통기한이 임박 예정이에요!".formatted(firstFood.name(), foods.size() - 1);
         }
-        return new FcmMessage(token, title, body);
+        return new FcmMessage(token, title, firstFood.name(), remainDays, type);
     }
 }
