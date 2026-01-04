@@ -53,6 +53,7 @@ public class AiRecipeRecommender {
 
         ClovaRequest clovaRequest = ClovaRequest.createPrompt(systemPrompt, userPrompt);
         ClovaResponse clovaResponse = clovaClient.getRecipe(BEARER + apiKey, clovaRequest);
+        log.info("[CLOVA RESULT] {}", clovaResponse.result().message().content());
 
         String content = clovaResponse.getContent();
         return objectMapper.readValue(content, NewRecipe.class);
