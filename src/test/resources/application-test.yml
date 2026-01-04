@@ -1,0 +1,48 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+
+logging:
+  level:
+    com.foodkeeper: debug
+
+jwt:
+  secret-key: testtesttesttesttesttesttesttest
+
+cloud:
+  aws:
+    s3:
+      bucket: food-keeper
+    credentials:
+      access-key: naver-access-key
+      secret-key: naver-secret-key
+    region:
+      static: kr-standard
+    stack:
+      auto: false
+
+custom:
+  s3:
+    endpoint: naver-storage-url
+
+clova:
+  url: clova-url
+  api-key: api-key
+
+client:
+  url: http://localhost:8080
+
+firebase:
+  key: testtesttesttesttesttesttesttest

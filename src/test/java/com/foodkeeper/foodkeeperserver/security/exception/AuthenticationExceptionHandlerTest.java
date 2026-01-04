@@ -1,0 +1,78 @@
+package com.foodkeeper.foodkeeperserver.security.exception;
+
+import com.foodkeeper.foodkeeperserver.support.exception.AppException;
+import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.AuthenticationException;
+import tools.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class AuthenticationExceptionHandlerTest {
+
+    AuthenticationExceptionHandler authenticationExceptionHandler = new AuthenticationExceptionHandler(new ObjectMapper());
+
+    @Test
+    @DisplayName("ApplicationException을 response를 통해 출력한다.")
+    void responseApplicationException() throws IOException {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        AppException exception = new AppException(ErrorType.DEFAULT_ERROR);
+
+        authenticationExceptionHandler.handle(request, response, exception);
+
+        assertThat(response.getStatus()).isEqualTo(401);
+        assertThat(response.getContentType())
+                .isEqualTo("application/json;charset=UTF-8");
+        assertThat(response.getCharacterEncoding()).isEqualTo("UTF-8");
+    }
+
+    @Test
+    @DisplayName("AuthenticationException을 response를 통해 출력한다.")
+    void responseAuthenticationException() throws IOException {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        AuthenticationException exception =
+                new InsufficientAuthenticationException("인증이 필요한 URI입니다.");
+
+        authenticationExceptionHandler.handle(request, response, exception);
+
+        assertThat(response.getStatus()).isEqualTo(401);
+        assertThat(response.getContentType())
+                .isEqualTo("application/json;charset=UTF-8");
+        assertThat(response.getCharacterEncoding()).isEqualTo("UTF-8");
+    }
+
+    @Test
+    @DisplayName("ApplicationException 처리 시 response가 commit되어 있다면 출력되지 않는다.")
+    void notWriteIfApplicationExceptionResponseCommitted() throws IOException {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        AuthenticationException exception =
+                new InsufficientAuthenticationException("인증이 필요한 URI입니다.");
+        response.setCommitted(true);
+
+        authenticationExceptionHandler.handle(request, response, exception);
+
+        assertThat(response.getStatus()).isEqualTo(200);
+    }
+
+    @Test
+    @DisplayName("AuthenticationException 처리 시 response가 commit되어 있다면 출력되지 않는다.")
+    void notWriteIfAuthenticationExceptionResponseCommitted() throws IOException {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        AppException exception = new AppException(ErrorType.DEFAULT_ERROR);
+        response.setCommitted(true);
+
+        authenticationExceptionHandler.handle(request, response, exception);
+
+        assertThat(response.getStatus()).isEqualTo(200);
+    }
+}

@@ -15,7 +15,8 @@ services:
     depends_on:
       - certbot
     networks:
-      - food-keeper
+      - kitchen-log
+
   certbot:
     image: certbot/certbot
     container_name: certbot
@@ -26,32 +27,68 @@ services:
     entrypoint: >
       /bin/sh -c 'trap exit TERM; while :; do certbot renew --deploy-hook "nginx -s reload"; sleep 12h & wait $${!}; done;'
     networks:
-      - food-keeper
+      - kitchen-log
+
   spring_blue:
-    image: seoarc/food-keeper-server:latest
-    container_name: food-keeper-api-blue
+    image: seoarc/kitchen-log-server:latest
+    container_name: kitchen-log-api-blue
     restart: on-failure:3
     environment:
       SPRING_PROFILES_ACTIVE: prod
       TZ: Asia/Seoul
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      NAVER_STORAGE_ACCESS_KEY: ${NAVER_STORAGE_ACCESS_KEY}
+      NAVER_STORAGE_SECRET_KEY: ${NAVER_STORAGE_SECRET_KEY}
+      NAVER_STORAGE_URL: ${NAVER_STORAGE_URL}
+      CLOVA_MODEL_URL: ${CLOVA_MODEL_URL}
+      CLOVA_API_KEY: ${CLOVA_API_KEY}
+      CLIENT_URL: ${CLIENT_URL}
+      FIREBASE_KEY: ${FIREBASE_KEY}
     networks:
-      - food-keeper
+      - kitchen-log
     volumes:
       - ./:/app/local
-      - ./logs:/var/log/spring
+      - /var/log/kitchen-log:/var/log/kitchen-log
+
   spring_green:
-    image: seoarc/food-keeper-server:latest
-    container_name: food-keeper-api-green
+    image: seoarc/kitchen-log-server:latest
+    container_name: kitchen-log-api-green
     restart: on-failure:3
     environment:
       SPRING_PROFILES_ACTIVE: prod
       TZ: Asia/Seoul
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      NAVER_STORAGE_ACCESS_KEY: ${NAVER_STORAGE_ACCESS_KEY}
+      NAVER_STORAGE_SECRET_KEY: ${NAVER_STORAGE_SECRET_KEY}
+      NAVER_STORAGE_URL: ${NAVER_STORAGE_URL}
+      CLOVA_MODEL_URL: ${CLOVA_MODEL_URL}
+      CLOVA_API_KEY: ${CLOVA_API_KEY}
+      CLOVA_GATEWAY_KEY: ${CLOVA_GATEWAY_KEY}
+      CLIENT_URL: ${CLIENT_URL}
+      FIREBASE_KEY: ${FIREBASE_KEY}
     networks:
-      - food-keeper
+      - kitchen-log
     volumes:
       - ./:/app/local
       - ./logs:/var/log/spring
 
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    volumes:
+      - ./promtail-config.prod.yml:/etc/promtail/config.yml
+      - /var/log/kitchen-log:/var/log/app
+      - /var/lib/promtail:/var/lib/promtail
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - kitchen-log
+
 networks:
-  food-keeper:
+  kitchen-log:
     driver: bridge

@@ -1,0 +1,131 @@
+package com.foodkeeper.foodkeeperserver.recipe.business;
+
+import com.foodkeeper.foodkeeperserver.recipe.dataaccess.ClovaClient;
+import com.foodkeeper.foodkeeperserver.recipe.dataaccess.entity.RecipeEntity;
+import com.foodkeeper.foodkeeperserver.recipe.dataaccess.repository.RecipeIngredientRepository;
+import com.foodkeeper.foodkeeperserver.recipe.dataaccess.repository.RecipeRepository;
+import com.foodkeeper.foodkeeperserver.recipe.dataaccess.repository.RecipeStepRepository;
+import com.foodkeeper.foodkeeperserver.recipe.domain.AiType;
+import com.foodkeeper.foodkeeperserver.recipe.domain.NewRecipe;
+import com.foodkeeper.foodkeeperserver.recipe.domain.RecipeIngredient;
+import com.foodkeeper.foodkeeperserver.recipe.domain.RecipeStep;
+import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaMessage;
+import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaResponse;
+import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaResponseStatus;
+import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaResult;
+import com.foodkeeper.foodkeeperserver.recipe.fixture.RecipeEntityFixture;
+import com.foodkeeper.foodkeeperserver.recipe.implement.AiRecipeRecommender;
+import com.foodkeeper.foodkeeperserver.recipe.implement.RecipeFinder;
+import com.foodkeeper.foodkeeperserver.recipe.implement.RecipeManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.ObjectMapper;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.spy;
+
+@ExtendWith(MockitoExtension.class)
+class RecipeServiceTest {
+
+    @Mock
+    ClovaClient clovaClient;
+    @Mock
+    RecipeRepository recipeRepository;
+    @Mock
+    RecipeStepRepository recipeStepRepository;
+    @Mock
+    RecipeIngredientRepository recipeIngredientRepository;
+    RecipeService recipeService;
+
+    @BeforeEach
+    void setUp() {
+        AiRecipeRecommender aiRecipeRecommender = new AiRecipeRecommender(clovaClient, new ObjectMapper());
+        RecipeManager recipeManager = new RecipeManager(recipeRepository, recipeIngredientRepository,
+                recipeStepRepository);
+        RecipeFinder recipeFinder = new RecipeFinder(recipeRepository, recipeStepRepository, recipeIngredientRepository);
+        recipeService = new RecipeService(aiRecipeRecommender, recipeManager, recipeFinder);
+    }
+
+    @Test
+    @DisplayName("ai를 통해 레시피를 추천받는다")
+    void aiRecommendRecipe() {
+        String clovaContent = """
+                ## 레시피입니다
+                ---
+                ai recipe
+                {
+                  "menuName": "요리 이름",
+                  "description": "요리에 대한 매력적인 한 줄 소개",
+                  "cookMinutes": 20,
+                  "recipeIngredients": [
+                    { "name": "재료명", "quantity": "정량" }
+                  ],
+                  "steps": [
+                    {
+                      "title": "단계별 핵심 요약",
+                      "content": "상세 조리법"
+                    },
+                    {
+                      "title": "제목",
+                      "content": "내용"
+                    }
+                  ]
+                }
+                ---
+                ### 레시피 결과: abcdefg
+                """;
+
+        ClovaMessage clovaMessage = new ClovaMessage(AiType.SYSTEM, clovaContent);
+        ClovaResponse clovaResponse = new ClovaResponse(
+                new ClovaResponseStatus("code", "message"),
+                new ClovaResult(clovaMessage));
+        given(clovaClient.getRecipe(anyString(), any())).willReturn(clovaResponse);
+
+        NewRecipe recipe = recipeService.recommendRecipe(List.of("test"), List.of("test"));
+
+        assertThat(recipe.menuName()).isEqualTo("요리 이름");
+        assertThat(recipe.description()).isEqualTo("요리에 대한 매력적인 한 줄 소개");
+        assertThat(recipe.cookMinutes()).isEqualTo(20);
+        assertThat(recipe.recipeIngredients()).hasSize(1);
+        assertThat(recipe.recipeIngredients().getFirst().name()).isEqualTo("재료명");
+        assertThat(recipe.recipeIngredients().getFirst().quantity()).isEqualTo("정량");
+        assertThat(recipe.steps()).hasSize(2);
+        assertThat(recipe.steps().getFirst().title()).isEqualTo("단계별 핵심 요약");
+        assertThat(recipe.steps().getFirst().content()).isEqualTo("상세 조리법");
+        assertThat(recipe.steps().get(1).title()).isEqualTo("제목");
+        assertThat(recipe.steps().get(1).content()).isEqualTo("내용");
+    }
+
+    @Test
+    @DisplayName("레시피를 저장한다.")
+    void registerRecipe() {
+        long recipeId = 1L;
+        String memberKey = "memberKey";
+        RecipeEntity recipeEntity = spy(RecipeEntityFixture.DEFAULT.get(memberKey));
+        given(recipeEntity.getId()).willReturn(recipeId);
+        given(recipeRepository.save(any(RecipeEntity.class))).willReturn(recipeEntity);
+
+        RecipeStep recipeStep = new RecipeStep("title", "content");
+        RecipeIngredient recipeIngredient = new RecipeIngredient("name", "quantity");
+        NewRecipe newRecipe = NewRecipe.builder()
+                .menuName("menu")
+                .description("desc")
+                .cookMinutes(20)
+                .steps(List.of(recipeStep))
+                .recipeIngredients(List.of(recipeIngredient))
+                .build();
+
+        Long savedRecipeId = recipeService.registerRecipe(newRecipe, memberKey);
+
+        assertThat(savedRecipeId).isEqualTo(recipeId);
+    }
+}

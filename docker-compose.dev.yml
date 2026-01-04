@@ -16,7 +16,8 @@ services:
     depends_on:
       - certbot
     networks:
-      - food-keeper
+      - kitchen-log
+
   certbot:
     image: certbot/certbot
     container_name: certbot
@@ -25,21 +26,65 @@ services:
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
   spring:
-    image: seoarc/food-keeper-server:latest
-    container_name: food-keeper-api-server
+    image: seoarc/kitchen-log-server:latest
+    container_name: kitchen-log-api-server
     restart: on-failure:3
     environment:
       SPRING_PROFILES_ACTIVE: dev
       TZ: Asia/Seoul
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      NAVER_STORAGE_ACCESS_KEY: ${NAVER_STORAGE_ACCESS_KEY}
+      NAVER_STORAGE_SECRET_KEY: ${NAVER_STORAGE_SECRET_KEY}
+      NAVER_STORAGE_URL: ${NAVER_STORAGE_URL}
+      CLOVA_MODEL_URL: ${CLOVA_MODEL_URL}
+      CLOVA_API_KEY: ${CLOVA_API_KEY}
+      CLIENT_URL: ${CLIENT_URL}
+      FIREBASE_KEY: ${FIREBASE_KEY}
     ports:
       - "8080:8080"
     networks:
-      - food-keeper
+      - kitchen-log
     volumes:
       - ./:/app/local
-      - ./logs:/var/log/spring
+      - /var/log/kitchen-log:/var/log/kitchen-log
+
+  mysql:
+    image: mysql:8.0.44-debian
+    container_name: mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db/mysql/data:/var/lib/mysql
+      - ./db/mysql/init:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: Asia/Seoul
+    command: [
+       "--character-set-server=utf8mb4",
+       "--collation-server=utf8mb4_unicode_ci"
+    ]
+    networks:
+      - kitchen-log
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    volumes:
+      - ./promtail-config.dev.yml:/etc/promtail/config.yml
+      - /var/log/kitchen-log:/var/log/app
+      - /var/lib/promtail:/var/lib/promtail
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - kitchen-log
 
 networks:
-  food-keeper:
+  kitchen-log:
     driver: bridge

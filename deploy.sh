@@ -26,7 +26,7 @@ docker compose -f $COMPOSE_FILE up -d spring_$NEW_COLOR
 # 3) 헬스체크 (Spring Actuator 기준 예시)
 echo "Health check for spring_$NEW_COLOR..."
 for i in {1..10}; do
-  if docker exec food-keeper-api-$NEW_COLOR curl -f http://localhost:8080/actuator/health >/dev/null 2>&1; then
+  if docker exec kitchen-log-api-$NEW_COLOR curl -f http://localhost:8080/actuator/health >/dev/null 2>&1; then
     echo "spring_$NEW_COLOR is healthy."
     break
   fi
@@ -35,13 +35,13 @@ for i in {1..10}; do
 done
 
 # 마지막까지 실패하면 실패 처리
-if ! docker exec food-keeper-api-$NEW_COLOR curl -f http://localhost:8080/actuator/health >/dev/null 2>&1; then
+if ! docker exec kitchen-log-api-$NEW_COLOR curl -f http://localhost:8080/actuator/health >/dev/null 2>&1; then
   echo "spring_$NEW_COLOR failed health check. Abort."
   exit 1
 fi
 
 # 4) nginx upstream을 새 색으로 스위칭
-NGINX_CONF=/root/nginx/conf.d/food-keeper.conf
+NGINX_CONF=/root/nginx/conf.d/kitchen-log.conf
 
 if [ "$NEW_COLOR" = "blue" ]; then
   sed -i 's/server spring_green:8080;/# server spring_green:8080;/' $NGINX_CONF
