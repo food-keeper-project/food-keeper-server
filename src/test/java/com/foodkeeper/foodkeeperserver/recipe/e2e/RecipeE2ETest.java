@@ -32,8 +32,8 @@ public class RecipeE2ETest extends E2ETest {
         ApiResponse<RecipeResponse> response = client.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/api/v1/recipes/recommend")
-                        .queryParam("ingredients", "무", "소고기")
-                        .queryParam("excludedMenus", "없음")
+                        .queryParam("ingredients", "사과", "돼지고기")
+                        .queryParam("excludedMenus", "[]")
                         .build())
                 .header(AUTHORIZATION, getAccessToken(member.getMemberKey()))
                 .exchange()
