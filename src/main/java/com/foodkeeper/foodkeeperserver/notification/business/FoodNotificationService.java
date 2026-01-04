@@ -24,7 +24,6 @@ public class FoodNotificationService {
     private final FcmSender fcmSender;
     private final FoodReader foodReader;
     private final FcmManager fcmManager;
-    private static final String TITLE = "유통기한 임박 알림";
 
     @Scheduled(cron = "0 0 12 * * *")
     public void sendExpiryAlarm() {
@@ -59,14 +58,17 @@ public class FoodNotificationService {
 
     private FcmMessage createFcmMessage(List<Food> foods, String token, LocalDate today) {
         String body;
+        String title;
         Food firstFood = foods.getFirst();
         long remainDays = firstFood.calculateRemainDay(today);
 
         if (foods.size() == 1) {
-            body = "%s의 유통기한이 %d일 남았습니다".formatted(firstFood.name(), remainDays);
+            title = "%s D-%d".formatted(firstFood.name(), remainDays);
+            body = "%s 유통기한까지 %d일 남았어요.\n낭비되지 않도록 미리 확인해보세요!".formatted(firstFood.name(), remainDays);
         } else {
-            body = "%s 외 %d건의 유통기한이 임박했습니다".formatted(firstFood.name(), foods.size() - 1);
+            title = "%s 외 %d건".formatted(firstFood.name(), foods.size() - 1);
+            body = "%s 외 %d건의 식품이 곧 유통기한이 임박 예정이에요!".formatted(firstFood.name(), foods.size() - 1);
         }
-        return new FcmMessage(token, TITLE, body);
+        return new FcmMessage(token, title, body);
     }
 }

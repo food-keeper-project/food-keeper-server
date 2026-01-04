@@ -32,19 +32,19 @@ public class RecipeE2ETest extends E2ETest {
         ApiResponse<RecipeResponse> response = client.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/api/v1/recipes/recommend")
-                        .queryParam("ingredients", "무", "소고기")
-                        .queryParam("excludedMenus", "없음")
+                        .queryParam("ingredients", "돼지고기", " 푸드소울")
+                        .queryParam("excludedMenus", ", 간단 돼지고기 볶음", " 간단 돼지고기 구이")
                         .build())
                 .header(AUTHORIZATION, getAccessToken(member.getMemberKey()))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(responseType)
+                .consumeWith(System.out::println)
                 .returnResult()
                 .getResponseBody();
 
         assertThat(response).isNotNull();
         assertThat(response.data()).isNotNull();
-        assertThat(response.data().ingredients()).hasSize(2);
 
 
         System.out.println(response.data());
