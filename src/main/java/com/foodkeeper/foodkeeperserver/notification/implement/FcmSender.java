@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.notification.implement;
 
+
 import com.foodkeeper.foodkeeperserver.notification.domain.FcmMessage;
 import com.google.firebase.messaging.*;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +23,17 @@ public class FcmSender {
                 .setBody(sender.body())
                 .build();
 
+        AndroidConfig androidConfig = AndroidConfig.builder()
+                .setPriority(AndroidConfig.Priority.HIGH)
+                .setNotification(AndroidNotification.builder()
+                        .setSound("default")
+                        .build())
+                .build();
+
         Message message = Message.builder()
                 .setToken(sender.fcmToken())
                 .setNotification(notification)
+                .setAndroidConfig(androidConfig)
                 .build();
         try {
             FirebaseMessaging.getInstance().send(message);
