@@ -20,8 +20,8 @@ public class RecipeCustomRepositoryImpl extends QuerydslRepositorySupport implem
     @Override
     public SliceObject<RecipeEntity> findRecipes(Cursorable<Long> cursorable, String memberKey) {
         List<RecipeEntity> content = selectFrom(recipeEntity)
-                .where(ltCursor(cursorable.cursor()), recipeEntity.memberKey.eq(memberKey))
-                .where(recipeEntity.status.ne(EntityStatus.DELETED))
+                .where(ltCursor(cursorable.cursor()), eqMember(memberKey))
+                .where(isNotDeleted())
                 .orderBy(recipeEntity.id.desc())
                 .limit(cursorable.limit() + 1)
                 .fetch();
@@ -33,15 +33,32 @@ public class RecipeCustomRepositoryImpl extends QuerydslRepositorySupport implem
     public List<Long> deleteRecipes(String memberKey) {
         List<Long> recipeIds = select(recipeEntity.id)
                 .from(recipeEntity)
-                .where(recipeEntity.memberKey.eq(memberKey), recipeEntity.status.ne(EntityStatus.DELETED))
+                .where(eqMember(memberKey), isNotDeleted())
                 .fetch();
 
         update(recipeEntity)
                 .set(recipeEntity.status, EntityStatus.DELETED)
-                .where(recipeEntity.memberKey.eq(memberKey), recipeEntity.status.ne(EntityStatus.DELETED))
+                .where(eqMember(memberKey), isNotDeleted())
                 .execute();
 
         return recipeIds;
+    }
+
+    @Override
+    public long recipeCount(String memberKey) {
+        Long count = select(recipeEntity.id.count())
+                .from(recipeEntity)
+                .where(eqMember(memberKey), isNotDeleted())
+                .fetchOne();
+        return count != null ? count : 0L;
+    }
+
+    private static BooleanExpression eqMember(String memberKey) {
+        return recipeEntity.memberKey.eq(memberKey);
+    }
+
+    private static BooleanExpression isNotDeleted() {
+        return recipeEntity.status.ne(EntityStatus.DELETED);
     }
 
     private static BooleanExpression ltCursor(Long cursor) {

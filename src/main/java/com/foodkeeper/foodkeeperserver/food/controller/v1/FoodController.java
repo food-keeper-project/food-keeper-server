@@ -7,6 +7,7 @@ import com.foodkeeper.foodkeeperserver.food.business.FoodService;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodRegisterRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodUpdateRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodsRequest;
+import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodCountResponse;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponse;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponses;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
@@ -59,12 +60,19 @@ public class FoodController {
     @NullMarked
     @Operation(summary = "식재료 전체 조회", description = "식재료 전체 조회 API")
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<FoodResponse>>> findFoods(@ModelAttribute FoodsRequest request,
+    public ResponseEntity<ApiResponse<PageResponse<FoodResponse>>> findMyFoodCount(@ModelAttribute FoodsRequest request,
                                                                              @CursorDefault Cursorable<Long> cursorable,
                                                                              @AuthMember Member authMember) {
         SliceObject<RegisteredFood> foods = foodService.findFoodList(cursorable, request.categoryId(), authMember.memberKey());
         List<FoodResponse> foodResponses = foods.content().stream().map(FoodResponse::from).toList();
         return ResponseEntity.ok(ApiResponse.success(new PageResponse<>(foodResponses, foods.hasNext())));
+    }
+
+    @NullMarked
+    @Operation(summary = "나의 식재료 개수 조회", description = "나의 식재료 개수 조회 API")
+    @GetMapping("/count/me")
+    public ResponseEntity<ApiResponse<FoodCountResponse>> findFoods(@AuthMember Member authMember) {
+        return ResponseEntity.ok(ApiResponse.success(new FoodCountResponse(foodService.foodCount(authMember.memberKey()))));
     }
 
     @NullMarked
