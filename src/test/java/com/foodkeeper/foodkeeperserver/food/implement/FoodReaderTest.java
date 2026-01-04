@@ -128,7 +128,7 @@ class FoodReaderTest {
         FoodCategory category = new FoodCategory(1L, "유제품", memberKey, LocalDateTime.now());
         given(mockFoodCategories.getCategories(anyLong())).willReturn(List.of(category));
 
-        given(foodRepository.findImminentFoods(memberKey)).willReturn(foodEntities);
+        given(foodRepository.findImminentFoods(any(LocalDate.class), eq(memberKey))).willReturn(foodEntities);
         given(foodCategoryReader.findNamesByFoodIds(anyList())).willReturn(mockFoodCategories);
 
         // when

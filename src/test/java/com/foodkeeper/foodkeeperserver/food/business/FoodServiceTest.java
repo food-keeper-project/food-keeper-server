@@ -35,6 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -228,7 +229,7 @@ public class FoodServiceTest {
 
         List<FoodEntity> foodEntities = List.of(FoodFixture.createFoodEntity(1L), FoodFixture.createFoodEntity(2L));
 
-        given(foodRepository.findImminentFoods(memberKey))
+        given(foodRepository.findImminentFoods(any(LocalDate.class), eq(memberKey)))
                 .willReturn(foodEntities);
 
         SelectedFoodCategoryEntity selectedEntity = SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 1L);

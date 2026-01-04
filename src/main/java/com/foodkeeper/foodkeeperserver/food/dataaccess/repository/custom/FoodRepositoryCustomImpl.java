@@ -80,9 +80,10 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
 
 
     @Override
-    public List<FoodEntity> findImminentFoods(String memberKey) {
+    public List<FoodEntity> findImminentFoods(LocalDate imminentStand, String memberKey) {
         return selectFrom(foodEntity)
                 .where(eqMember(memberKey), isNotDeleted())
+                .where(foodEntity.expiryDate.goe(imminentStand), foodEntity.expiryDate.loe(LocalDate.now()))
                 .orderBy(foodEntity.expiryDate.asc())
                 .fetch();
     }
