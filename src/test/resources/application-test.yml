@@ -38,8 +38,8 @@ custom:
     endpoint: naver-storage-url
 
 clova:
-  url: clova-url
-  api-key: api-key
+  url: ${CLOBA_URL}
+  api-key: ${CLOBA_API_KEY}
 
 client:
   url: http://localhost:8080
