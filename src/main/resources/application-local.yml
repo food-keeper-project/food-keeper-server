@@ -2,8 +2,7 @@ spring:
   config:
     activate:
       on-profile: local
-    import: "optional:file:.env[.properties]"
-
+    import: aws-secretsmanager:dev/kitchenlog
 
   datasource:
     first:
@@ -53,25 +52,25 @@ jwt:
 cloud:
   aws:
     s3:
-      bucket: food-keeper
+      bucket: ${BUCKET_NAME}
     credentials:
-      access-key: naver-access-key
-      secret-key: naver-secret-key
+      access-key: ${CLOUD_ACCESS_KEY}
+      secret-key: ${CLOUD_SECRET_KEY}
     region:
-      static: kr-standard
+      static: ${CLOUD_REGION}
     stack:
       auto: false
 
 custom:
   s3:
-    endpoint: naver-storage-url
+    endpoint: ${NAVER_STORAGE_URL}
 
 clova:
-  url: clova-url
-  api-key: api-key
+  url: ${CLOVA_MODEL_URL}
+  api-key: ${CLOVA_API_KEY}
 
 client:
   url: http://localhost:8080
 
 firebase:
-  key: testtesttesttesttesttesttesttest
+  key: ${FIREBASE_KEY}
