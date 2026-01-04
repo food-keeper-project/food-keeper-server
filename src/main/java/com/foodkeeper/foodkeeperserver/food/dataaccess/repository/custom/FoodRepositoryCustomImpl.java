@@ -30,8 +30,8 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
 
         List<FoodEntity> content = query
                 .where(
-                        foodEntity.memberKey.eq(memberKey),
-                        foodEntity.status.ne(EntityStatus.DELETED),
+                        eqMember(memberKey),
+                        isNotDeleted(),
                         ltCursor(cursorable.cursor())
                 )
                 .orderBy(foodEntity.id.desc(), foodEntity.createdAt.desc())
@@ -49,10 +49,7 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
     public List<FoodEntity> findAllByMemberKey(String memberKey) {
 
         return selectFrom(foodEntity)
-                .where(
-                        foodEntity.memberKey.eq(memberKey),
-                        foodEntity.status.ne(EntityStatus.DELETED)
-                )
+                .where(eqMember(memberKey), isNotDeleted())
                 .orderBy(
                         foodEntity.name.asc(),
                         foodEntity.createdAt.desc()
@@ -64,9 +61,7 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
     @Override
     public List<FoodEntity> findImminentFoods(String memberKey) {
         return selectFrom(foodEntity)
-                .where(
-                        foodEntity.memberKey.eq(memberKey),
-                        foodEntity.status.ne(EntityStatus.DELETED))
+                .where(eqMember(memberKey), isNotDeleted())
                 .orderBy(foodEntity.expiryDate.asc())
                 .fetch();
     }
@@ -83,14 +78,31 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
     public List<Long> removeFoods(String memberKey) {
         List<Long> foodIds = select(foodEntity.id)
                 .from(foodEntity)
-                .where(foodEntity.memberKey.eq(memberKey), foodEntity.status.ne(EntityStatus.DELETED))
+                .where(eqMember(memberKey), isNotDeleted())
                 .fetch();
 
         update(foodEntity)
                 .set(foodEntity.status, EntityStatus.DELETED)
-                .where(foodEntity.memberKey.eq(memberKey), foodEntity.status.ne(EntityStatus.DELETED))
+                .where(eqMember(memberKey), isNotDeleted())
                 .execute();
 
         return foodIds;
+    }
+
+    @Override
+    public long foodCount(String memberKey) {
+        Long count = select(foodEntity.id.count())
+                .from(foodEntity)
+                .where(eqMember(memberKey), isNotDeleted())
+                .fetchOne();
+        return count != null ? count : 0L;
+    }
+
+    private static BooleanExpression eqMember(String memberKey) {
+        return foodEntity.memberKey.eq(memberKey);
+    }
+
+    private static BooleanExpression isNotDeleted() {
+        return foodEntity.status.ne(EntityStatus.DELETED);
     }
 }
