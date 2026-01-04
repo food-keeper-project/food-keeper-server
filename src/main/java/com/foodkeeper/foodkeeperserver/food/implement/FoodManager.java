@@ -27,8 +27,12 @@ public class FoodManager {
 
     @Transactional
     public void updateFood(Food food, List<Long> categoryIds, String memberKey) {
-        FoodEntity foodEntity = foodRepository.findByIdAndMemberKey(food.id(), memberKey)
+        FoodEntity foodEntity = foodRepository.findById(food.id())
                 .orElseThrow(() -> new AppException(ErrorType.FOOD_DATA_NOT_FOUND));
+
+        if (!foodEntity.getMemberKey().equals(memberKey)) {
+            throw new AppException(ErrorType.INVALID_MEMBER_KEY);
+        }
         foodEntity.update(food);
         if (categoryIds != null) {
             selectedFoodCategoryManager.update(food.id(), categoryIds);
