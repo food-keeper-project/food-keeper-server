@@ -278,7 +278,6 @@ public class FoodServiceTest {
 
         given(foodRepository.findById(foodId)).willReturn(Optional.ofNullable(foodEntity));
         assertNotNull(foodEntity);
-        given(foodRepository.findByIdAndMemberKey(foodId, FoodFixture.MEMBER_KEY)).willReturn(Optional.of(foodEntity));
 
         given(imageManager.fileUpload(any())).willReturn(Optional.of("파일 경로"));
         willDoNothing().given(imageManager).deleteFile(any());
