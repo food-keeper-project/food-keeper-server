@@ -13,8 +13,10 @@ public class MapperConfig {
     @Bean
     public ObjectMapper objectMapper() {
         return JsonMapper.builder()
-                        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                        .enable(JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS)
-                        .build();
+                .enable(JsonReadFeature.ALLOW_UNQUOTED_PROPERTY_NAMES)
+                .enable(JsonReadFeature.ALLOW_SINGLE_QUOTES)
+                .enable(JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS)
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .build();
     }
 }
