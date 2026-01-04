@@ -7,6 +7,8 @@ public record ClovaResponse(ClovaResponseStatus status, ClovaResult result) {
     private static final String EMPTY_JSON = "{}";
     private static final String JSON_REGEX = "(\\{.*\\}|\\[.*\\])";
     public static final String JSON_EMPTY_MESSAGE = "레시피를 생성할 수 없습니다.";
+    public static final String NOT_JSON_ELEMENTS = "(?s)```(?:json)?\\s*(.*?)\\s*```";
+    public static final String WORD_WITHOUT_BRACKET = "(?<![\"'])(\\w+)\\s*:";
 
     public String getContent() {
         if (result != null && result.message() != null) {
@@ -19,11 +21,14 @@ public record ClovaResponse(ClovaResponseStatus status, ClovaResult result) {
     private String cleanJsonContent(String rawContent) {
         if (rawContent == null) return EMPTY_JSON;
 
-        Matcher matcher = Pattern.compile(JSON_REGEX, Pattern.DOTALL).matcher(rawContent);
+        String content = rawContent.replaceAll(NOT_JSON_ELEMENTS, "$1");
+        content = content.replaceAll(WORD_WITHOUT_BRACKET, "\"$1\":");
 
+        Matcher matcher = Pattern.compile(JSON_REGEX, Pattern.DOTALL).matcher(content);
         if (matcher.find()) {
-            return matcher.group(1);
+            return matcher.group().trim();
         }
+
         return EMPTY_JSON;
     }
 }
