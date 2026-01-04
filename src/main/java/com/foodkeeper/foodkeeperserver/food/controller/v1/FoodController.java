@@ -61,8 +61,8 @@ public class FoodController {
     @Operation(summary = "식재료 전체 조회", description = "식재료 전체 조회 API")
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<FoodResponse>>> findMyFoodCount(@ModelAttribute FoodsRequest request,
-                                                                             @CursorDefault Cursorable<Long> cursorable,
-                                                                             @AuthMember Member authMember) {
+                                                                                   @CursorDefault Cursorable<Long> cursorable,
+                                                                                   @AuthMember Member authMember) {
         SliceObject<RegisteredFood> foods = foodService.findFoodList(cursorable, request.categoryId(), authMember.memberKey());
         List<FoodResponse> foodResponses = foods.content().stream().map(FoodResponse::from).toList();
         return ResponseEntity.ok(ApiResponse.success(new PageResponse<>(foodResponses, foods.hasNext())));

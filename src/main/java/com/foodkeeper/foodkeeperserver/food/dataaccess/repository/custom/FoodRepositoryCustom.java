@@ -7,7 +7,7 @@ import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import java.util.List;
 
 public interface FoodRepositoryCustom {
-    SliceObject<FoodEntity> findFoodCursorList(Cursorable<Long> cursorable, Long categoryId, String memberKey);
+    SliceObject<FoodEntity> findFoods(Cursorable<Long> cursorable, Long categoryId, String memberKey);
 
     List<FoodEntity> findAllByMemberKey(String memberKey);
 

@@ -40,7 +40,7 @@ class FoodReaderTest {
 
     @Test
     @DisplayName("식재료 커서 리스트 조회 시 카테고리 정보와 매핑되어 RegisteredFood 반환")
-    void findFoodList_SUCCESS() {
+    void findFoods_SUCCESS() {
         // given
         Long categoryId = 1L;
         String memberKey = FoodFixture.MEMBER_KEY;
@@ -57,11 +57,11 @@ class FoodReaderTest {
         FoodCategory category2 = new FoodCategory(1L, "냉동", memberKey, LocalDateTime.now());
         given(mockFoodCategories.getCategories(anyLong())).willReturn(List.of(category1, category2));
 
-        given(foodRepository.findFoodCursorList(cursorable, categoryId, memberKey)).willReturn(foodSlice);
+        given(foodRepository.findFoods(cursorable, categoryId, memberKey)).willReturn(foodSlice);
         given(foodCategoryReader.findNamesByFoodIds(anyList())).willReturn(mockFoodCategories);
 
         // when
-        SliceObject<RegisteredFood> result = foodReader.findFoodList(cursorable, categoryId, memberKey);
+        SliceObject<RegisteredFood> result = foodReader.findFoods(cursorable, categoryId, memberKey);
 
         // then
         assertThat(result.content()).hasSize(2);
