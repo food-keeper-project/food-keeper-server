@@ -216,18 +216,18 @@ public class FoodE2ETest extends E2ETest {
         FoodCategoryEntity category = foodCategoryRepository.save(
                 FoodCategoryEntity.builder().name("test").memberKey(member.getMemberKey()).build());
         List<LocalDate> expiryDates = List.of(
-                LocalDate.now().minusDays(7),
-                LocalDate.now().minusDays(7),
-                LocalDate.now().minusDays(5),
-                LocalDate.now().minusDays(5),
-                LocalDate.now().minusDays(5),
-                LocalDate.now().minusDays(3),
-                LocalDate.now().minusDays(2),
+                LocalDate.now().minusDays(1),
+                LocalDate.now().minusDays(1),
                 LocalDate.now().minusDays(2),
                 LocalDate.now(),
-                LocalDate.now().plusDays(1),
-                LocalDate.now().plusDays(1),
-                LocalDate.now().plusDays(2)
+                LocalDate.now().plusDays(2),
+                LocalDate.now().plusDays(2),
+                LocalDate.now().plusDays(3),
+                LocalDate.now().plusDays(5),
+                LocalDate.now().plusDays(5),
+                LocalDate.now().plusDays(5),
+                LocalDate.now().plusDays(7),
+                LocalDate.now().plusDays(7)
         );
 
         expiryDates.forEach(expiryDate -> {

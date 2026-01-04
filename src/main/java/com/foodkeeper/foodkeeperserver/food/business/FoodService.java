@@ -59,7 +59,7 @@ public class FoodService {
     }
 
     public List<RegisteredFood> findImminentFoods(String memberKey) {
-        LocalDate imminentStand = LocalDate.now().minusDays(7);
+        LocalDate imminentStand = LocalDate.now().plusDays(7);
         return foodReader.findImminentFoods(imminentStand, memberKey);
     }
 
