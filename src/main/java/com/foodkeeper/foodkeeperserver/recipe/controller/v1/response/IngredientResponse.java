@@ -5,6 +5,6 @@ import com.foodkeeper.foodkeeperserver.recipe.domain.RecipeIngredient;
 public record IngredientResponse(String name, String quantity) {
 
     public static IngredientResponse from(RecipeIngredient ingredient) {
-        return new IngredientResponse(ingredient.name(), ingredient.name());
+        return new IngredientResponse(ingredient.name(), ingredient.quantity());
     }
 }
