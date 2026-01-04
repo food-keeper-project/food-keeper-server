@@ -32,6 +32,10 @@ public class RecipeService {
         return recipeManager.register(recipe, memberKey);
     }
 
+    public long recipeCount(String memberKey) {
+        return recipeFinder.recipeCount(memberKey);
+    }
+
     public NewRecipe recommendRecipe(List<String> ingredients, List<String> excludedMenus) {
         return aiRecipeRecommender.getRecipeRecommendation(ingredients, excludedMenus);
     }
