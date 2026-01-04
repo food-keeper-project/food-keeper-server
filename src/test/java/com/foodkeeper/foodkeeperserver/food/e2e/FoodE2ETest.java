@@ -49,7 +49,7 @@ public class FoodE2ETest extends E2ETest {
     }
 
     @Test
-    @DisplayName("유통기한 알람이 14일보다 크면 valication 예외가 발생한다.")
+    @DisplayName("유통기한 알람이 14일보다 크면 validation 예외가 발생한다.")
     void throwValidationExceptionIfExpiryAlarmOver14() {
         MemberEntity member = memberRepository.save(MemberEntityFixture.DEFAULT.get());
         FoodCategoryEntity category = foodCategoryRepository.save(
@@ -79,7 +79,7 @@ public class FoodE2ETest extends E2ETest {
     }
 
     @Test
-    @DisplayName("카테고리 개수가 1개 미만이면 Valication 예외가 발생한다.")
+    @DisplayName("카테고리 개수가 1개 미만이면 Validation 예외가 발생한다.")
     void throwValidationExceptionIfCategoryCountIsUnder1() {
         MemberEntity member = memberRepository.save(MemberEntityFixture.DEFAULT.get());
 
@@ -106,7 +106,7 @@ public class FoodE2ETest extends E2ETest {
     }
 
     @Test
-    @DisplayName("카테고리 개수가 3개 초과면 Valication 예외가 발생한다.")
+    @DisplayName("카테고리 개수가 3개 초과면 Validation 예외가 발생한다.")
     void throwValidationExceptionIfCategoryCountIsOver3() {
         MemberEntity member = memberRepository.save(MemberEntityFixture.DEFAULT.get());
 
