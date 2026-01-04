@@ -5,6 +5,7 @@ import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
 import com.foodkeeper.foodkeeperserver.recipe.business.RecipeService;
 import com.foodkeeper.foodkeeperserver.recipe.controller.v1.request.RecipeRegisterRequest;
+import com.foodkeeper.foodkeeperserver.recipe.controller.v1.response.RecipeCountResponse;
 import com.foodkeeper.foodkeeperserver.recipe.controller.v1.response.RecipeListResponse;
 import com.foodkeeper.foodkeeperserver.recipe.controller.v1.response.RecipeResponse;
 import com.foodkeeper.foodkeeperserver.security.auth.AuthMember;
@@ -42,8 +43,8 @@ public class RecipeController {
     @Operation(summary = "레시피 등록", description = "레시피 등록 API")
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> registerRecipe(@RequestBody @Valid RecipeRegisterRequest request,
-                                                            @AuthMember Member member) {
-        Long recipeId = recipeService.registerRecipe(request.toNewRecipe(), member.memberKey());
+                                                            @AuthMember Member authMember) {
+        Long recipeId = recipeService.registerRecipe(request.toNewRecipe(), authMember.memberKey());
         return ResponseEntity.created(URI.create("/api/v1/recipes/" + recipeId)).body(ApiResponse.success());
     }
 
@@ -51,27 +52,35 @@ public class RecipeController {
     @Operation(summary = "레시피 목록 조회", description = "레시피 목록 조회 API")
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<RecipeListResponse>>> findRecipes(@CursorDefault Cursorable<Long> cursorable,
-                                                                                     @AuthMember Member member) {
+                                                                                     @AuthMember Member authMember) {
         return ResponseEntity.ok(ApiResponse.success(PageResponse.from(
-                recipeService.findRecipes(cursorable, member.memberKey())
+                recipeService.findRecipes(cursorable, authMember.memberKey())
                         .map(RecipeListResponse::from))));
+    }
+
+    @NullMarked
+    @Operation(summary = "나의 레시피 개수 조회", description = "나의 레시피 개수 조회 API")
+    @GetMapping("/count/me")
+    public ResponseEntity<ApiResponse<RecipeCountResponse>> findRecipeCount(@AuthMember Member authMember) {
+        return ResponseEntity.ok(ApiResponse.success(
+                new RecipeCountResponse(recipeService.recipeCount(authMember.memberKey()))));
     }
 
     @NullMarked
     @Operation(summary = "레시피 단일 조회", description = "레시피 단일 조회 API")
     @GetMapping("/{recipeId}")
     public ResponseEntity<ApiResponse<RecipeResponse>> findRecipe(@PathVariable Long recipeId,
-                                                                  @AuthMember Member member) {
+                                                                  @AuthMember Member authMember) {
         return ResponseEntity.ok(ApiResponse.success(RecipeResponse.from(
-                recipeService.findRecipe(recipeId, member.memberKey()))));
+                recipeService.findRecipe(recipeId, authMember.memberKey()))));
     }
 
     @NullMarked
     @Operation(summary = "레시피 삭제", description = "레시피 삭제 API")
     @DeleteMapping("/{recipeId}")
     public ResponseEntity<ApiResponse<Void>> removeRecipe(@PathVariable Long recipeId,
-                                                          @AuthMember Member member) {
-        recipeService.removeRecipe(recipeId, member.memberKey());
+                                                          @AuthMember Member authMember) {
+        recipeService.removeRecipe(recipeId, authMember.memberKey());
         return ResponseEntity.ok(ApiResponse.success());
     }
 }

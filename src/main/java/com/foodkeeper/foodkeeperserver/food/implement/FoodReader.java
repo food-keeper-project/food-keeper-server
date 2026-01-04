@@ -61,4 +61,8 @@ public class FoodReader {
                 .map(FoodEntity::toDomain)
                 .toList();
     }
+
+    public long foodCount(String memberKey) {
+        return foodRepository.foodCount(memberKey);
+    }
 }

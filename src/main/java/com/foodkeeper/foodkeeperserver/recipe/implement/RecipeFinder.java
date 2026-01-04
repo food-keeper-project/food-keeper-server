@@ -43,4 +43,8 @@ public class RecipeFinder {
 
         return recipeEntity.toDomain(recipeSteps, recipeIngredients);
     }
+
+    public long recipeCount(String memberKey) {
+        return recipeRepository.recipeCount(memberKey);
+    }
 }

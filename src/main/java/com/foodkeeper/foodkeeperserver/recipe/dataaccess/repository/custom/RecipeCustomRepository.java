@@ -11,4 +11,6 @@ public interface RecipeCustomRepository {
     SliceObject<RecipeEntity> findRecipes(Cursorable<Long> cursorable, String memberKey);
 
     List<Long> deleteRecipes(String memberKey);
+
+    long recipeCount(String memberKey);
 }

@@ -14,4 +14,6 @@ public interface FoodRepositoryCustom {
     List<FoodEntity> findImminentFoods(String memberKey);
 
     List<Long> removeFoods(String memberKey);
+
+    long foodCount(String memberKey);
 }

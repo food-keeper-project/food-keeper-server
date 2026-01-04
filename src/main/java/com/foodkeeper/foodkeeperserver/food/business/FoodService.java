@@ -63,6 +63,10 @@ public class FoodService {
         return foodReader.findImminentFoods(today, memberKey);
     }
 
+    public long foodCount(String memberKey) {
+        return foodReader.foodCount(memberKey);
+    }
+
     @Transactional
     public void removeFood(Long foodId, String memberKey) {
         Food food = foodManager.removeFood(foodId, memberKey);

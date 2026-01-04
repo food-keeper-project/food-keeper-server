@@ -2,6 +2,7 @@ spring:
   config:
     activate:
       on-profile: prod
+    import: aws-secretsmanager:prod/kitchenlog
 
   datasource:
     first:
@@ -48,12 +49,12 @@ jwt:
 cloud:
   aws:
     s3:
-      bucket: food-keeper
+      bucket: ${BUCKET_NAME}
     credentials:
-      access-key: ${NAVER_STORAGE_ACCESS_KEY}
-      secret-key: ${NAVER_STORAGE_SECRET_KEY}
+      access-key: ${CLOUD_ACCESS_KEY}
+      secret-key: ${CLOUD_SECRET_KEY}
     region:
-      static: kr-standard
+      static: ${CLOUD_REGION}
     stack:
       auto: false
 
