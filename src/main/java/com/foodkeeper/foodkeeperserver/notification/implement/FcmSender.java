@@ -8,6 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -18,21 +21,19 @@ public class FcmSender {
     @Async("fcmExecutor")
     public void sendNotification(FcmMessage sender) {
 
-        Notification notification = Notification.builder()
-                .setTitle(sender.title())
-                .setBody(sender.body())
-                .build();
+        Map<String, String> data = new HashMap<>();
+        data.put("foodName", sender.foodName());
+        data.put("remainingDays", String.valueOf(sender.remainingDays()));
+        data.put("title", sender.title());
+        data.put("type", sender.type());
 
         AndroidConfig androidConfig = AndroidConfig.builder()
                 .setPriority(AndroidConfig.Priority.HIGH)
-                .setNotification(AndroidNotification.builder()
-                        .setSound("default")
-                        .build())
                 .build();
 
         Message message = Message.builder()
                 .setToken(sender.fcmToken())
-                .setNotification(notification)
+                .putAllData(data)
                 .setAndroidConfig(androidConfig)
                 .build();
         try {
