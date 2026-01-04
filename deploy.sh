@@ -26,7 +26,7 @@ docker compose -f $COMPOSE_FILE up -d spring_$NEW_COLOR
 # 3) 헬스체크 (Spring Actuator 기준 예시)
 echo "Health check for spring_$NEW_COLOR..."
 for i in {1..10}; do
-  if docker exec kitchen-log-api-$NEW_COLOR curl -f http://localhost:8080/actuator/health >/dev/null 2>&1; then
+  if docker exec spring_$NEW_COLOR curl -f http://localhost:8080/actuator/health >/dev/null 2>&1; then
     echo "spring_$NEW_COLOR is healthy."
     break
   fi
@@ -35,7 +35,7 @@ for i in {1..10}; do
 done
 
 # 마지막까지 실패하면 실패 처리
-if ! docker exec kitchen-log-api-$NEW_COLOR curl -f http://localhost:8080/actuator/health >/dev/null 2>&1; then
+if ! docker exec spring_$NEW_COLOR curl -f http://localhost:8080/actuator/health >/dev/null 2>&1; then
   echo "spring_$NEW_COLOR failed health check. Abort."
   exit 1
 fi

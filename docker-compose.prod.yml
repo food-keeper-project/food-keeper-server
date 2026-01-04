@@ -31,7 +31,7 @@ services:
 
   spring_blue:
     image: seoarc/kitchen-log-server:latest
-    container_name: kitchen-log-api-blue
+    container_name: spring_blue
     restart: on-failure:3
     environment:
       SPRING_PROFILES_ACTIVE: prod
@@ -55,7 +55,7 @@ services:
 
   spring_green:
     image: seoarc/kitchen-log-server:latest
-    container_name: kitchen-log-api-green
+    container_name: spring_green
     restart: on-failure:3
     environment:
       SPRING_PROFILES_ACTIVE: prod
@@ -69,7 +69,6 @@ services:
       NAVER_STORAGE_URL: ${NAVER_STORAGE_URL}
       CLOVA_MODEL_URL: ${CLOVA_MODEL_URL}
       CLOVA_API_KEY: ${CLOVA_API_KEY}
-      CLOVA_GATEWAY_KEY: ${CLOVA_GATEWAY_KEY}
       CLIENT_URL: ${CLIENT_URL}
       FIREBASE_KEY: ${FIREBASE_KEY}
     networks:
