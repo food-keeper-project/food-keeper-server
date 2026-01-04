@@ -1,9 +1,7 @@
 package com.foodkeeper.foodkeeperserver.notification.business;
 
-import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
-import com.foodkeeper.foodkeeperserver.food.implement.FoodManager;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodReader;
 import com.foodkeeper.foodkeeperserver.notification.domain.FcmMessage;
 import com.foodkeeper.foodkeeperserver.notification.domain.MemberFcmTokens;
@@ -29,10 +27,14 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 public class FoodNotificationServiceTest {
 
-    @InjectMocks FoodNotificationService foodNotificationService;
-    @Mock FoodReader foodReader;
-    @Mock FcmManager fcmManager;
-    @Mock FcmSender fcmSender;
+    @InjectMocks
+    FoodNotificationService foodNotificationService;
+    @Mock
+    FoodReader foodReader;
+    @Mock
+    FcmManager fcmManager;
+    @Mock
+    FcmSender fcmSender;
 
     @Test
     @DisplayName("식재료가 1개일 떄 단일 메시지 알림 전송")
@@ -44,7 +46,7 @@ public class FoodNotificationServiceTest {
         Food food = FoodFixture.createFood(1L);
         given(foodReader.findFoodsToNotify(today)).willReturn(List.of(food));
 
-        MemberFcmTokens memberFcmTokens =new MemberFcmTokens(Map.of(memberKey, List.of(token)));
+        MemberFcmTokens memberFcmTokens = new MemberFcmTokens(Map.of(memberKey, List.of(token)));
         given(fcmManager.findTokens(anySet())).willReturn(memberFcmTokens);
         //when
         foodNotificationService.sendExpiryAlarm();
@@ -52,8 +54,7 @@ public class FoodNotificationServiceTest {
         ArgumentCaptor<FcmMessage> captor = ArgumentCaptor.forClass(FcmMessage.class);
         verify(fcmSender).sendNotification(captor.capture());
 
-        assertThat(captor.getValue().body()).isEqualTo("우유 유통기한까지 1일 남았어요.\n" +
-                "낭비되지 않도록 미리 확인해보세요!");
+        assertThat(captor.getValue().title()).isEqualTo("우유 D-1");
         assertThat(captor.getValue().fcmToken()).isEqualTo(token);
     }
 
@@ -78,6 +79,6 @@ public class FoodNotificationServiceTest {
 
         ArgumentCaptor<FcmMessage> captor = ArgumentCaptor.forClass(FcmMessage.class);
         verify(fcmSender).sendNotification(captor.capture());
-        assertThat(captor.getValue().body()).isEqualTo("우유 외 1건의 식품이 곧 유통기한이 임박 예정이에요!");
+        assertThat(captor.getValue().title()).isEqualTo("우유 외 1건");
     }
 }

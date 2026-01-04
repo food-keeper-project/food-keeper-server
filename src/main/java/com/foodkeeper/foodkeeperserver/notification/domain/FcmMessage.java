@@ -1,4 +1,4 @@
 package com.foodkeeper.foodkeeperserver.notification.domain;
 
-public record FcmMessage(String fcmToken, String title, String body) {
+public record FcmMessage(String fcmToken, String title, String foodName, Long remainingDays, String type) {
 }
