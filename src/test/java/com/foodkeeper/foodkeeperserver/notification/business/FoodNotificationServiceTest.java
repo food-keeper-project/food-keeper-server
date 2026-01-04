@@ -52,7 +52,8 @@ public class FoodNotificationServiceTest {
         ArgumentCaptor<FcmMessage> captor = ArgumentCaptor.forClass(FcmMessage.class);
         verify(fcmSender).sendNotification(captor.capture());
 
-        assertThat(captor.getValue().body()).isEqualTo("우유의 유통기한이 1일 남았습니다");
+        assertThat(captor.getValue().body()).isEqualTo("우유 유통기한까지 1일 남았어요.\n" +
+                "낭비되지 않도록 미리 확인해보세요!");
         assertThat(captor.getValue().fcmToken()).isEqualTo(token);
     }
 
@@ -77,6 +78,6 @@ public class FoodNotificationServiceTest {
 
         ArgumentCaptor<FcmMessage> captor = ArgumentCaptor.forClass(FcmMessage.class);
         verify(fcmSender).sendNotification(captor.capture());
-        assertThat(captor.getValue().body()).isEqualTo("우유 외 1건의 유통기한이 임박했습니다");
+        assertThat(captor.getValue().body()).isEqualTo("우유 외 1건의 식품이 곧 유통기한이 임박 예정이에요!");
     }
 }
