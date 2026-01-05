@@ -1,17 +1,17 @@
 package com.foodkeeper.foodkeeperserver.auth.business;
 
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.OauthEntity;
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.EmailVerificationRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.LocalAuthRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.MemberRoleRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
 import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
 import com.foodkeeper.foodkeeperserver.auth.domain.OAuthUser;
 import com.foodkeeper.foodkeeperserver.auth.domain.SignInContext;
-import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
-import com.foodkeeper.foodkeeperserver.auth.implement.KakaoAuthenticator;
-import com.foodkeeper.foodkeeperserver.auth.implement.LocalAuthAuthenticator;
-import com.foodkeeper.foodkeeperserver.auth.implement.RefreshTokenManager;
+import com.foodkeeper.foodkeeperserver.auth.implement.*;
+import com.foodkeeper.foodkeeperserver.common.handler.TransactionHandler;
 import com.foodkeeper.foodkeeperserver.food.implement.CategoryManager;
+import com.foodkeeper.foodkeeperserver.mail.service.AppMailSender;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
 import com.foodkeeper.foodkeeperserver.member.domain.Email;
@@ -29,6 +29,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.crypto.SecretKey;
@@ -51,6 +52,9 @@ class AuthServiceTest {
     @Mock CategoryManager foodCategoryManager;
     @Mock LocalAuthRepository localAuthRepository;
     @Mock ApplicationEventPublisher eventPublisher;
+    @Mock EmailVerificationRepository emailVerificationRepository;
+    @Mock TransactionHandler transactionHandler;
+    @Mock JavaMailSender javaMailSender;
     @Mock PasswordEncoder passwordEncoder;
     SecretKey secretKey;
     AuthService authService;
@@ -64,8 +68,11 @@ class AuthServiceTest {
                 memberRoleRepository, foodCategoryManager);
         RefreshTokenManager refreshTokenManager = new RefreshTokenManager(memberRepository);
         LocalAuthAuthenticator localAuthAuthenticator = new LocalAuthAuthenticator(localAuthRepository, memberRepository);
+        AppMailSender appMailSender = new AppMailSender(javaMailSender);
+        EmailVerificator emailVerificator = new EmailVerificator(emailVerificationRepository, appMailSender,
+                transactionHandler);
         authService = new AuthService(kakaoAuthenticator, localAuthAuthenticator, memberFinder, memberRegistrar,
-                jwtGenerator, refreshTokenManager, eventPublisher, passwordEncoder);
+                jwtGenerator, refreshTokenManager, eventPublisher, passwordEncoder, emailVerificator);
     }
 
     @Test

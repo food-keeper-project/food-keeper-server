@@ -5,9 +5,10 @@ import com.foodkeeper.foodkeeperserver.auth.business.TokenRefreshService;
 import com.foodkeeper.foodkeeperserver.auth.controller.v1.request.*;
 import com.foodkeeper.foodkeeperserver.auth.controller.v1.response.AccountDuplicationCheckResponse;
 import com.foodkeeper.foodkeeperserver.auth.controller.v1.response.AuthTokenResponse;
-import com.foodkeeper.foodkeeperserver.auth.controller.v1.response.EmailDuplicationCheckResponse;
+import com.foodkeeper.foodkeeperserver.auth.domain.EmailCode;
 import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
 import com.foodkeeper.foodkeeperserver.common.aspect.annotation.SignInLog;
+import com.foodkeeper.foodkeeperserver.member.domain.Email;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.security.auth.AuthMember;
@@ -69,11 +70,17 @@ public class AuthController {
     }
 
     @NullMarked
-    @PostMapping("/check/email")
-    public ResponseEntity<ApiResponse<EmailDuplicationCheckResponse>> checkEmailDuplication(
-            @RequestBody EmailDuplicationCheckRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(new EmailDuplicationCheckResponse(
-                authService.isDuplicatedEmail(request.email()))));
+    @PostMapping("/verify/email")
+    public ResponseEntity<ApiResponse<Void>> verifyEmail(@RequestBody EmailVerifyRequest request) {
+        authService.verifyEmail(new Email(request.email()));
+        return ResponseEntity.ok(ApiResponse.success());
+    }
+
+    @NullMarked
+    @PostMapping("/verify/email-code")
+    public ResponseEntity<ApiResponse<Void>> verifyEmailCode(@RequestBody EmailCodeVerifyRequest request) {
+        authService.verifyEmailCode(EmailCode.of(request.email(), request.code()));
+        return ResponseEntity.ok(ApiResponse.success());
     }
 
     @NullMarked

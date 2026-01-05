@@ -24,6 +24,8 @@ public class FoodCategoryCustomRepositoryImpl extends QuerydslRepositorySupport 
                 .set(foodCategoryEntity.deletedAt, LocalDateTime.now())
                 .where(foodCategoryEntity.memberKey.eq(memberKey), isNotDeleted())
                 .execute();
+
+        getEntityManager().clear();
     }
 
     @Override

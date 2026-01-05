@@ -1,0 +1,18 @@
+package com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.custom;
+
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.EmailVerificationEntity;
+
+import java.util.Optional;
+
+public interface EmailVerificationCustomRepository {
+
+    void updateVerificationsStatusToExpired(String email);
+
+    Optional<EmailVerificationEntity> findByEmail(String email);
+
+    void updateStatusToExpired(String email, String code);
+
+    void incrementFailedCount(String email);
+
+    void updateStatusToVerified(String email, String code);
+}

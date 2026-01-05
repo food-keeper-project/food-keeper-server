@@ -23,6 +23,8 @@ public class RecipeIngredientCustomRepositoryImpl extends QuerydslRepositorySupp
                 .set(recipeIngredientEntity.deletedAt, LocalDateTime.now())
                 .where(recipeIngredientEntity.recipeId.in(recipeIds), isNotDeleted())
                 .execute();
+
+        getEntityManager().clear();
     }
 
     @Override

@@ -44,6 +44,8 @@ public class RecipeCustomRepositoryImpl extends QuerydslRepositorySupport implem
                 .where(eqMember(memberKey), isNotDeleted())
                 .execute();
 
+        getEntityManager().clear();
+
         return recipeIds;
     }
 
