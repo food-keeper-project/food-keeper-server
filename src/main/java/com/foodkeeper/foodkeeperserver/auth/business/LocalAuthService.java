@@ -40,7 +40,7 @@ public class LocalAuthService {
 
     public void verifyEmail(Email email) {
         if (memberFinder.existsEmail(email)) {
-            throw new AppException(ErrorType.INVALID_EMAIL);
+            throw new AppException(ErrorType.DUPLICATED_EMAIL);
         }
 
         emailVerificator.sendVerificationCode(email, LocalDateTime.now().plusMinutes(5));
