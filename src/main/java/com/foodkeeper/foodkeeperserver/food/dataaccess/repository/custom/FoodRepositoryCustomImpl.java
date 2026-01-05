@@ -10,12 +10,13 @@ import com.querydsl.jpa.impl.JPAQuery;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QFoodEntity.foodEntity;
 import static com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QSelectedFoodCategoryEntity.selectedFoodCategoryEntity;
 
-@Slf4j
 public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implements FoodRepositoryCustom {
 
     protected FoodRepositoryCustomImpl() {
@@ -97,10 +98,20 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
 
         update(foodEntity)
                 .set(foodEntity.status, EntityStatus.DELETED)
+                .set(foodEntity.deletedAt, LocalDateTime.now())
                 .where(eqMember(memberKey), isNotDeleted())
                 .execute();
 
         return foodIds;
+    }
+
+    @Override
+    public Optional<FoodEntity> findByIdAndMemberKey(Long id, String memberKey) {
+        return Optional.ofNullable(
+                selectFrom(foodEntity)
+                        .where(foodEntity.id.eq(id), eqMember(memberKey), isNotDeleted())
+                        .fetchOne()
+        );
     }
 
     @Override

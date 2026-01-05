@@ -26,7 +26,7 @@ public class FoodCategoryEntity extends BaseEntity {
     private String memberKey;
 
     @Builder
-    private FoodCategoryEntity(String name, String memberKey) {
+    public FoodCategoryEntity(String name, String memberKey) {
         this.name = name;
         this.memberKey = memberKey;
     }
