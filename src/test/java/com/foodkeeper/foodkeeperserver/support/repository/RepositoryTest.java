@@ -4,11 +4,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.mysql.MySQLContainer;
 
+@EnableJpaAuditing
 @ActiveProfiles("test")
 @DataJpaTest
 public class RepositoryTest {
@@ -17,7 +19,8 @@ public class RepositoryTest {
             .withDatabaseName("foodkeeper")
             .withUsername("test")
             .withPassword("test");
-    @Autowired protected TestEntityManager em;
+    @Autowired
+    protected TestEntityManager em;
 
     static {
         container.start();
