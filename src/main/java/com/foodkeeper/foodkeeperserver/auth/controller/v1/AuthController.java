@@ -1,6 +1,7 @@
 package com.foodkeeper.foodkeeperserver.auth.controller.v1;
 
-import com.foodkeeper.foodkeeperserver.auth.business.AuthService;
+import com.foodkeeper.foodkeeperserver.auth.business.LocalAuthService;
+import com.foodkeeper.foodkeeperserver.auth.business.OauthService;
 import com.foodkeeper.foodkeeperserver.auth.business.TokenRefreshService;
 import com.foodkeeper.foodkeeperserver.auth.controller.v1.request.*;
 import com.foodkeeper.foodkeeperserver.auth.controller.v1.response.AccountDuplicationCheckResponse;
@@ -30,7 +31,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthService authService;
+    private final OauthService oauthService;
+    private final LocalAuthService localAuthService;
     private final TokenRefreshService tokenRefreshService;
 
     @Operation(summary = "카카오 로그인", description = "카카오 로그인 API")
@@ -39,7 +41,7 @@ public class AuthController {
     @PostMapping("/sign-in/kakao")
     public ResponseEntity<ApiResponse<AuthTokenResponse>> signInWithKakao(
             @Valid @RequestBody SignInRequest signInRequest, HttpServletRequest request) {
-        Jwt jwt = authService.signInByOAuth(signInRequest.toContext(OAuthProvider.KAKAO, request.getRemoteAddr()));
+        Jwt jwt = oauthService.signInByOAuth(signInRequest.toContext(OAuthProvider.KAKAO, request.getRemoteAddr()));
 
         return ResponseEntity.ok(ApiResponse.success(new AuthTokenResponse(jwt.accessToken(), jwt.refreshToken())));
     }
@@ -57,7 +59,7 @@ public class AuthController {
     @NullMarked
     @DeleteMapping("/sign-out")
     public ResponseEntity<ApiResponse<Void>> signOut(@AuthMember Member member) {
-        authService.signOut(member.memberKey());
+        localAuthService.signOut(member.memberKey());
         return ResponseEntity.ok(ApiResponse.success());
     }
 
@@ -66,27 +68,27 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AccountDuplicationCheckResponse>> checkAccountDuplication(
             @RequestBody AccountDuplicationCheckRequest request) {
         return ResponseEntity.ok(ApiResponse.success(new AccountDuplicationCheckResponse(
-                authService.isDuplicatedAccount(request.account()))));
+                localAuthService.isDuplicatedAccount(request.account()))));
     }
 
     @NullMarked
     @PostMapping("/verify/email")
     public ResponseEntity<ApiResponse<Void>> verifyEmail(@RequestBody EmailVerifyRequest request) {
-        authService.verifyEmail(new Email(request.email()));
+        localAuthService.verifyEmail(new Email(request.email()));
         return ResponseEntity.ok(ApiResponse.success());
     }
 
     @NullMarked
     @PostMapping("/verify/email-code")
     public ResponseEntity<ApiResponse<Void>> verifyEmailCode(@RequestBody EmailCodeVerifyRequest request) {
-        authService.verifyEmailCode(EmailCode.of(request.email(), request.code()));
+        localAuthService.verifyEmailCode(EmailCode.of(request.email(), request.code()));
         return ResponseEntity.ok(ApiResponse.success());
     }
 
     @NullMarked
     @PostMapping("/sign-up")
     public ResponseEntity<ApiResponse<Void>> signUp(@RequestBody LocalSignUpRequest request) {
-        authService.signUp(request.toContext());
+        localAuthService.signUp(request.toContext());
         return ResponseEntity.ok(ApiResponse.success());
     }
 }

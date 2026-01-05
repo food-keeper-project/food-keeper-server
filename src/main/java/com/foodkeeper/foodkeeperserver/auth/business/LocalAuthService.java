@@ -1,52 +1,31 @@
 package com.foodkeeper.foodkeeperserver.auth.business;
 
-import com.foodkeeper.foodkeeperserver.auth.domain.*;
-import com.foodkeeper.foodkeeperserver.auth.implement.*;
+import com.foodkeeper.foodkeeperserver.auth.domain.EmailCode;
+import com.foodkeeper.foodkeeperserver.auth.domain.EmailVerification;
+import com.foodkeeper.foodkeeperserver.auth.domain.SignUpContext;
+import com.foodkeeper.foodkeeperserver.auth.implement.EmailVerificator;
+import com.foodkeeper.foodkeeperserver.auth.implement.LocalAuthAuthenticator;
+import com.foodkeeper.foodkeeperserver.auth.implement.RefreshTokenManager;
 import com.foodkeeper.foodkeeperserver.member.domain.Email;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService {
-    private final OAuthAuthenticator oauthAuthenticator;
+public class LocalAuthService {
     private final LocalAuthAuthenticator localAuthAuthenticator;
     private final MemberFinder memberFinder;
     private final MemberRegistrar memberRegistrar;
-    private final JwtGenerator jwtGenerator;
-    private final RefreshTokenManager refreshTokenManager;
-    private final ApplicationEventPublisher eventPublisher;
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificator emailVerificator;
-
-    @Transactional
-    public Jwt signInByOAuth(SignInContext context) {
-        OAuthUser oAuthUser = oauthAuthenticator.authenticate(context.accessToken());
-
-        String memberKey = memberFinder.findMemberKeyByOAuthAccount(oAuthUser.account())
-                .orElseGet(() -> memberRegistrar.register(oAuthUser.toNewOAuthMember(context.ipAddress())));
-
-        Jwt jwt = jwtGenerator.generateJwt(memberKey);
-        refreshTokenManager.updateRefreshToken(memberKey, jwt.refreshToken());
-
-        eventPublisher.publishEvent(
-                new SignInEvent(context.getIpAddress(), context.fcmToken(), memberKey));
-
-        return jwt;
-    }
-
-    public void signOut(String memberKey) {
-        refreshTokenManager.remove(memberKey);
-    }
+    private final RefreshTokenManager refreshTokenManager;
 
     public void signUp(SignUpContext context) {
         if (!emailVerificator.isVerified(context.email())) {
@@ -91,7 +70,7 @@ public class AuthService {
         emailVerificator.makeAsVerified(emailCode);
     }
 
-    public boolean isDuplicatedEmail(String email) {
-        return localAuthAuthenticator.isDuplicatedEmail(email);
+    public void signOut(String memberKey) {
+        refreshTokenManager.remove(memberKey);
     }
 }
