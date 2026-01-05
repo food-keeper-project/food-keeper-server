@@ -6,6 +6,7 @@ import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface FoodRepositoryCustom {
     SliceObject<FoodEntity> findFoods(Cursorable<Long> cursorable, Long categoryId, String memberKey);
@@ -15,6 +16,8 @@ public interface FoodRepositoryCustom {
     List<FoodEntity> findImminentFoods(LocalDate imminentStand, String memberKey);
 
     List<Long> removeFoods(String memberKey);
+
+    Optional<FoodEntity> findByIdAndMemberKey(Long id, String memberKey);
 
     long foodCount(String memberKey);
 }

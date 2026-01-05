@@ -3,7 +3,9 @@ package com.foodkeeper.foodkeeperserver.recipe.dataaccess.repository.custom;
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.enums.EntityStatus;
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.entity.RecipeIngredientEntity;
 import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
+import com.querydsl.core.types.dsl.BooleanExpression;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.foodkeeper.foodkeeperserver.recipe.dataaccess.entity.QRecipeIngredientEntity.recipeIngredientEntity;
@@ -18,7 +20,19 @@ public class RecipeIngredientCustomRepositoryImpl extends QuerydslRepositorySupp
     public void deleteAllByRecipeIds(List<Long> recipeIds) {
         update(recipeIngredientEntity)
                 .set(recipeIngredientEntity.status, EntityStatus.DELETED)
-                .where(recipeIngredientEntity.recipeId.in(recipeIds))
+                .set(recipeIngredientEntity.deletedAt, LocalDateTime.now())
+                .where(recipeIngredientEntity.recipeId.in(recipeIds), isNotDeleted())
                 .execute();
+    }
+
+    @Override
+    public List<RecipeIngredientEntity> findByRecipeId(Long recipeId) {
+        return selectFrom(recipeIngredientEntity)
+                .where(recipeIngredientEntity.recipeId.eq(recipeId), isNotDeleted())
+                .fetch();
+    }
+
+    private static BooleanExpression isNotDeleted() {
+        return recipeIngredientEntity.status.ne(EntityStatus.DELETED);
     }
 }
