@@ -72,6 +72,13 @@ dependencies {
     implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'com.github.loki4j:loki-logback-appender:2.0.0'
 
+    // cache
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.2.3'
+
+    // bucket4j
+    implementation 'com.bucket4j:bucket4j_jdk17-core:8.16.0'
+    implementation 'com.bucket4j:bucket4j_jdk17-caffeine:8.16.0'
+
     // test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'

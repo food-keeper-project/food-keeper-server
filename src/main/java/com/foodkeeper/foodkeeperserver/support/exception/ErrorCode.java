@@ -5,6 +5,7 @@ public enum ErrorCode {
     E401,
     E403,
     E404,
+    E429,
     E500,
 
     // Food

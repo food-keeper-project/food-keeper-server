@@ -86,3 +86,9 @@ client:
 
 firebase:
   key: ${FIREBASE_KEY}
+
+rate-limiter:
+  capacity: 5
+  refill-token-amount: 5
+  refill-duration-seconds: 10
+  cache-max-size: 2000
