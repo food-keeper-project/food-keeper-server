@@ -13,7 +13,7 @@ import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.member.fixture.MemberEntityFixture;
 import com.foodkeeper.foodkeeperserver.notification.dataaccess.entity.FcmTokenEntity;
 import com.foodkeeper.foodkeeperserver.notification.dataaccess.repository.FcmRepository;
-import com.foodkeeper.foodkeeperserver.support.e2e.E2ETest;
+import com.foodkeeper.foodkeeperserver.support.integration.E2ETest;
 import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
