@@ -86,6 +86,6 @@ firebase:
 
 rate-limiter:
   capacity: ${RATE_LIMITER_CAPACITY}
-  refill-token-amount: ${RATE_LIMITER_REFILE_TOKEN_AMOUNT}
+  refill-token-amount: ${RATE_LIMITER_REFILL_TOKEN_AMOUNT}
   refill-duration-seconds: ${RATE_LIMITER_REFILL_DURATION_SECONDS}
   cache-max-size: ${RATE_LIMITER_CACHE_MAX_SIZE}

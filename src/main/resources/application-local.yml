@@ -90,5 +90,5 @@ firebase:
 rate-limiter:
   capacity: 5
   refill-token-amount: 5
-  refill-duration-seconds: 10
+  refill-duration-seconds: 600
   cache-max-size: 2000
