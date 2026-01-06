@@ -5,7 +5,6 @@ import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.caffeine.Bucket4jCaffeine;
 import io.github.bucket4j.distributed.proxy.ProxyManager;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

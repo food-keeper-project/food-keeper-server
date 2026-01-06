@@ -31,7 +31,6 @@ class ApiThrottlingFilterTest {
 
     @Mock ProxyManager<String> proxyManager;
     @Mock BucketConfiguration bucketConfiguration;
-    @Mock ObjectMapper objectMapper;
     ApiThrottlingFilter apiThrottlingFilter;
 
     @BeforeEach
