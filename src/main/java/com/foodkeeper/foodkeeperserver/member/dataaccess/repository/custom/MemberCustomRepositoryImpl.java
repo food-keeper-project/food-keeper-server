@@ -40,6 +40,8 @@ public class MemberCustomRepositoryImpl extends QuerydslRepositorySupport implem
                 .set(memberEntity.refreshToken, refreshToken)
                 .where(eqMember(memberKey), isNotDeleted())
                 .execute();
+
+        getEntityManager().clear();
     }
 
     @Override
@@ -48,6 +50,8 @@ public class MemberCustomRepositoryImpl extends QuerydslRepositorySupport implem
                 .setNull(memberEntity.refreshToken)
                 .where(eqMember(memberKey), isNotDeleted())
                 .execute();
+
+        getEntityManager().clear();
     }
 
     @Override

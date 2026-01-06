@@ -101,6 +101,8 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
                 .where(eqMember(memberKey), isNotDeleted())
                 .execute();
 
+        getEntityManager().clear();
+
         return foodIds;
     }
 

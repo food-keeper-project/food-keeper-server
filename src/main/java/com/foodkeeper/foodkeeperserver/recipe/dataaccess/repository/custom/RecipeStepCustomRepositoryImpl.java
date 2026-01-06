@@ -23,6 +23,8 @@ public class RecipeStepCustomRepositoryImpl extends QuerydslRepositorySupport im
                 .set(recipeStepEntity.deletedAt, LocalDateTime.now())
                 .where(recipeStepEntity.recipeId.in(recipeIds), isNotDeleted())
                 .execute();
+
+        getEntityManager().clear();
     }
 
     @Override

@@ -23,6 +23,8 @@ public class FcmTokenCustomRepositoryImpl extends QuerydslRepositorySupport impl
                 .set(fcmTokenEntity.status, EntityStatus.DELETED)
                 .where(fcmTokenEntity.memberKey.eq(memberKey), isNotDeleted())
                 .execute();
+
+        getEntityManager().clear();
     }
 
     @Override
@@ -47,6 +49,8 @@ public class FcmTokenCustomRepositoryImpl extends QuerydslRepositorySupport impl
                 .set(fcmTokenEntity.status, EntityStatus.DELETED)
                 .where(fcmTokenEntity.token.eq(token), isNotDeleted())
                 .execute();
+
+        getEntityManager().clear();
     }
 
     private static BooleanExpression isNotDeleted() {

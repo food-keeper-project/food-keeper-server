@@ -22,6 +22,18 @@ spring:
     console:
       enabled: true
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 management:
   endpoints:
     web:
@@ -74,3 +86,9 @@ client:
 
 firebase:
   key: ${FIREBASE_KEY}
+
+rate-limiter:
+  capacity: 5
+  refill-token-amount: 5
+  refill-duration-seconds: 600
+  cache-max-size: 2000
