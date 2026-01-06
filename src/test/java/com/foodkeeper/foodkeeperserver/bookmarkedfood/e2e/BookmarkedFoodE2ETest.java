@@ -6,7 +6,7 @@ import com.foodkeeper.foodkeeperserver.bookmarkedfood.fixture.BookmarkedFoodEnti
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
 import com.foodkeeper.foodkeeperserver.member.fixture.MemberEntityFixture;
-import com.foodkeeper.foodkeeperserver.support.e2e.E2ETest;
+import com.foodkeeper.foodkeeperserver.support.integration.E2ETest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -14,7 +14,7 @@ import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
 import com.foodkeeper.foodkeeperserver.member.fixture.MemberEntityFixture;
-import com.foodkeeper.foodkeeperserver.support.e2e.E2ETest;
+import com.foodkeeper.foodkeeperserver.support.integration.E2ETest;
 import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
 import com.foodkeeper.foodkeeperserver.support.response.PageResponse;
 import org.junit.jupiter.api.DisplayName;

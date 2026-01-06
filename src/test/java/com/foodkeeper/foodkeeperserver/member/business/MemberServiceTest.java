@@ -60,6 +60,4 @@ class MemberServiceTest {
         // then
         assertThat(foundMember.memberKey()).isEqualTo("memberKey");
     }
-
-
 }
