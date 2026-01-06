@@ -35,6 +35,7 @@ public class EmailVerificationEntity extends BaseEntity {
     private LocalDateTime expiredAt;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private EmailVerificationStatus verificationStatus;
 
     public EmailVerificationEntity(String email, String code, LocalDateTime expiredAt) {
