@@ -46,14 +46,13 @@ public class ApiThrottlingFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-        String clientIp = NetworkUtils.getClientIp(httpRequest);
-
         for (LimitApi limitApi : LIMIT_APIS) {
             if (antPathMatcher.match(limitApi.url(), httpRequest.getRequestURI())
                     && (limitApi.noMethod() || limitApi.method().equals(httpRequest.getMethod()))) {
+                String clientIp = NetworkUtils.getClientIp(httpRequest);
                 Bucket bucket = proxyManager.getProxy(clientIp, () -> bucketConfiguration);
-                log.info("[REQUEST]: {}", httpRequest.getRequestURI());
-                checkApiToken(bucket, chain, request, response);
+
+                checkApiToken(bucket, clientIp, chain, request, response);
                 return;
             }
         }
@@ -63,19 +62,25 @@ public class ApiThrottlingFilter implements Filter {
 
     private void checkApiToken(
             Bucket bucket,
-            FilterChain filterChain,
+            String clientIp,
+            FilterChain chain,
             ServletRequest request,
             ServletResponse response)
             throws IOException, ServletException {
         ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
 
         if (probe.isConsumed()) {
-            filterChain.doFilter(request, response);
+            chain.doFilter(request, response);
             return;
         }
 
         long waitForRefill = probe.getNanosToWaitForRefill() / ONE_SECOND_TO_NANOS;
 
+        log.warn("[REQUEST BLOCKED - 429]: IP={} | Path={}", clientIp, ((HttpServletRequest) request).getRequestURI());
+        responseTooMuchRequests(response, waitForRefill);
+    }
+
+    private void responseTooMuchRequests(ServletResponse response, long waitForRefill) throws IOException {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         httpResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
         httpResponse.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
