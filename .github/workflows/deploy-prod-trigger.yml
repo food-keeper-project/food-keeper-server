@@ -75,3 +75,4 @@ jobs:
           script: |
             chmod +x deploy.sh
             ./deploy.sh
+            sudo ./deploy.sh
