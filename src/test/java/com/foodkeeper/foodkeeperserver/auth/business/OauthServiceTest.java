@@ -9,8 +9,7 @@ import com.foodkeeper.foodkeeperserver.auth.domain.OAuthUser;
 import com.foodkeeper.foodkeeperserver.auth.domain.SignInContext;
 import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
 import com.foodkeeper.foodkeeperserver.auth.implement.KakaoAuthenticator;
-import com.foodkeeper.foodkeeperserver.auth.implement.LocalAuthAuthenticator;
-import com.foodkeeper.foodkeeperserver.auth.implement.RefreshTokenManager;
+import com.foodkeeper.foodkeeperserver.auth.implement.OauthFinder;
 import com.foodkeeper.foodkeeperserver.food.implement.CategoryManager;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
@@ -19,7 +18,6 @@ import com.foodkeeper.foodkeeperserver.member.domain.IpAddress;
 import com.foodkeeper.foodkeeperserver.member.domain.Nickname;
 import com.foodkeeper.foodkeeperserver.member.domain.ProfileImageUrl;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
-import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +27,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -42,7 +39,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-class AuthServiceTest {
+class OauthServiceTest {
 
     @Mock MemberRepository memberRepository;
     @Mock OauthRepository oauthRepository;
@@ -51,21 +48,17 @@ class AuthServiceTest {
     @Mock CategoryManager foodCategoryManager;
     @Mock LocalAuthRepository localAuthRepository;
     @Mock ApplicationEventPublisher eventPublisher;
-    @Mock PasswordEncoder passwordEncoder;
     SecretKey secretKey;
-    AuthService authService;
+    OauthService oauthService;
 
     @BeforeEach
     void setUp() {
         secretKey = Keys.hmacShaKeyFor("this_is_a_test_secret_key_abcdefghijtlmnopqr".getBytes(StandardCharsets.UTF_8));
         JwtGenerator jwtGenerator = new JwtGenerator(secretKey);
-        MemberFinder memberFinder = new MemberFinder(memberRepository, oauthRepository);
+        OauthFinder oauthFinder = new OauthFinder(oauthRepository);
         MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, oauthRepository, localAuthRepository,
                 memberRoleRepository, foodCategoryManager);
-        RefreshTokenManager refreshTokenManager = new RefreshTokenManager(memberRepository);
-        LocalAuthAuthenticator localAuthAuthenticator = new LocalAuthAuthenticator(localAuthRepository, memberRepository);
-        authService = new AuthService(kakaoAuthenticator, localAuthAuthenticator, memberFinder, memberRegistrar,
-                jwtGenerator, refreshTokenManager, eventPublisher, passwordEncoder);
+        oauthService = new OauthService(kakaoAuthenticator, oauthFinder, memberRegistrar, jwtGenerator, eventPublisher);
     }
 
     @Test
@@ -92,7 +85,7 @@ class AuthServiceTest {
         given(oauthRepository.findByAccount(eq(account))).willReturn(Optional.of(oauthEntity));
 
         // when
-        Jwt jwt = authService.signInByOAuth(register);
+        Jwt jwt = oauthService.signInByOAuth(register);
 
         // then
         assertThat(jwt.accessToken()).isNotBlank();
@@ -128,35 +121,11 @@ class AuthServiceTest {
         given(oauthRepository.save(any(OauthEntity.class))).willReturn(oauthEntity);
 
         // when
-        Jwt jwt = authService.signInByOAuth(register);
+        Jwt jwt = oauthService.signInByOAuth(register);
 
         // then
         assertThat(jwt.accessToken()).isNotBlank();
         assertThat(jwt.refreshToken()).isNotBlank();
         assertThat(jwt.accessToken()).isNotEqualTo(jwt.refreshToken());
-    }
-
-    @Test
-    @DisplayName("계정이 중복된다면 true가 반환된다.")
-    void returnTrueIfAccountIsDuplicated() {
-        // given
-        String account = "account";
-        given(localAuthRepository.existsByAccount(eq(account))).willReturn(true);
-
-        boolean isDuplicated = authService.isDuplicatedAccount(account);
-
-        assertThat(isDuplicated).isTrue();
-    }
-
-    @Test
-    @DisplayName("이메일이 중복된다면 true가 반환된다.")
-    void returnTrueIfEmailIsDuplicated() {
-        // given
-        String email = "test@mail.com";
-        given(memberRepository.existsByEmail(eq(email))).willReturn(true);
-
-        boolean isDuplicated = authService.isDuplicatedEmail(email);
-
-        assertThat(isDuplicated).isTrue();
     }
 }

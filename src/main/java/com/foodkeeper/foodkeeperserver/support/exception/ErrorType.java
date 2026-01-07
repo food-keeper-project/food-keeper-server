@@ -11,6 +11,7 @@ public enum ErrorType {
     FAILED_AUTH(HttpStatus.BAD_REQUEST, ErrorCode.E400, "인증에 실패했습니다.", LogLevel.WARN),
     INVALID_ACCESS_PATH(HttpStatus.BAD_REQUEST, ErrorCode.E400, "잘못된 접근 경로입니다.", LogLevel.WARN),
     NOT_FOUND_DATA(HttpStatus.BAD_REQUEST, ErrorCode.E400, "해당 데이터를 찾을 수 없습니다.", LogLevel.WARN),
+    TOO_MANY_REQUESTS(HttpStatus.TOO_MANY_REQUESTS, ErrorCode.E429, "너무 많은 요청을 보냈습니다.", LogLevel.WARN),
 
     // Food
     FOOD_DATA_NOT_FOUND(HttpStatus.BAD_REQUEST, ErrorCode.E1000, "해당 식재료가 존재하지 않습니다.", LogLevel.WARN),
@@ -32,6 +33,7 @@ public enum ErrorType {
     INVALID_ACCOUNT_LENGTH(HttpStatus.BAD_REQUEST, ErrorCode.E3010, "계정 길이가 너무 깁니다.", LogLevel.WARN),
     PASSWORD_IS_NULL(HttpStatus.BAD_REQUEST, ErrorCode.E3011, "비밀번호는 null일 수 없습니다.", LogLevel.WARN),
     INVALID_PASSWORD_LENGTH(HttpStatus.BAD_REQUEST, ErrorCode.E3012, "비밀번호 길이가 너무 깁니다.", LogLevel.WARN),
+    NOT_VERIFIED_EMAIL(HttpStatus.BAD_REQUEST, ErrorCode.E3013, "이메일이 인증되지 않았습니다.", LogLevel.WARN),
 
     // S3
     S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E5000, "이미지 업로드에 실패했습니다.", LogLevel.ERROR),
@@ -54,7 +56,16 @@ public enum ErrorType {
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, ErrorCode.E9002, "이메일이 유효하지 않습니다.", LogLevel.WARN),
     INVALID_IMAGE_URL(HttpStatus.BAD_REQUEST, ErrorCode.E9003, "이미지 URL이 유효하지 않습니다.", LogLevel.WARN),
 
+    // Mail
+    MAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E10000, "메일 전송에 실패했습니다.", LogLevel.ERROR),
+
+    // Email Verification
+    DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, ErrorCode.E10001, "이미 존재하는 이메일입니다.", LogLevel.WARN),
+    TOO_MUCH_FAILED(HttpStatus.BAD_REQUEST, ErrorCode.E10002, "너무 많이 실패했습니다 다시 시도해주세요.", LogLevel.WARN),
+    INVALID_EMAIL_CODE(HttpStatus.BAD_REQUEST, ErrorCode.E10003, "유효하지 않은 인증 코드입니다.", LogLevel.WARN),
+    EXPIRED_EMAIL_CODE(HttpStatus.BAD_REQUEST, ErrorCode.E10004, "만료된 인증 코드입니다.", LogLevel.WARN),
     ;
+
     private final HttpStatus status;
     private final ErrorCode errorCode;
     private final String message;

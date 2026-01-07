@@ -47,6 +47,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-admin:9.7.0'
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-secrets-manager:4.0.0-M1'
 
+    // mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // lombok
     compileOnly 'org.projectlombok:lombok'
@@ -69,6 +71,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'com.github.loki4j:loki-logback-appender:2.0.0'
+
+    // cache
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.2.3'
+
+    // bucket4j
+    implementation 'com.bucket4j:bucket4j_jdk17-core:8.16.0'
+    implementation 'com.bucket4j:bucket4j_jdk17-caffeine:8.16.0'
 
     // test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

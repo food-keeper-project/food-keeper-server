@@ -5,6 +5,7 @@ import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.entity.RecipeEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface RecipeCustomRepository {
 
@@ -13,4 +14,6 @@ public interface RecipeCustomRepository {
     List<Long> deleteRecipes(String memberKey);
 
     long recipeCount(String memberKey);
+
+    Optional<RecipeEntity> findByIdAndMemberKey(Long id, String memberKey);
 }

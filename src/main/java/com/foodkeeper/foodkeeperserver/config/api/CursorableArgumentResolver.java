@@ -1,4 +1,4 @@
-package com.foodkeeper.foodkeeperserver.config.controller;
+package com.foodkeeper.foodkeeperserver.config.api;
 
 import com.foodkeeper.foodkeeperserver.common.controller.CursorDefault;
 import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;

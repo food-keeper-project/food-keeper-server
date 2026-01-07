@@ -106,12 +106,6 @@ public class FoodEntity extends BaseEntity {
         this.memo = food.memo();
     }
 
-    public boolean isImminent(LocalDate today) {
-        if (expiryDate.isBefore(today)) return false;
-        LocalDate alarmLimitDate = today.plusDays(this.expiryAlarmDays);
-        return !expiryDate.isAfter(alarmLimitDate);
-    }
-
     public boolean isNotificationDay(LocalDate today) {
         LocalDate alarmDay = this.expiryDate.minusDays(this.expiryAlarmDays);
         return alarmDay.isEqual(today);

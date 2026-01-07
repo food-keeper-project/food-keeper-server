@@ -8,7 +8,10 @@ import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupp
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QFoodEntity.foodEntity;
 import static com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QSelectedFoodCategoryEntity.selectedFoodCategoryEntity;
@@ -19,30 +22,48 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
         super(FoodEntity.class);
     }
 
-    // 카테고리 분류 조회
     @Override
-    public SliceObject<FoodEntity> findFoodCursorList(Cursorable<Long> cursorable,
-                                                      Long categoryId,
-                                                      String memberKey) {
+    public SliceObject<FoodEntity> findFoods(Cursorable<Long> cursorable,
+                                             Long categoryId,
+                                             String memberKey) {
+
         JPAQuery<FoodEntity> query = selectFrom(foodEntity);
 
         applyCategoryFilter(query, categoryId);
 
         List<FoodEntity> content = query
-                .where(
-                        eqMember(memberKey),
-                        isNotDeleted(),
-                        ltCursor(cursorable.cursor())
-                )
-                .orderBy(foodEntity.id.desc(), foodEntity.createdAt.desc())
+                .where(eqMember(memberKey), isNotDeleted())
+                .where(gtCursor(cursorable.cursor()))
+                .orderBy(foodEntity.expiryDate.asc(), foodEntity.id.asc())
                 .limit(cursorable.limit() + 1)
                 .fetch();
 
         return new SliceObject<>(content, cursorable, hasNext(cursorable, content));
     }
 
-    private static BooleanExpression ltCursor(Long cursor) {
-        return cursor == null ? null : foodEntity.id.lt(cursor);
+    private BooleanExpression gtCursor(Long cursor) {
+        if (cursor == null) {
+            return null;
+        }
+
+        LocalDate cursorExpiryDate = getCursorExpiryDate(cursor);
+        return foodEntity.expiryDate.gt(cursorExpiryDate)
+                .or(foodEntity.expiryDate.eq(cursorExpiryDate).and(foodEntity.id.gt(cursor)));
+    }
+
+    private LocalDate getCursorExpiryDate(Long cursor) {
+        return select(foodEntity.expiryDate)
+                .from(foodEntity)
+                .where(foodEntity.id.eq(cursor))
+                .fetchOne();
+    }
+
+    private void applyCategoryFilter(JPAQuery<FoodEntity> query, Long categoryId) {
+        if (categoryId != null) {
+            query.join(selectedFoodCategoryEntity)
+                    .on(foodEntity.id.eq(selectedFoodCategoryEntity.foodId))
+                    .where(selectedFoodCategoryEntity.foodCategoryId.eq(categoryId));
+        }
     }
 
     @Override
@@ -59,19 +80,12 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
 
 
     @Override
-    public List<FoodEntity> findImminentFoods(String memberKey) {
+    public List<FoodEntity> findImminentFoods(LocalDate imminentStand, String memberKey) {
         return selectFrom(foodEntity)
                 .where(eqMember(memberKey), isNotDeleted())
+                .where(foodEntity.expiryDate.loe(imminentStand), foodEntity.expiryDate.goe(LocalDate.now()))
                 .orderBy(foodEntity.expiryDate.asc())
                 .fetch();
-    }
-
-    private void applyCategoryFilter(JPAQuery<FoodEntity> query, Long categoryId) {
-        if (categoryId != null) {
-            query.join(selectedFoodCategoryEntity)
-                    .on(foodEntity.id.eq(selectedFoodCategoryEntity.foodId))
-                    .where(selectedFoodCategoryEntity.foodCategoryId.eq(categoryId));
-        }
     }
 
     @Override
@@ -83,10 +97,22 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
 
         update(foodEntity)
                 .set(foodEntity.status, EntityStatus.DELETED)
+                .set(foodEntity.deletedAt, LocalDateTime.now())
                 .where(eqMember(memberKey), isNotDeleted())
                 .execute();
 
+        getEntityManager().clear();
+
         return foodIds;
+    }
+
+    @Override
+    public Optional<FoodEntity> findByIdAndMemberKey(Long id, String memberKey) {
+        return Optional.ofNullable(
+                selectFrom(foodEntity)
+                        .where(foodEntity.id.eq(id), eqMember(memberKey), isNotDeleted())
+                        .fetchOne()
+        );
     }
 
     @Override

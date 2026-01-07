@@ -37,7 +37,7 @@ public class FcmSenderTest {
     @DisplayName("알림 전송 요청 시 FirebaseMessaging 호출 성공")
     void sendNotification_SUCCESS() throws Exception {
         //given
-        FcmMessage fcmMessage = new FcmMessage("fcmToken", "title", "body");
+        FcmMessage fcmMessage = new FcmMessage("fcmToken", "title", "foodName", 1L, "type");
 
         try (MockedStatic<FirebaseMessaging> mockFirebase = mockStatic(FirebaseMessaging.class)) {
             FirebaseMessaging messaging = mock(FirebaseMessaging.class);
@@ -55,7 +55,7 @@ public class FcmSenderTest {
     void sendNotification_FAIL_DELETE() throws Exception {
         //given
         String expiredToken = "token";
-        FcmMessage fcmMessage = new FcmMessage(expiredToken, "title","body");
+        FcmMessage fcmMessage = new FcmMessage("token", "title", "foodName", 1L, "type");
 
         try (MockedStatic<FirebaseMessaging> mockFirebase = mockStatic(FirebaseMessaging.class)) {
             FirebaseMessaging messaging = mock(FirebaseMessaging.class);

@@ -3,23 +3,20 @@ package com.foodkeeper.foodkeeperserver.support.repository;
 import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.jpa.impl.JPAUpdateClause;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.support.JpaEntityInformationSupport;
 import org.springframework.data.jpa.repository.support.Querydsl;
 import org.springframework.data.querydsl.SimpleEntityPathResolver;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 @Getter(AccessLevel.PROTECTED)
 public abstract class QuerydslRepositorySupport {
 
@@ -32,7 +29,7 @@ public abstract class QuerydslRepositorySupport {
         this.entityClass = entityClass;
     }
 
-    @Autowired
+    @PersistenceContext
     public void setEntityManager(EntityManager entityManager) {
         this.entityManager = entityManager;
 
@@ -53,6 +50,10 @@ public abstract class QuerydslRepositorySupport {
 
     protected <T> JPAQuery<T> selectFrom(EntityPath<T> from) {
         return this.jpaQueryFactory.selectFrom(from);
+    }
+
+    protected JPAQuery<Integer> selectOne() {
+        return this.jpaQueryFactory.selectOne();
     }
 
     protected <T> JPAUpdateClause update(EntityPath<T> from) {

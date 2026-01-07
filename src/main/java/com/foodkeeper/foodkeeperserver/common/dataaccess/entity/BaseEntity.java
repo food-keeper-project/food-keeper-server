@@ -23,6 +23,7 @@ public class BaseEntity {
     @Column
     private LocalDateTime deletedAt;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private EntityStatus status;
 

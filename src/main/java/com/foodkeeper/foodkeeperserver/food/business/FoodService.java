@@ -46,7 +46,7 @@ public class FoodService {
     }
 
     public SliceObject<RegisteredFood> findFoodList(Cursorable<Long> cursorable, Long categoryId, String memberKey) {
-        return foodReader.findFoodList(cursorable, categoryId, memberKey);
+        return foodReader.findFoods(cursorable, categoryId, memberKey);
     }
 
     public RegisteredFood findFood(Long foodId, String memberKey) {
@@ -59,8 +59,8 @@ public class FoodService {
     }
 
     public List<RegisteredFood> findImminentFoods(String memberKey) {
-        LocalDate today = LocalDate.now();
-        return foodReader.findImminentFoods(today, memberKey);
+        LocalDate imminentStand = LocalDate.now().plusDays(7);
+        return foodReader.findImminentFoods(imminentStand, memberKey);
     }
 
     public long foodCount(String memberKey) {

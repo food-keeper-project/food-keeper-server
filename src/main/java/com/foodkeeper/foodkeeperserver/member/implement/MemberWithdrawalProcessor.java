@@ -27,10 +27,11 @@ public class MemberWithdrawalProcessor {
 
     @Transactional
     public void withdraw(String memberKey) {
-        memberRepository.findByMemberKey(memberKey).orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_DATA))
-                .delete();
+        memberRepository.findByMemberKey(memberKey)
+                .orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_DATA)).delete();
         memberRoleRepository.findByMemberKey(memberKey).forEach(BaseEntity::delete);
         oauthRepository.findAllByMemberKey(memberKey).forEach(BaseEntity::delete);
+        memberRepository.flush();
 
         foodManager.removeFoods(memberKey);
         recipeManager.removeRecipes(memberKey);

@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 set -e
 
-COMPOSE_FILE=/root/docker-compose.prod.yml
-CURRENT_COLOR_FILE=/root/current_color
+if [ -f .env ]; then
+    export $(grep -v '^#' .env | xargs)
+fi
+
+COMPOSE_FILE=$ROOT_DIR/docker-compose.prod.yml
+CURRENT_COLOR_FILE=$ROOT_DIR/current_color
 
 # 1) 현재 색 읽기 (없으면 blue로 가정)
 if [ -f "$CURRENT_COLOR_FILE" ]; then
@@ -41,8 +45,6 @@ if ! docker exec spring_$NEW_COLOR curl -f http://localhost:8080/actuator/health
 fi
 
 # 4) nginx upstream을 새 색으로 스위칭
-NGINX_CONF=/root/nginx/conf.d/kitchen-log.conf
-
 if [ "$NEW_COLOR" = "blue" ]; then
   sed -i 's/server spring_green:8080;/# server spring_green:8080;/' $NGINX_CONF
   sed -i 's/# server spring_blue:8080;/server spring_blue:8080;/' $NGINX_CONF

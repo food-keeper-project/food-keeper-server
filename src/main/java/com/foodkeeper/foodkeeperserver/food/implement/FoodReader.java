@@ -24,8 +24,8 @@ public class FoodReader {
     private final FoodRepository foodRepository;
     private final FoodCategoryReader foodCategoryReader;
 
-    public SliceObject<RegisteredFood> findFoodList(Cursorable<Long> cursorable, Long categoryId, String memberKey) {
-        SliceObject<Food> foods = foodRepository.findFoodCursorList(cursorable, categoryId, memberKey).map(FoodEntity::toDomain);
+    public SliceObject<RegisteredFood> findFoods(Cursorable<Long> cursorable, Long categoryId, String memberKey) {
+        SliceObject<Food> foods = foodRepository.findFoods(cursorable, categoryId, memberKey).map(FoodEntity::toDomain);
         FoodCategories foodCategories = foodCategoryReader.findNamesByFoodIds(foods.content().stream().map(Food::id).toList());
         return foods.map(food -> food.toRegisteredFood(foodCategories.getCategories(food.id())));
     }
@@ -43,9 +43,8 @@ public class FoodReader {
         return foods.stream().map(food -> food.toRegisteredFood(foodCategories.getCategories(food.id()))).toList();
     }
 
-    public List<RegisteredFood> findImminentFoods(LocalDate toady, String memberKey) {
-        List<Food> foods = foodRepository.findImminentFoods(memberKey).stream()
-                .filter(food -> food.isImminent(toady))
+    public List<RegisteredFood> findImminentFoods(LocalDate imminentStand, String memberKey) {
+        List<Food> foods = foodRepository.findImminentFoods(imminentStand, memberKey).stream()
                 .map(FoodEntity::toDomain).toList();
         FoodCategories foodCategories = foodCategoryReader.findNamesByFoodIds(foods.stream().map(Food::id).toList());
         return foods.stream().map(food -> food.toRegisteredFood(foodCategories.getCategories(food.id()))).toList();

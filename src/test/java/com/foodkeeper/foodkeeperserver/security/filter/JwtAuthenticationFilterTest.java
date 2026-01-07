@@ -6,12 +6,12 @@ import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepositor
 import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
 import com.foodkeeper.foodkeeperserver.auth.domain.enums.MemberRole;
 import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
+import com.foodkeeper.foodkeeperserver.auth.implement.JwtValidator;
 import com.foodkeeper.foodkeeperserver.auth.implement.MemberRoleFinder;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
 import com.foodkeeper.foodkeeperserver.member.fixture.MemberEntityFixture;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
-import com.foodkeeper.foodkeeperserver.auth.implement.JwtValidator;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import io.jsonwebtoken.security.Keys;
@@ -55,7 +55,7 @@ class JwtAuthenticationFilterTest {
     @BeforeEach
     void setUp() {
         SecurityContextHolder.clearContext();
-        MemberFinder memberFinder = new MemberFinder(memberRepository, oauthRepository);
+        MemberFinder memberFinder = new MemberFinder(memberRepository);
         MemberRoleFinder memberRoleFinder = new MemberRoleFinder(memberRoleRepository);
         jwt = new JwtGenerator(secretKey).generateJwt(memberKey);
         JwtValidator jwtValidator = new JwtValidator(secretKey);

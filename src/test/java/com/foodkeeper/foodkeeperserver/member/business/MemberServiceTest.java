@@ -27,25 +27,18 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
 
-    @Mock
-    MemberRepository memberRepository;
-    @Mock
-    MemberRoleRepository memberRoleRepository;
-    @Mock
-    OauthRepository oauthRepository;
-    @Mock
-    FoodManager foodManager;
-    @Mock
-    CategoryManager categoryManager;
-    @Mock
-    RecipeManager recipeManager;
-    @Mock
-    FcmManager fcmManager;
+    @Mock MemberRepository memberRepository;
+    @Mock MemberRoleRepository memberRoleRepository;
+    @Mock OauthRepository oauthRepository;
+    @Mock FoodManager foodManager;
+    @Mock CategoryManager categoryManager;
+    @Mock RecipeManager recipeManager;
+    @Mock FcmManager fcmManager;
     MemberService memberService;
 
     @BeforeEach
     void setUp() {
-        MemberFinder memberFinder = new MemberFinder(memberRepository, oauthRepository);
+        MemberFinder memberFinder = new MemberFinder(memberRepository);
         MemberWithdrawalProcessor memberWithdrawalProcessor = new MemberWithdrawalProcessor(memberRepository,
                 memberRoleRepository, oauthRepository, foodManager, categoryManager, recipeManager, fcmManager);
         memberService = new MemberService(memberFinder, memberWithdrawalProcessor);
@@ -67,6 +60,4 @@ class MemberServiceTest {
         // then
         assertThat(foundMember.memberKey()).isEqualTo("memberKey");
     }
-
-
 }

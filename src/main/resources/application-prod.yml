@@ -18,6 +18,18 @@ spring:
         hbm2ddl:
           auto: validate
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 springdoc:
   swagger-ui:
     url: /v3/api-docs
@@ -71,3 +83,9 @@ client:
 
 firebase:
   key: ${FIREBASE_KEY}
+
+rate-limiter:
+  capacity: ${RATE_LIMITER_CAPACITY}
+  refill-token-amount: ${RATE_LIMITER_REFILL_TOKEN_AMOUNT}
+  refill-duration-seconds: ${RATE_LIMITER_REFILL_DURATION_SECONDS}
+  cache-max-size: ${RATE_LIMITER_CACHE_MAX_SIZE}

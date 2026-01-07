@@ -4,7 +4,7 @@ import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
 import com.foodkeeper.foodkeeperserver.member.fixture.MemberEntityFixture;
 import com.foodkeeper.foodkeeperserver.recipe.controller.v1.response.RecipeResponse;
-import com.foodkeeper.foodkeeperserver.support.e2e.E2ETest;
+import com.foodkeeper.foodkeeperserver.support.integration.E2ETest;
 import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

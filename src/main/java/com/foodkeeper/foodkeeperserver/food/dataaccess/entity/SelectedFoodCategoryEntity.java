@@ -25,7 +25,7 @@ public class SelectedFoodCategoryEntity {
     private Long foodCategoryId;
 
     @Builder
-    private SelectedFoodCategoryEntity(Long foodId, Long foodCategoryId) {
+    public SelectedFoodCategoryEntity(Long foodId, Long foodCategoryId) {
         this.foodId = foodId;
         this.foodCategoryId = foodCategoryId;
     }

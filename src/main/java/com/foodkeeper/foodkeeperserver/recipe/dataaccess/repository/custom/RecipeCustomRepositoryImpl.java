@@ -7,7 +7,9 @@ import com.foodkeeper.foodkeeperserver.recipe.dataaccess.entity.RecipeEntity;
 import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
 import com.querydsl.core.types.dsl.BooleanExpression;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static com.foodkeeper.foodkeeperserver.recipe.dataaccess.entity.QRecipeEntity.recipeEntity;
 
@@ -38,8 +40,11 @@ public class RecipeCustomRepositoryImpl extends QuerydslRepositorySupport implem
 
         update(recipeEntity)
                 .set(recipeEntity.status, EntityStatus.DELETED)
+                .set(recipeEntity.deletedAt, LocalDateTime.now())
                 .where(eqMember(memberKey), isNotDeleted())
                 .execute();
+
+        getEntityManager().clear();
 
         return recipeIds;
     }
@@ -51,6 +56,15 @@ public class RecipeCustomRepositoryImpl extends QuerydslRepositorySupport implem
                 .where(eqMember(memberKey), isNotDeleted())
                 .fetchOne();
         return count != null ? count : 0L;
+    }
+
+    @Override
+    public Optional<RecipeEntity> findByIdAndMemberKey(Long id, String memberKey) {
+        return Optional.ofNullable(
+                selectFrom(recipeEntity)
+                        .where(recipeEntity.id.eq(id), recipeEntity.memberKey.eq(memberKey), isNotDeleted())
+                        .fetchOne()
+        );
     }
 
     private static BooleanExpression eqMember(String memberKey) {
