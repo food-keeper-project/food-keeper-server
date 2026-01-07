@@ -7,11 +7,11 @@ import com.foodkeeper.foodkeeperserver.auth.domain.SignInEvent;
 import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
 import com.foodkeeper.foodkeeperserver.auth.implement.OAuthAuthenticator;
 import com.foodkeeper.foodkeeperserver.auth.implement.OauthFinder;
+import com.foodkeeper.foodkeeperserver.auth.implement.OauthLockManager;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,13 +21,12 @@ public class OauthService {
     private final MemberRegistrar memberRegistrar;
     private final JwtGenerator jwtGenerator;
     private final ApplicationEventPublisher eventPublisher;
+    private final OauthLockManager lockManager;
 
-    @Transactional
     public Jwt signInByOAuth(SignInContext context) {
         OAuthUser oAuthUser = oauthAuthenticator.authenticate(context.accessToken());
 
-        String memberKey = oauthFinder.findMemberKeyByOAuthAccount(oAuthUser.account())
-                .orElseGet(() -> memberRegistrar.register(oAuthUser.toNewOAuthMember(context.ipAddress())));
+        String memberKey = registerIfNotExists(context, oAuthUser);
 
         Jwt jwt = jwtGenerator.generateJwt(memberKey);
 
@@ -35,5 +34,17 @@ public class OauthService {
                 new SignInEvent(context.getIpAddress(), jwt.refreshToken(), context.fcmToken(), memberKey));
 
         return jwt;
+    }
+
+    /** @return MemberKey(멤버 키) */
+    private String registerIfNotExists(SignInContext context, OAuthUser oAuthUser) {
+        String lockKey = context.oAuthProvider().name() + oAuthUser.email();
+        try {
+            lockManager.acquire(lockKey, 1);
+            return oauthFinder.findMemberKey(oAuthUser.email(), oAuthUser.provider())
+                    .orElseGet(() -> memberRegistrar.register(oAuthUser.toNewOAuthMember(context.ipAddress())));
+        } finally {
+            lockManager.release(lockKey);
+        }
     }
 }

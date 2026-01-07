@@ -11,6 +11,8 @@ import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
 import com.foodkeeper.foodkeeperserver.member.domain.NewLocalMember;
 import com.foodkeeper.foodkeeperserver.member.domain.NewOAuthMember;
+import com.foodkeeper.foodkeeperserver.support.exception.AppException;
+import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,9 @@ public class MemberRegistrar {
 
     @Transactional
     public String register(NewOAuthMember newOAuthMember) {
+        if (memberRepository.existsByEmail(newOAuthMember.member().getEmail())) {
+            throw new AppException(ErrorType.INVALID_EMAIL);
+        }
         MemberEntity memberEntity = memberRepository.save(MemberEntity.from(newOAuthMember.member()));
         oauthRepository.save(
                 new OauthEntity(newOAuthMember.provider(), newOAuthMember.oauthAccount(), memberEntity.getMemberKey()));

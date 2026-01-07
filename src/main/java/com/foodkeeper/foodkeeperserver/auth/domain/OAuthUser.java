@@ -2,7 +2,7 @@ package com.foodkeeper.foodkeeperserver.auth.domain;
 
 import com.foodkeeper.foodkeeperserver.auth.domain.enums.MemberRole;
 import com.foodkeeper.foodkeeperserver.member.domain.*;
-import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
+import com.foodkeeper.foodkeeperserver.auth.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.SignUpType;
 import lombok.Builder;
 

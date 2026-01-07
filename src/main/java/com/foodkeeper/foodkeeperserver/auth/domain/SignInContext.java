@@ -1,7 +1,7 @@
 package com.foodkeeper.foodkeeperserver.auth.domain;
 
 import com.foodkeeper.foodkeeperserver.member.domain.IpAddress;
-import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
+import com.foodkeeper.foodkeeperserver.auth.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.Builder;

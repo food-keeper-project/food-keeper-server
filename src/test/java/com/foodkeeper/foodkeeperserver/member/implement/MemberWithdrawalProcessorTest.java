@@ -15,7 +15,7 @@ import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.SelectedFoodCa
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
-import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
+import com.foodkeeper.foodkeeperserver.auth.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.member.fixture.MemberEntityFixture;
 import com.foodkeeper.foodkeeperserver.notification.dataaccess.entity.FcmTokenEntity;
 import com.foodkeeper.foodkeeperserver.notification.dataaccess.repository.FcmRepository;

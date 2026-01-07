@@ -10,6 +10,7 @@ import com.foodkeeper.foodkeeperserver.auth.domain.SignInContext;
 import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
 import com.foodkeeper.foodkeeperserver.auth.implement.KakaoAuthenticator;
 import com.foodkeeper.foodkeeperserver.auth.implement.OauthFinder;
+import com.foodkeeper.foodkeeperserver.auth.implement.OauthLockManager;
 import com.foodkeeper.foodkeeperserver.food.implement.CategoryManager;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
@@ -17,7 +18,7 @@ import com.foodkeeper.foodkeeperserver.member.domain.Email;
 import com.foodkeeper.foodkeeperserver.member.domain.IpAddress;
 import com.foodkeeper.foodkeeperserver.member.domain.Nickname;
 import com.foodkeeper.foodkeeperserver.member.domain.ProfileImageUrl;
-import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
+import com.foodkeeper.foodkeeperserver.auth.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,7 +59,9 @@ class OauthServiceTest {
         OauthFinder oauthFinder = new OauthFinder(oauthRepository);
         MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, oauthRepository, localAuthRepository,
                 memberRoleRepository, foodCategoryManager);
-        oauthService = new OauthService(kakaoAuthenticator, oauthFinder, memberRegistrar, jwtGenerator, eventPublisher);
+        OauthLockManager oauthLockManager = new OauthLockManager(oauthRepository);
+        oauthService = new OauthService(kakaoAuthenticator, oauthFinder, memberRegistrar, jwtGenerator, eventPublisher,
+                oauthLockManager);
     }
 
     @Test
@@ -68,11 +71,12 @@ class OauthServiceTest {
         String account = "account";
         String accessToken = "accessToken";
         String memberKey = "memberKey";
+        OAuthProvider provider = OAuthProvider.KAKAO;
         SignInContext register = SignInContext.builder()
                 .accessToken(accessToken)
                 .ipAddress(new IpAddress("127.0.0.1"))
                 .fcmToken("fcmToken")
-                .oAuthProvider(OAuthProvider.KAKAO)
+                .oAuthProvider(provider)
                 .build();
         OAuthUser oauthUser = OAuthUser.builder()
                 .account(account)
@@ -80,9 +84,9 @@ class OauthServiceTest {
                 .nickname(new Nickname("nickname"))
                 .profileImageUrl(new ProfileImageUrl("https://test.com/image.jpg"))
                 .build();
-        OauthEntity oauthEntity = new OauthEntity(OAuthProvider.KAKAO, account, memberKey);
+        OauthEntity oauthEntity = new OauthEntity(provider, account, memberKey);
         given(kakaoAuthenticator.authenticate(eq(accessToken))).willReturn(oauthUser);
-        given(oauthRepository.findByAccount(eq(account))).willReturn(Optional.of(oauthEntity));
+        given(oauthRepository.findByEmail(eq(account), eq(provider))).willReturn(Optional.of(oauthEntity));
 
         // when
         Jwt jwt = oauthService.signInByOAuth(register);
