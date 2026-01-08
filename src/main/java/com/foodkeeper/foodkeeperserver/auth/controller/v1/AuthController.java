@@ -77,6 +77,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success());
     }
 
+    @Operation(summary = "ID 중복확인", description = "ID 중복확인 API")
     @NullMarked
     @PostMapping("/check/account")
     public ResponseEntity<ApiResponse<AccountDuplicationCheckResponse>> checkAccountDuplication(
@@ -85,6 +86,7 @@ public class AuthController {
                 localAuthService.isDuplicatedAccount(new LocalAccount(request.account())))));
     }
 
+    @Operation(summary = "email 유효성 검사 및 인증코드 발송", description = "email 유효성 검사 및 인증코드 발송 API")
     @NullMarked
     @PostMapping("/email/verify")
     public ResponseEntity<ApiResponse<Void>> verifyEmail(@Valid @RequestBody EmailVerifyRequest request) {
@@ -92,6 +94,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success());
     }
 
+    @Operation(summary = "email 인증코드 확인", description = "email 인증코드 확인 API")
     @NullMarked
     @PostMapping("/email-code/verify")
     public ResponseEntity<ApiResponse<Void>> verifyEmailCode(@Valid @RequestBody EmailCodeVerifyRequest request) {
@@ -99,6 +102,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success());
     }
 
+    @Operation(summary = "회원가입", description = "회원가입 API")
     @NullMarked
     @PostMapping("/sign-up")
     public ResponseEntity<ApiResponse<Void>> signUp(@Valid @RequestBody LocalSignUpRequest request,
@@ -107,6 +111,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success());
     }
 
+    @Operation(summary = "ID 찾기 인증코드 발송", description = "ID 찾기 인증코드 발송 API")
     @NullMarked
     @PostMapping("/account/verify")
     public ResponseEntity<ApiResponse<Void>> sendCodeForRecoverAccount(
@@ -115,6 +120,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success());
     }
 
+    @Operation(summary = "ID 찾기 인증코드 확인 ID 발송", description = "ID 찾기 인증코드 확인 및 ID 발송 API")
     @NullMarked
     @PostMapping("/account-code/verify")
     public ResponseEntity<ApiResponse<Void>> findAccount(
@@ -123,6 +129,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success());
     }
 
+    @Operation(summary = "비밀번호 찾기 인증코드 발송", description = "비밀번호 찾기 인증코드 발송 API")
     @NullMarked
     @PostMapping("/password/verify")
     public ResponseEntity<ApiResponse<Void>> sendCodeForRecoverPassword(
@@ -131,6 +138,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success());
     }
 
+    @Operation(summary = "비밀번호 찾기 인증코드 확인", description = "비밀번호 찾기 인증코드 확인 API")
     @NullMarked
     @PostMapping("/password-code/verify")
     public ResponseEntity<ApiResponse<Void>> findPassword(
@@ -139,6 +147,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success());
     }
 
+    @Operation(summary = "비밀번호 재설정", description = "비밀번호 재설정 API")
     @NullMarked
     @PostMapping("/password/change")
     public ResponseEntity<ApiResponse<Void>> changePassword(
