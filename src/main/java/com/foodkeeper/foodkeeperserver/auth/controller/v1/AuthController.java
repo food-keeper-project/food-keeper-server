@@ -9,6 +9,7 @@ import com.foodkeeper.foodkeeperserver.auth.controller.v1.response.AuthTokenResp
 import com.foodkeeper.foodkeeperserver.auth.domain.EmailCode;
 import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
 import com.foodkeeper.foodkeeperserver.common.aspect.annotation.SignInLog;
+import com.foodkeeper.foodkeeperserver.common.utils.NetworkUtils;
 import com.foodkeeper.foodkeeperserver.member.domain.Email;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
 import com.foodkeeper.foodkeeperserver.auth.domain.enums.OAuthProvider;
@@ -40,8 +41,19 @@ public class AuthController {
     @SignInLog
     @PostMapping("/sign-in/kakao")
     public ResponseEntity<ApiResponse<AuthTokenResponse>> signInWithKakao(
-            @Valid @RequestBody SignInRequest signInRequest, HttpServletRequest request) {
-        Jwt jwt = oauthService.signInByOAuth(signInRequest.toContext(OAuthProvider.KAKAO, request.getRemoteAddr()));
+            @Valid @RequestBody OauthSignInRequest request, HttpServletRequest httpRequest) {
+        Jwt jwt = oauthService.signInByOAuth(request.toContext(OAuthProvider.KAKAO, httpRequest.getRemoteAddr()));
+
+        return ResponseEntity.ok(ApiResponse.success(new AuthTokenResponse(jwt.accessToken(), jwt.refreshToken())));
+    }
+
+    @Operation(summary = "로컬 로그인", description = "로컬 로그인 API")
+    @NullMarked
+    @SignInLog
+    @PostMapping("/sign-in/local")
+    public ResponseEntity<ApiResponse<AuthTokenResponse>> signIn(
+            @Valid @RequestBody LocalSignInRequest request, HttpServletRequest httpRequest) {
+        Jwt jwt = localAuthService.signIn(request.toContext(NetworkUtils.getClientIp(httpRequest)));
 
         return ResponseEntity.ok(ApiResponse.success(new AuthTokenResponse(jwt.accessToken(), jwt.refreshToken())));
     }

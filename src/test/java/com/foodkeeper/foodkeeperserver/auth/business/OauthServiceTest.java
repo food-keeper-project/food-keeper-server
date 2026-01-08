@@ -5,7 +5,7 @@ import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.MemberRoleRepo
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
 import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
 import com.foodkeeper.foodkeeperserver.auth.domain.OAuthUser;
-import com.foodkeeper.foodkeeperserver.auth.domain.SignInContext;
+import com.foodkeeper.foodkeeperserver.auth.domain.OauthSignInContext;
 import com.foodkeeper.foodkeeperserver.auth.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
 import com.foodkeeper.foodkeeperserver.auth.implement.KakaoAuthenticator;
@@ -69,7 +69,7 @@ class OauthServiceTest {
         String memberKey = "memberKey";
         OAuthProvider provider = OAuthProvider.KAKAO;
         String email = "email@test.com";
-        SignInContext register = SignInContext.builder()
+        OauthSignInContext register = OauthSignInContext.builder()
                 .accessToken(accessToken)
                 .ipAddress(new IpAddress("127.0.0.1"))
                 .fcmToken("fcmToken")
@@ -103,7 +103,7 @@ class OauthServiceTest {
         String account = "account";
         String accessToken = "accessToken";
         String memberKey = "memberKey";
-        SignInContext register = SignInContext.builder()
+        OauthSignInContext register = OauthSignInContext.builder()
                 .accessToken(accessToken)
                 .ipAddress(new IpAddress("127.0.0.1"))
                 .fcmToken("fcmToken")

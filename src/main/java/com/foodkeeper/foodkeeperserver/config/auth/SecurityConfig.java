@@ -55,8 +55,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(mvc.matcher("/api/v1/auth/sign-in/**")).permitAll()
                         .requestMatchers(mvc.matcher("/api/v1/test-sign-in/**")).permitAll()
-                        .requestMatchers(mvc.matcher("/api/v1/auth/check/account")).permitAll()
-                        .requestMatchers(mvc.matcher("/api/v1/auth/verify/email")).permitAll()
+                        .requestMatchers(mvc.matcher("/api/v1/auth/check/**")).permitAll()
+                        .requestMatchers(mvc.matcher("/api/v1/auth/verify/**")).permitAll()
                         .requestMatchers(mvc.matcher("/actuator")).permitAll()
                         .requestMatchers(mvc.matcher("/actuator/**")).permitAll()
                         .anyRequest().authenticated())

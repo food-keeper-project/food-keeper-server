@@ -9,7 +9,7 @@ import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.EmailVerificat
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.LocalAuthRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
 import com.foodkeeper.foodkeeperserver.auth.domain.OAuthUser;
-import com.foodkeeper.foodkeeperserver.auth.domain.SignInContext;
+import com.foodkeeper.foodkeeperserver.auth.domain.OauthSignInContext;
 import com.foodkeeper.foodkeeperserver.auth.domain.SignUpContext;
 import com.foodkeeper.foodkeeperserver.auth.domain.enums.EmailVerificationStatus;
 import com.foodkeeper.foodkeeperserver.auth.domain.enums.OAuthProvider;
@@ -68,7 +68,7 @@ public class AuthConcurrencyTest extends SpringTest {
             executor.submit(() -> {
                 try {
                     IpAddress ip = new IpAddress("127.0.0.1");
-                    oauthService.signInByOAuth(new SignInContext(accessToken, OAuthProvider.KAKAO, "fcm", ip));
+                    oauthService.signInByOAuth(new OauthSignInContext(accessToken, OAuthProvider.KAKAO, "fcm", ip));
                 } finally {
                     latch.countDown();
                 }

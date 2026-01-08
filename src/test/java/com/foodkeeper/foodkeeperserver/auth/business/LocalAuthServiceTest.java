@@ -1,11 +1,11 @@
 package com.foodkeeper.foodkeeperserver.auth.business;
 
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.EmailVerificationEntity;
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.LocalAuthEntity;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.EmailVerificationRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.LocalAuthRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.MemberRoleRepository;
-import com.foodkeeper.foodkeeperserver.auth.domain.EmailCode;
-import com.foodkeeper.foodkeeperserver.auth.domain.EmailVerification;
+import com.foodkeeper.foodkeeperserver.auth.domain.*;
 import com.foodkeeper.foodkeeperserver.auth.domain.enums.EmailVerificationStatus;
 import com.foodkeeper.foodkeeperserver.auth.implement.*;
 import com.foodkeeper.foodkeeperserver.common.handler.TransactionHandler;
@@ -13,6 +13,7 @@ import com.foodkeeper.foodkeeperserver.food.implement.CategoryManager;
 import com.foodkeeper.foodkeeperserver.mail.implement.AppMailSender;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
 import com.foodkeeper.foodkeeperserver.member.domain.Email;
+import com.foodkeeper.foodkeeperserver.member.domain.IpAddress;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -48,6 +50,8 @@ class LocalAuthServiceTest {
     @Mock TransactionHandler transactionHandler;
     @Mock JavaMailSender javaMailSender;
     @Mock PasswordEncoder passwordEncoder;
+    @Mock ApplicationEventPublisher eventPublisher;
+    JwtGenerator jwtGenerator;
     SecretKey secretKey;
     LocalAuthService localAuthService;
 
@@ -56,14 +60,15 @@ class LocalAuthServiceTest {
         secretKey = Keys.hmacShaKeyFor("this_is_a_test_secret_key_abcdefghijtlmnopqr".getBytes(StandardCharsets.UTF_8));
         LocalAuthFinder localAuthFinder = new LocalAuthFinder(localAuthRepository);
         MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, memberRoleRepository, foodCategoryManager);
-        LocalAuthAuthenticator localAuthAuthenticator = new LocalAuthAuthenticator(localAuthRepository);
+        LocalAuthAuthenticator localAuthAuthenticator = new LocalAuthAuthenticator(localAuthRepository, passwordEncoder);
         AppMailSender appMailSender = new AppMailSender(javaMailSender);
         EmailVerificator emailVerificator = new EmailVerificator(emailVerificationRepository, appMailSender, transactionHandler);
         RefreshTokenManager refreshTokenManager = new RefreshTokenManager(memberRepository);
         LocalAuthLockManager lockManager = new LocalAuthLockManager(localAuthRepository);
         LocalAuthRegistrar localAuthRegistrar = new LocalAuthRegistrar(localAuthRepository, memberRegistrar, emailVerificator);
-        localAuthService = new LocalAuthService(localAuthAuthenticator, localAuthFinder, localAuthRegistrar, passwordEncoder,
-                emailVerificator, refreshTokenManager, lockManager);
+        jwtGenerator = new JwtGenerator(secretKey);
+        localAuthService = new LocalAuthService(localAuthAuthenticator, localAuthFinder, localAuthRegistrar,
+                emailVerificator, refreshTokenManager, jwtGenerator, lockManager, eventPublisher);
     }
 
     @Test
@@ -222,5 +227,29 @@ class LocalAuthServiceTest {
         // then
         assertThatCode(() -> localAuthService.verifyEmailCode(new EmailCode(new Email(email), "123456")))
                 .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("account와 password가 일치하면 로그인이 성공한다.")
+    void successSignInIfAccountAndPasswordAreValid() {
+        // given
+        String account = "account123";
+        String password = "password123";
+        String encodedPassword = "encodedPassword";
+        String memberKey = "memberKey";
+        LocalAuthEntity localAuthEntity = new LocalAuthEntity(account, encodedPassword, memberKey);
+        LocalSignInContext context =
+                new LocalSignInContext(new LocalAccount(account), new Password(password), "fcm", new IpAddress("127.0.0.1"));
+        given(passwordEncoder.encode(eq(password))).willReturn(encodedPassword);
+        given(localAuthRepository.findByAccountAndPassword(eq(account), eq(encodedPassword)))
+                .willReturn(Optional.of(localAuthEntity));
+
+        // when
+        Jwt jwt = localAuthService.signIn(context);
+
+        // then
+        Jwt generatedJwt = jwtGenerator.generateJwt(memberKey);
+        assertThat(jwt.accessToken()).isEqualTo(generatedJwt.accessToken());
+        assertThat(jwt.refreshToken()).isEqualTo(generatedJwt.refreshToken());
     }
 }
