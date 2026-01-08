@@ -46,14 +46,10 @@ public class EmailVerificationCustomRepositoryImpl extends QuerydslRepositorySup
         update(emailVerificationEntity)
                 .set(emailVerificationEntity.failedCount, emailVerificationEntity.failedCount.add(1))
                 .where(emailVerificationEntity.email.eq(email))
-                .where(isNotDeleted(), withStatus(EmailVerificationStatus.ACTIVE))
+                .where(isNotDeleted(), emailVerificationEntity.verificationStatus.eq(EmailVerificationStatus.ACTIVE))
                 .execute();
 
         getEntityManager().clear();
-    }
-
-    private static BooleanExpression withStatus(EmailVerificationStatus verificationStatus) {
-        return emailVerificationEntity.verificationStatus.eq(verificationStatus);
     }
 
     private static BooleanExpression isNotDeleted() {
