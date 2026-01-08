@@ -7,6 +7,7 @@ import com.foodkeeper.foodkeeperserver.notification.domain.FcmMessage;
 import com.foodkeeper.foodkeeperserver.security.auth.AuthMember;
 import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,8 @@ public class FcmController {
     @NullMarked
     @Operation(summary = "FcmToken 재발급 (앱 켜질때마다 호출)", description = "FcmToken 재발급 API")
     @PatchMapping
-    public ResponseEntity<ApiResponse<Void>> refreshFcmToken(@AuthMember Member authMember, @RequestBody RefreshFcmTokenRequest request
+    public ResponseEntity<ApiResponse<Void>> refreshFcmToken(@AuthMember Member authMember,
+                                                             @Valid @RequestBody RefreshFcmTokenRequest request
     ) {
         fcmTokenService.update(request.fcmToken(), authMember.memberKey());
         return ResponseEntity.ok(ApiResponse.success());

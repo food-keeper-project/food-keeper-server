@@ -32,7 +32,7 @@ public class FoodCategoryController {
     @NullMarked
     @Operation(summary = "카테고리 추가", description = "카테고리 추가 API")
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> createCategory(@RequestBody FoodCategoryRegisterRequest request,
+    public ResponseEntity<ApiResponse<Void>> createCategory(@Valid @RequestBody FoodCategoryRegisterRequest request,
                                                             @AuthMember Member member) {
         FoodCategoryRegister register = new FoodCategoryRegister(request.name(), member.memberKey());
         foodCategoryService.registerFoodCategory(register);
@@ -54,7 +54,7 @@ public class FoodCategoryController {
     @Operation(summary = "카테고리 이름 수정", description = "카테고리 이름 수정 API")
     @PatchMapping("/{categoryId}")
     public ResponseEntity<ApiResponse<Void>> updateCategory(@PathVariable Long categoryId,
-                                                            @RequestBody @Valid CategoryUpdateRequest request,
+                                                            @Valid @RequestBody CategoryUpdateRequest request,
                                                             @AuthMember Member member) {
         foodCategoryService.updateCategory(categoryId, request.name(), member.memberKey());
         return ResponseEntity.created(URI.create("/api/v1/categories/{categoryId}")).build();
