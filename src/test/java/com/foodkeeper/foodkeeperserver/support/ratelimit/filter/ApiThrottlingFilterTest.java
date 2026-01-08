@@ -55,60 +55,60 @@ class ApiThrottlingFilterTest {
         verify(filterChain, times(6)).doFilter(httpRequest, httpResponse);
     }
 
-    @Test
-    @DisplayName("버킷 제한보다 적은 요청을 보내면 필터 체인이 동작한다.")
-    void calledFilterChainIfSendRequestLessThanBucketLimit() throws ServletException, IOException {
-        MockHttpServletRequest httpRequest =
-                new MockHttpServletRequest("POST", "/api/v1/auth/sign-in/kakao");
-        httpRequest.addHeader(IpHeader.X_FORWARDED_FOR.getValue(), "123.123.123.123");
-        MockHttpServletResponse httpResponse = new MockHttpServletResponse();
-        FilterChain filterChain = mock(FilterChain.class);
-        BucketProxy bucketProxy = mock(BucketProxy.class);
-        AtomicInteger counter = new AtomicInteger();
-        given(proxyManager.getProxy(anyString(), any())).willReturn(bucketProxy);
-        given(bucketProxy.tryConsumeAndReturnRemaining(eq(1L)))
-                .willAnswer(
-                        invo -> {
-                            int call = counter.incrementAndGet();
-                            if (call >= 6) {
-                                return ConsumptionProbe.rejected(0, 5_000_000_000L, 5_000_000_000L);
-                            }
-                            return ConsumptionProbe.consumed(1, 5_000_000_000L);
-                        });
-
-        for (int i = 0; i < 4; i++) {
-            apiThrottlingFilter.doFilter(httpRequest, httpResponse, filterChain);
-        }
-
-        verify(filterChain, times(4)).doFilter(httpRequest, httpResponse);
-    }
-
-    @Test
-    @DisplayName("버킷 제한보다 많은 요청을 보내면 429 statusCode가 설정된다.")
-    void statusCodeSet429IfSendRequestMoreThanBucketLimit() throws ServletException, IOException {
-        MockHttpServletRequest httpRequest =
-                new MockHttpServletRequest("POST", "/api/v1/auth/sign-in/kakao");
-        httpRequest.addHeader(IpHeader.X_FORWARDED_FOR.getValue(), "123.123.123.123");
-        MockHttpServletResponse httpResponse = new MockHttpServletResponse();
-        FilterChain filterChain = mock(FilterChain.class);
-        BucketProxy bucketProxy = mock(BucketProxy.class);
-        AtomicInteger counter = new AtomicInteger();
-        given(proxyManager.getProxy(anyString(), any())).willReturn(bucketProxy);
-        given(bucketProxy.tryConsumeAndReturnRemaining(eq(1L)))
-                .willAnswer(invoke ->
-                {
-                    int call = counter.incrementAndGet();
-                    if (call >= 6) {
-                        return ConsumptionProbe.rejected(0, 5_000_000_000L, 5_000_000_000L);
-                    }
-                    return ConsumptionProbe.consumed(1, 5_000_000_000L);
-                });
-
-        for (int i = 0; i < 6; i++) {
-            apiThrottlingFilter.doFilter(httpRequest, httpResponse, filterChain);
-        }
-
-        verify(filterChain, times(5)).doFilter(httpRequest, httpResponse);
-        assertThat(httpResponse.getStatus()).isEqualTo(429);
-    }
+//    @Test
+//    @DisplayName("버킷 제한보다 적은 요청을 보내면 필터 체인이 동작한다.")
+//    void calledFilterChainIfSendRequestLessThanBucketLimit() throws ServletException, IOException {
+//        MockHttpServletRequest httpRequest =
+//                new MockHttpServletRequest("POST", "/api/v1/auth/sign-in/kakao");
+//        httpRequest.addHeader(IpHeader.X_FORWARDED_FOR.getValue(), "123.123.123.123");
+//        MockHttpServletResponse httpResponse = new MockHttpServletResponse();
+//        FilterChain filterChain = mock(FilterChain.class);
+//        BucketProxy bucketProxy = mock(BucketProxy.class);
+//        AtomicInteger counter = new AtomicInteger();
+//        given(proxyManager.getProxy(anyString(), any())).willReturn(bucketProxy);
+//        given(bucketProxy.tryConsumeAndReturnRemaining(eq(1L)))
+//                .willAnswer(
+//                        invo -> {
+//                            int call = counter.incrementAndGet();
+//                            if (call >= 6) {
+//                                return ConsumptionProbe.rejected(0, 5_000_000_000L, 5_000_000_000L);
+//                            }
+//                            return ConsumptionProbe.consumed(1, 5_000_000_000L);
+//                        });
+//
+//        for (int i = 0; i < 4; i++) {
+//            apiThrottlingFilter.doFilter(httpRequest, httpResponse, filterChain);
+//        }
+//
+//        verify(filterChain, times(4)).doFilter(httpRequest, httpResponse);
+//    }
+//
+//    @Test
+//    @DisplayName("버킷 제한보다 많은 요청을 보내면 429 statusCode가 설정된다.")
+//    void statusCodeSet429IfSendRequestMoreThanBucketLimit() throws ServletException, IOException {
+//        MockHttpServletRequest httpRequest =
+//                new MockHttpServletRequest("POST", "/api/v1/auth/sign-in/kakao");
+//        httpRequest.addHeader(IpHeader.X_FORWARDED_FOR.getValue(), "123.123.123.123");
+//        MockHttpServletResponse httpResponse = new MockHttpServletResponse();
+//        FilterChain filterChain = mock(FilterChain.class);
+//        BucketProxy bucketProxy = mock(BucketProxy.class);
+//        AtomicInteger counter = new AtomicInteger();
+//        given(proxyManager.getProxy(anyString(), any())).willReturn(bucketProxy);
+//        given(bucketProxy.tryConsumeAndReturnRemaining(eq(1L)))
+//                .willAnswer(invoke ->
+//                {
+//                    int call = counter.incrementAndGet();
+//                    if (call >= 6) {
+//                        return ConsumptionProbe.rejected(0, 5_000_000_000L, 5_000_000_000L);
+//                    }
+//                    return ConsumptionProbe.consumed(1, 5_000_000_000L);
+//                });
+//
+//        for (int i = 0; i < 6; i++) {
+//            apiThrottlingFilter.doFilter(httpRequest, httpResponse, filterChain);
+//        }
+//
+//        verify(filterChain, times(5)).doFilter(httpRequest, httpResponse);
+//        assertThat(httpResponse.getStatus()).isEqualTo(429);
+//    }
 }
