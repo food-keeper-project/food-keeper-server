@@ -1,4 +1,6 @@
 package com.foodkeeper.foodkeeperserver.food.controller.v1.request;
 
-public record FoodCategoryRegisterRequest(String name) {
+import jakarta.validation.constraints.NotBlank;
+
+public record FoodCategoryRegisterRequest(@NotBlank String name) {
 }
