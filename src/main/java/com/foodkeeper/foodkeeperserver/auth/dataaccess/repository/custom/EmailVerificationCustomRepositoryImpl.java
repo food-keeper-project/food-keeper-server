@@ -23,6 +23,7 @@ public class EmailVerificationCustomRepositoryImpl extends QuerydslRepositorySup
     public void updateVerificationsStatusToExpired(String email) {
         update(emailVerificationEntity)
                 .set(emailVerificationEntity.verificationStatus, EmailVerificationStatus.EXPIRED)
+                .set(emailVerificationEntity.status, EntityStatus.DELETED)
                 .where(emailVerificationEntity.email.eq(email))
                 .where(isNotDeleted())
                 .execute();
