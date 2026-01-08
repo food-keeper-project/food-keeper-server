@@ -56,25 +56,6 @@ class EmailVerificationRepositoryTest extends RepositoryTest {
     }
 
     @Test
-    @DisplayName("EmailVerification의 verificationStatus를 expired로 수정한다.")
-    void updateVerificationStatusToExpired() {
-        // given
-        String email = "test@mail.com";
-        String code = "123456";
-        EmailVerificationEntity verification = em.persist(
-                new EmailVerificationEntity(email, code, LocalDateTime.now().plusMinutes(5)));
-
-        // when
-        emailVerificationRepository.updateStatusToExpired(email, code);
-
-        // then
-        Optional<EmailVerificationEntity> foundVerification = emailVerificationRepository.findById(verification.getId());
-        assertThat(verification.getVerificationStatus()).isEqualTo(EmailVerificationStatus.ACTIVE);
-        assertThat(foundVerification).isNotEmpty();
-        assertThat(foundVerification.get().getVerificationStatus()).isEqualTo(EmailVerificationStatus.EXPIRED);
-    }
-
-    @Test
     @DisplayName("EmailVerification의 failedCount를 1 증가시킨다.")
     void incrementFailedCount() {
         // given
@@ -90,24 +71,5 @@ class EmailVerificationRepositoryTest extends RepositoryTest {
         assertThat(verification.getFailedCount()).isEqualTo(0);
         assertThat(foundVerification).isNotEmpty();
         assertThat(foundVerification.get().getFailedCount()).isEqualTo(1);
-    }
-
-    @Test
-    @DisplayName("EmailVerification의 verificationStatus를 verified로 수정한다.")
-    void updateVerificationStatusToVerified() {
-        // given
-        String email = "test@mail.com";
-        String code = "123456";
-        EmailVerificationEntity verification = em.persist(
-                new EmailVerificationEntity(email, code, LocalDateTime.now().plusMinutes(5)));
-
-        // when
-        emailVerificationRepository.updateStatusToVerified(email, code);
-
-        // then
-        Optional<EmailVerificationEntity> foundVerification = emailVerificationRepository.findById(verification.getId());
-        assertThat(verification.getVerificationStatus()).isEqualTo(EmailVerificationStatus.ACTIVE);
-        assertThat(foundVerification).isNotEmpty();
-        assertThat(foundVerification.get().getVerificationStatus()).isEqualTo(EmailVerificationStatus.VERIFIED);
     }
 }

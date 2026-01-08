@@ -87,8 +87,9 @@ public class AuthController {
 
     @NullMarked
     @PostMapping("/sign-up")
-    public ResponseEntity<ApiResponse<Void>> signUp(@RequestBody LocalSignUpRequest request) {
-        localAuthService.signUp(request.toContext());
+    public ResponseEntity<ApiResponse<Void>> signUp(@RequestBody LocalSignUpRequest request,
+                                                    HttpServletRequest httpRequest) {
+        localAuthService.signUp(request.toContext(httpRequest.getRemoteAddr()));
         return ResponseEntity.ok(ApiResponse.success());
     }
 }

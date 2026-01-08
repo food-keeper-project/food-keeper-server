@@ -30,10 +30,12 @@ public enum ErrorType {
     OAUTH_ACCESS_TOKEN_IS_NULL(HttpStatus.BAD_REQUEST, ErrorCode.E3007, "OAuth 엑세스 토큰은 null일 수 없습니다.", LogLevel.WARN),
     FCM_TOKEN_IS_NULL(HttpStatus.BAD_REQUEST, ErrorCode.E3008, "FCM 토큰은 null일 수 없습니다.", LogLevel.WARN),
     ACCOUNT_IS_NULL(HttpStatus.BAD_REQUEST, ErrorCode.E3009, "계정은 null일 수 없습니다.", LogLevel.WARN),
-    INVALID_ACCOUNT_LENGTH(HttpStatus.BAD_REQUEST, ErrorCode.E3010, "계정 길이가 너무 깁니다.", LogLevel.WARN),
+    INVALID_ACCOUNT_LENGTH(HttpStatus.BAD_REQUEST, ErrorCode.E3010, "계정 길이는 6~12자리여야 합니다.", LogLevel.WARN),
     PASSWORD_IS_NULL(HttpStatus.BAD_REQUEST, ErrorCode.E3011, "비밀번호는 null일 수 없습니다.", LogLevel.WARN),
-    INVALID_PASSWORD_LENGTH(HttpStatus.BAD_REQUEST, ErrorCode.E3012, "비밀번호 길이가 너무 깁니다.", LogLevel.WARN),
+    INVALID_PASSWORD_LENGTH(HttpStatus.BAD_REQUEST, ErrorCode.E3012, "비밀번호 길이는 8~20자리여야 합니다.", LogLevel.WARN),
     NOT_VERIFIED_EMAIL(HttpStatus.BAD_REQUEST, ErrorCode.E3013, "이메일이 인증되지 않았습니다.", LogLevel.WARN),
+    INVALID_ACCOUNT_FORMAT(HttpStatus.BAD_REQUEST, ErrorCode.E3014, "계정은 영문 또는 숫자를 포함해야 합니다.", LogLevel.WARN),
+    INVALID_PASSWORD_FORMAT(HttpStatus.BAD_REQUEST, ErrorCode.E3015, "비밀번호는 영문과 숫자를 포함해야 합니다.", LogLevel.WARN),
 
     // S3
     S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E5000, "이미지 업로드에 실패했습니다.", LogLevel.ERROR),

@@ -1,15 +1,12 @@
 package com.foodkeeper.foodkeeperserver.member.implement;
 
-import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.LocalAuthRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.MemberRoleRepository;
-import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
 import com.foodkeeper.foodkeeperserver.auth.domain.MemberRoles;
 import com.foodkeeper.foodkeeperserver.auth.domain.enums.MemberRole;
 import com.foodkeeper.foodkeeperserver.food.implement.CategoryManager;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
 import com.foodkeeper.foodkeeperserver.member.domain.*;
-import com.foodkeeper.foodkeeperserver.auth.domain.enums.OAuthProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,16 +25,13 @@ import static org.mockito.Mockito.mock;
 class MemberRegistrarTest {
 
     @Mock MemberRepository memberRepository;
-    @Mock OauthRepository oauthRepository;
     @Mock MemberRoleRepository memberRoleRepository;
     @Mock CategoryManager foodCategoryManager;
-    @Mock LocalAuthRepository localAuthRepository;
     MemberRegistrar memberRegistrar;
 
     @BeforeEach
     void setUp() {
-        memberRegistrar = new MemberRegistrar(memberRepository, oauthRepository, localAuthRepository,
-                memberRoleRepository, foodCategoryManager);
+        memberRegistrar = new MemberRegistrar(memberRepository, memberRoleRepository, foodCategoryManager);
     }
 
     @Test
@@ -51,17 +45,12 @@ class MemberRegistrarTest {
                 .nickname(new Nickname("nickname"))
                 .imageUrl(new ProfileImageUrl("https://test.com/image.jpg"))
                 .build();
-        NewOAuthMember newOAuthMember = NewOAuthMember.builder()
-                .member(newMember)
-                .oauthAccount("account")
-                .provider(OAuthProvider.KAKAO)
-                .build();
         MemberEntity memberEntity = mock(MemberEntity.class);
         given(memberEntity.getMemberKey()).willReturn("memberKey");
         given(memberRepository.save(any(MemberEntity.class))).willReturn(memberEntity);
 
         // when
-        String registeredMemberKey = memberRegistrar.register(newOAuthMember);
+        String registeredMemberKey = memberRegistrar.register(newMember);
 
         // then
         assertThat(registeredMemberKey).isEqualTo("memberKey");

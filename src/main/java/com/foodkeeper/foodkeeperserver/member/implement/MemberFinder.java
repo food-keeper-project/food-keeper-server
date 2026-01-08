@@ -1,7 +1,6 @@
 package com.foodkeeper.foodkeeperserver.member.implement;
 
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
-import com.foodkeeper.foodkeeperserver.member.domain.Email;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
@@ -18,9 +17,5 @@ public class MemberFinder {
     public Member find(String memberKey) {
         return memberRepository.findByMemberKey(memberKey).orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_DATA))
                 .toDomain();
-    }
-
-    public boolean existsEmail(Email email) {
-        return memberRepository.existsByEmail(email.email());
     }
 }

@@ -4,23 +4,15 @@ import com.foodkeeper.foodkeeperserver.auth.domain.enums.MemberRole;
 import com.foodkeeper.foodkeeperserver.member.domain.*;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.Gender;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.SignUpType;
-import lombok.Builder;
 
 import java.util.List;
 
-@Builder
-public record SignUpContext(Account account,
+public record SignUpContext(LocalAccount account,
                             Password password,
                             Email email,
                             Nickname nickname,
                             Gender gender,
-                            List<String> preferFoods,
                             IpAddress ipAddress) {
-    public SignUpContext {
-        if (preferFoods == null) {
-            preferFoods = List.of();
-        }
-    }
 
     public NewLocalMember toNewLocalMember(String encodedPassword) {
         NewMember newMember = NewMember.builder()
@@ -40,5 +32,62 @@ public record SignUpContext(Account account,
 
     public String getPassword() {
         return password.password();
+    }
+
+    public String getEmail() {
+        return email.email();
+    }
+
+    public static SignUpContextBuilder builder() {
+        return new SignUpContextBuilder();
+    }
+
+    public static class SignUpContextBuilder {
+        private String account;
+        private String password;
+        private String email;
+        private String nickname;
+        private Gender gender;
+        private String ipAddress;
+
+        public SignUpContextBuilder account(String account) {
+            this.account = account;
+            return this;
+        }
+
+        public SignUpContextBuilder password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public SignUpContextBuilder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public SignUpContextBuilder nickname(String nickname) {
+            this.nickname = nickname;
+            return this;
+        }
+
+        public SignUpContextBuilder gender(Gender gender) {
+            this.gender = gender;
+            return this;
+        }
+
+        public SignUpContextBuilder ipAddress(String ipAddress) {
+            this.ipAddress = ipAddress;
+            return this;
+        }
+
+        public SignUpContext build() {
+            return new SignUpContext(new LocalAccount(account),
+                    new Password(password),
+                    new Email(email),
+                    new Nickname(nickname),
+                    gender,
+                    new IpAddress(ipAddress)
+            );
+        }
     }
 }

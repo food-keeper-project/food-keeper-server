@@ -5,8 +5,10 @@ import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
 import com.foodkeeper.foodkeeperserver.auth.domain.MemberRoles;
 import com.foodkeeper.foodkeeperserver.auth.domain.enums.MemberRole;
 import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
-import com.foodkeeper.foodkeeperserver.member.domain.*;
-import com.foodkeeper.foodkeeperserver.auth.domain.enums.OAuthProvider;
+import com.foodkeeper.foodkeeperserver.member.domain.Email;
+import com.foodkeeper.foodkeeperserver.member.domain.IpAddress;
+import com.foodkeeper.foodkeeperserver.member.domain.NewMember;
+import com.foodkeeper.foodkeeperserver.member.domain.Nickname;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.SignUpType;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
 import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
@@ -43,7 +45,7 @@ public class TestSignInController {
                 .memberRoles(new MemberRoles(List.of(MemberRole.ROLE_USER)))
                 .build();
 
-        String memberKey = memberRegistrar.register(new NewOAuthMember(newMember, OAuthProvider.KAKAO, "testAccount"));
+        String memberKey = memberRegistrar.register(newMember);
         Jwt jwt = jwtGenerator.generateJwt(memberKey);
 
         return ResponseEntity.ok(ApiResponse.success(new AuthTokenResponse(jwt.accessToken(), jwt.refreshToken())));
