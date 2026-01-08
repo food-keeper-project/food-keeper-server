@@ -37,6 +37,7 @@ public enum ErrorType {
     INVALID_ACCOUNT_FORMAT(HttpStatus.BAD_REQUEST, ErrorCode.E3014, "계정은 영문 또는 숫자를 포함해야 합니다.", LogLevel.WARN),
     INVALID_PASSWORD_FORMAT(HttpStatus.BAD_REQUEST, ErrorCode.E3015, "비밀번호는 영문과 숫자를 포함해야 합니다.", LogLevel.WARN),
     NOT_FOUND_ACCOUNT(HttpStatus.BAD_REQUEST, ErrorCode.E3016, "존재하지 않는 계정 정보입니다.", LogLevel.WARN),
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, ErrorCode.E3017, "비밀번호가 일치하지 않습니다.", LogLevel.WARN),
 
     // S3
     S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E5000, "이미지 업로드에 실패했습니다.", LogLevel.ERROR),

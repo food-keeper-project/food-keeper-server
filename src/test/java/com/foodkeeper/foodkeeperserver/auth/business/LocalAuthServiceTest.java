@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.crypto.SecretKey;
@@ -56,7 +57,6 @@ class LocalAuthServiceTest {
     TransactionHandler transactionHandler;
     @Mock
     JavaMailSender javaMailSender;
-    @Mock
     PasswordEncoder passwordEncoder;
     @Mock
     ApplicationEventPublisher eventPublisher;
@@ -67,6 +67,7 @@ class LocalAuthServiceTest {
     @BeforeEach
     void setUp() {
         secretKey = Keys.hmacShaKeyFor("this_is_a_test_secret_key_abcdefghijtlmnopqr".getBytes(StandardCharsets.UTF_8));
+        passwordEncoder = new BCryptPasswordEncoder();
         LocalAuthFinder localAuthFinder = new LocalAuthFinder(localAuthRepository);
         MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, memberRoleRepository, foodCategoryManager);
         LocalAuthAuthenticator localAuthAuthenticator = new LocalAuthAuthenticator(localAuthRepository, passwordEncoder);
@@ -90,14 +91,14 @@ class LocalAuthServiceTest {
         given(localAuthRepository.existsByAccount(eq(account))).willReturn(true);
 
         // when
-        boolean isDuplicated = localAuthService.isDuplicatedAccount(account);
+        boolean isDuplicated = localAuthService.isDuplicatedAccount(new LocalAccount(account));
 
         // then
         assertThat(isDuplicated).isTrue();
     }
 
     @Test
-    @DisplayName("이미 존재하는 이메일이면 AppExcpetion이 발생한다.")
+    @DisplayName("이미 존재하는 이메일이면 AppException이 발생한다.")
     void throwAppExceptionIfEmailExists() {
         // given
         String email = "test@mail.com";
@@ -246,14 +247,12 @@ class LocalAuthServiceTest {
         // given
         String account = "account123";
         String password = "password123";
-        String encodedPassword = "encodedPassword";
+        String encodedPassword = passwordEncoder.encode(password);
         String memberKey = "memberKey";
         LocalAuthEntity localAuthEntity = new LocalAuthEntity(account, encodedPassword, memberKey);
         LocalSignInContext context =
                 new LocalSignInContext(new LocalAccount(account), new Password(password), "fcm", new IpAddress("127.0.0.1"));
-        given(passwordEncoder.encode(eq(password))).willReturn(encodedPassword);
-        given(localAuthRepository.findByAccountAndPassword(eq(account), eq(encodedPassword)))
-                .willReturn(Optional.of(localAuthEntity));
+        given(localAuthRepository.findByAccount(eq(account))).willReturn(Optional.of(localAuthEntity));
 
         // when
         Jwt jwt = localAuthService.signIn(context);
