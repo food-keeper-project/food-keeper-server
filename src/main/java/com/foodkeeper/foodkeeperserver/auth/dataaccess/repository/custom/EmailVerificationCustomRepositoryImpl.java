@@ -7,6 +7,7 @@ import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupp
 import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.QEmailVerificationEntity.emailVerificationEntity;
@@ -24,6 +25,7 @@ public class EmailVerificationCustomRepositoryImpl extends QuerydslRepositorySup
         update(emailVerificationEntity)
                 .set(emailVerificationEntity.verificationStatus, EmailVerificationStatus.EXPIRED)
                 .set(emailVerificationEntity.status, EntityStatus.DELETED)
+                .set(emailVerificationEntity.deletedAt, LocalDateTime.now())
                 .where(emailVerificationEntity.email.eq(email))
                 .where(isNotDeleted())
                 .execute();

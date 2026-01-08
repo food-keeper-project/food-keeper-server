@@ -54,6 +54,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(mvc.matcher("/api/v1/auth/sign-in/**")).permitAll()
+                        .requestMatchers(mvc.matcher("/api/v1/auth/sign-up")).permitAll()
                         .requestMatchers(mvc.matcher("/api/v1/test-sign-in/**")).permitAll()
                         .requestMatchers(mvc.matcher("/api/v1/auth/check/**")).permitAll()
                         .requestMatchers(mvc.matcher("/api/v1/auth/verify/**")).permitAll()
