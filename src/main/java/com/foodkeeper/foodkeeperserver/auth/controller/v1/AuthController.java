@@ -8,6 +8,8 @@ import com.foodkeeper.foodkeeperserver.auth.controller.v1.response.AccountDuplic
 import com.foodkeeper.foodkeeperserver.auth.controller.v1.response.AuthTokenResponse;
 import com.foodkeeper.foodkeeperserver.auth.domain.EmailCode;
 import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
+import com.foodkeeper.foodkeeperserver.auth.domain.LocalAccount;
+import com.foodkeeper.foodkeeperserver.auth.domain.Password;
 import com.foodkeeper.foodkeeperserver.common.aspect.annotation.SignInLog;
 import com.foodkeeper.foodkeeperserver.common.utils.NetworkUtils;
 import com.foodkeeper.foodkeeperserver.member.domain.Email;
@@ -84,14 +86,14 @@ public class AuthController {
     }
 
     @NullMarked
-    @PostMapping("/verify/email")
+    @PostMapping("/email/verify")
     public ResponseEntity<ApiResponse<Void>> verifyEmail(@Valid @RequestBody EmailVerifyRequest request) {
-        localAuthService.verifyEmail(new Email(request.email()));
+        localAuthService.verifyEmailForSignUp(new Email(request.email()));
         return ResponseEntity.ok(ApiResponse.success());
     }
 
     @NullMarked
-    @PostMapping("/verify/email-code")
+    @PostMapping("/email-code/verify")
     public ResponseEntity<ApiResponse<Void>> verifyEmailCode(@Valid @RequestBody EmailCodeVerifyRequest request) {
         localAuthService.verifyEmailCode(EmailCode.of(request.email(), request.code()));
         return ResponseEntity.ok(ApiResponse.success());
@@ -102,6 +104,49 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Void>> signUp(@Valid @RequestBody LocalSignUpRequest request,
                                                     HttpServletRequest httpRequest) {
         localAuthService.signUp(request.toContext(httpRequest.getRemoteAddr()));
+        return ResponseEntity.ok(ApiResponse.success());
+    }
+
+    @NullMarked
+    @PostMapping("/account/verify")
+    public ResponseEntity<ApiResponse<Void>> sendCodeForRecoverAccount(
+            @Valid @RequestBody FindAccountRequest request) {
+        localAuthService.verifyEmailForRecoverAccount(new Email(request.email()));
+        return ResponseEntity.ok(ApiResponse.success());
+    }
+
+    @NullMarked
+    @PostMapping("/account-code/verify")
+    public ResponseEntity<ApiResponse<Void>> findAccount(
+            @Valid @RequestBody EmailCodeVerifyRequest request) {
+        localAuthService.recoverAccount(EmailCode.of(request.email(), request.code()));
+        return ResponseEntity.ok(ApiResponse.success());
+    }
+
+    @NullMarked
+    @PostMapping("/password/verify")
+    public ResponseEntity<ApiResponse<Void>> sendCodeForRecoverPassword(
+            @Valid @RequestBody FindPasswordRequest request) {
+        localAuthService.verifyEmailForRecoverPassword(new Email(request.email()), new LocalAccount(request.account()));
+        return ResponseEntity.ok(ApiResponse.success());
+    }
+
+    @NullMarked
+    @PostMapping("/password-code/verify")
+    public ResponseEntity<ApiResponse<Void>> findPassword(
+            @Valid @RequestBody EmailCodeVerifyRequest request) {
+        localAuthService.findPassword(EmailCode.of(request.email(), request.code()), new LocalAccount(request.account()));
+        return ResponseEntity.ok(ApiResponse.success());
+    }
+
+    @NullMarked
+    @PostMapping("/password/change")
+    public ResponseEntity<ApiResponse<Void>> changePassword(
+            @Valid @RequestBody PasswordChangeRequest request) {
+        localAuthService.changePassword(
+                new Email(request.email()),
+                new LocalAccount(request.account()),
+                new Password(request.newPassword()));
         return ResponseEntity.ok(ApiResponse.success());
     }
 }

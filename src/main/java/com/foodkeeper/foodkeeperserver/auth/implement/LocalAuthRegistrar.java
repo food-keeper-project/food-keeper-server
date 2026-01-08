@@ -3,7 +3,7 @@ package com.foodkeeper.foodkeeperserver.auth.implement;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.LocalAuthEntity;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.LocalAuthRepository;
 import com.foodkeeper.foodkeeperserver.auth.domain.EmailVerification;
-import com.foodkeeper.foodkeeperserver.member.domain.NewLocalMember;
+import com.foodkeeper.foodkeeperserver.auth.domain.NewLocalMember;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
@@ -26,7 +26,7 @@ public class LocalAuthRegistrar {
             throw new AppException(ErrorType.NOT_VERIFIED_EMAIL);
         }
 
-        if (localAuthRepository.existsEmail(newLocalMember.member().getEmail())) {
+        if (localAuthRepository.existsByEmail(newLocalMember.member().getEmail())) {
             throw new AppException(ErrorType.INVALID_EMAIL);
         }
 

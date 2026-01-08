@@ -3,6 +3,7 @@ package com.foodkeeper.foodkeeperserver.auth.implement;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.OauthEntity;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
 import com.foodkeeper.foodkeeperserver.auth.domain.MemberRoles;
+import com.foodkeeper.foodkeeperserver.auth.domain.NewOAuthMember;
 import com.foodkeeper.foodkeeperserver.auth.domain.enums.MemberRole;
 import com.foodkeeper.foodkeeperserver.auth.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.member.domain.*;

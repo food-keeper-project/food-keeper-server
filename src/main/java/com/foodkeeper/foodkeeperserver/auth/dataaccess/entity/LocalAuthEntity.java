@@ -1,5 +1,8 @@
 package com.foodkeeper.foodkeeperserver.auth.dataaccess.entity;
 
+import com.foodkeeper.foodkeeperserver.auth.domain.EncodedPassword;
+import com.foodkeeper.foodkeeperserver.auth.domain.LocalAccount;
+import com.foodkeeper.foodkeeperserver.auth.domain.LocalAuth;
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -36,5 +39,14 @@ public class LocalAuthEntity extends BaseEntity {
         this.password = password;
         this.passwordUpdatedAt = LocalDateTime.now();
         this.memberKey = memberKey;
+    }
+
+    public LocalAuth toDomain() {
+        return new LocalAuth(new LocalAccount(account), new EncodedPassword(password), memberKey);
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+        this.passwordUpdatedAt = LocalDateTime.now();
     }
 }
