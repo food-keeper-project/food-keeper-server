@@ -109,8 +109,6 @@ public class AuthConcurrencyTest extends SpringTest {
                             .gender(Gender.M)
                             .ipAddress("127.0.0.1")
                             .build());
-                } catch (Exception e) {
-                   e.printStackTrace();
                 } finally {
                     latch.countDown();
                 }
