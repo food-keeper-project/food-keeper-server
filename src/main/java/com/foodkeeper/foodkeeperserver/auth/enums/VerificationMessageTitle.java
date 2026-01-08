@@ -8,7 +8,7 @@ public enum VerificationMessageTitle {
     RECOVER_ACCOUNT("[키친로그] 아이디 찾기 인증 번호입니다."),
     RECOVER_PASSWORD("[키친로그] 비밀번호 찾기 인증 번호입니다."),
     ;
-    private String title;
+    private final String title;
 
     VerificationMessageTitle(String title) {
         this.title = title;
