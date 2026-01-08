@@ -81,30 +81,4 @@ class MemberRepositoryTest extends RepositoryTest {
         assertThat(foundMember).isNotEmpty();
         assertThat(foundMember.get().getRefreshToken()).isNull();
     }
-
-    @Test
-    @DisplayName("Member의 email이 존재하면 true를 반환한다.")
-    void returnTrueIfMemberEmailExists() {
-        // given
-        MemberEntity member = em.persist(MemberEntityFixture.DEFAULT.get());
-
-        // when
-        boolean exists = memberRepository.existsByEmail(member.getEmail());
-
-        // then
-        assertThat(exists).isTrue();
-    }
-
-    @Test
-    @DisplayName("Member의 email이 존재하지 않으면 false를 반환한다.")
-    void returnFalseIfMemberEmailExists() {
-        // given
-        em.persist(MemberEntityFixture.DEFAULT.get());
-
-        // when
-        boolean exists = memberRepository.existsByEmail("anotherEmail");
-
-        // then
-        assertThat(exists).isFalse();
-    }
 }

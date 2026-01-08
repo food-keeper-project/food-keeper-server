@@ -2,6 +2,8 @@ package com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.custom;
 
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.LocalAuthEntity;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.LocalAuthRepository;
+import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
+import com.foodkeeper.foodkeeperserver.member.fixture.MemberEntityFixture;
 import com.foodkeeper.foodkeeperserver.support.repository.RepositoryTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,6 +39,35 @@ class LocalAuthRepositoryTest extends RepositoryTest {
 
         // when
         boolean exists = localAuthRepository.existsByAccount(account);
+
+        // then
+        assertThat(exists).isFalse();
+    }
+
+
+    @Test
+    @DisplayName("Local로 가입한 Member의 email이 존재하면 true를 반환한다.")
+    void returnTrueIfMemberEmailExists() {
+        // given
+        MemberEntity member = em.persist(MemberEntityFixture.DEFAULT.get());
+        em.persist(new LocalAuthEntity("account", "password", member.getMemberKey()));
+
+        // when
+        boolean exists = localAuthRepository.existsByEmail(member.getEmail());
+
+        // then
+        assertThat(exists).isTrue();
+    }
+
+    @Test
+    @DisplayName("Local로 가입한 Member의 email이 존재하지 않으면 false를 반환한다.")
+    void returnFalseIfMemberEmailExists() {
+        // given
+        MemberEntity member = em.persist(MemberEntityFixture.DEFAULT.get());
+        em.persist(new LocalAuthEntity("account", "password", member.getMemberKey()));
+
+        // when
+        boolean exists = localAuthRepository.existsByEmail("anotherEmail");
 
         // then
         assertThat(exists).isFalse();

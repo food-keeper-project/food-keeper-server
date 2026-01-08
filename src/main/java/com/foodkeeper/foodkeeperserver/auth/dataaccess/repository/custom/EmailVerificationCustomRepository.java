@@ -10,9 +10,5 @@ public interface EmailVerificationCustomRepository {
 
     Optional<EmailVerificationEntity> findByEmail(String email);
 
-    void updateStatusToExpired(String email, String code);
-
     void incrementFailedCount(String email);
-
-    void updateStatusToVerified(String email, String code);
 }

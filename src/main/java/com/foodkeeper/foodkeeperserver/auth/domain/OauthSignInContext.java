@@ -1,18 +1,18 @@
 package com.foodkeeper.foodkeeperserver.auth.domain;
 
 import com.foodkeeper.foodkeeperserver.member.domain.IpAddress;
-import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
+import com.foodkeeper.foodkeeperserver.auth.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.Builder;
 
 @Builder
-public record SignInContext(String accessToken,
-                            OAuthProvider oAuthProvider,
-                            String fcmToken,
-                            IpAddress ipAddress) {
+public record OauthSignInContext(String accessToken,
+                                 OAuthProvider oAuthProvider,
+                                 String fcmToken,
+                                 IpAddress ipAddress) {
 
-    public SignInContext {
+    public OauthSignInContext {
         if (accessToken == null) {
             throw new AppException(ErrorType.OAUTH_ACCESS_TOKEN_IS_NULL);
         }

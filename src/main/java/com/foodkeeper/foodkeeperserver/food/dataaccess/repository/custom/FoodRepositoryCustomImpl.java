@@ -33,29 +33,16 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
 
         List<FoodEntity> content = query
                 .where(eqMember(memberKey), isNotDeleted())
-                .where(gtCursor(cursorable.cursor()))
-                .orderBy(foodEntity.expiryDate.asc(), foodEntity.id.asc())
+                .where(ltCursor(cursorable.cursor()))
+                .orderBy(foodEntity.id.desc())
                 .limit(cursorable.limit() + 1)
                 .fetch();
 
         return new SliceObject<>(content, cursorable, hasNext(cursorable, content));
     }
 
-    private BooleanExpression gtCursor(Long cursor) {
-        if (cursor == null) {
-            return null;
-        }
-
-        LocalDate cursorExpiryDate = getCursorExpiryDate(cursor);
-        return foodEntity.expiryDate.gt(cursorExpiryDate)
-                .or(foodEntity.expiryDate.eq(cursorExpiryDate).and(foodEntity.id.gt(cursor)));
-    }
-
-    private LocalDate getCursorExpiryDate(Long cursor) {
-        return select(foodEntity.expiryDate)
-                .from(foodEntity)
-                .where(foodEntity.id.eq(cursor))
-                .fetchOne();
+    private BooleanExpression ltCursor(Long cursor) {
+        return cursor == null ? null : foodEntity.id.lt(cursor);
     }
 
     private void applyCategoryFilter(JPAQuery<FoodEntity> query, Long categoryId) {

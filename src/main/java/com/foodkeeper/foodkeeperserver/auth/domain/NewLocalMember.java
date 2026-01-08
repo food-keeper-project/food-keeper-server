@@ -1,12 +1,11 @@
-package com.foodkeeper.foodkeeperserver.member.domain;
+package com.foodkeeper.foodkeeperserver.auth.domain;
 
-import com.foodkeeper.foodkeeperserver.auth.domain.Account;
-import com.foodkeeper.foodkeeperserver.auth.domain.EncodedPassword;
+import com.foodkeeper.foodkeeperserver.member.domain.NewMember;
 import lombok.Builder;
 
 @Builder
 public record NewLocalMember(NewMember member,
-                             Account account,
+                             LocalAccount account,
                              EncodedPassword password) {
 
     public String getAccount() {
