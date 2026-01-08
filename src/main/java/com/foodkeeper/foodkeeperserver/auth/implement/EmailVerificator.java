@@ -55,7 +55,7 @@ public class EmailVerificator {
     @Transactional
     public void updateVerification(EmailVerification emailVerification) {
         EmailVerificationEntity entity = emailVerificationRepository.findById(emailVerification.getId())
-                .orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_DATA));
+                .orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_EMAIL_VERIFICATION));
 
         entity.update(emailVerification.getStatus());
         if (emailVerification.isExpired() || emailVerification.isBlocked()) {
@@ -66,7 +66,7 @@ public class EmailVerificator {
     @Transactional
     public void deleteVerification(Long id) {
         emailVerificationRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_DATA))
+                .orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_EMAIL_VERIFICATION))
                 .delete();
     }
 }

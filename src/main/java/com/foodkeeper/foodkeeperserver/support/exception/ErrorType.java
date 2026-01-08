@@ -66,6 +66,7 @@ public enum ErrorType {
     TOO_MUCH_FAILED(HttpStatus.BAD_REQUEST, ErrorCode.E10002, "너무 많이 실패했습니다 다시 시도해주세요.", LogLevel.WARN),
     INVALID_EMAIL_CODE(HttpStatus.BAD_REQUEST, ErrorCode.E10003, "유효하지 않은 인증 코드입니다.", LogLevel.WARN),
     EXPIRED_EMAIL_CODE(HttpStatus.BAD_REQUEST, ErrorCode.E10004, "만료된 인증 코드입니다.", LogLevel.WARN),
+    NOT_FOUND_EMAIL_VERIFICATION(HttpStatus.BAD_REQUEST, ErrorCode.E10005, "인증 데이터를 찾지 못했습니다.", LogLevel.WARN),
     ;
 
     private final HttpStatus status;

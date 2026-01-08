@@ -113,18 +113,20 @@ class LocalAuthServiceTest {
     void throwAppExceptionIfFailedCountExceededFive() {
         // given
         String email = "test@mail.com";
+        String code = "123456";
         EmailVerificationEntity emailVerificationEntity = mock(EmailVerificationEntity.class);
         EmailVerification emailVerification = EmailVerification.builder()
-                .emailCode(EmailCode.of(email, "123456"))
+                .emailCode(EmailCode.of(email, code))
                 .failedCount(5)
                 .expiredAt(LocalDateTime.now().plusMinutes(5))
                 .status(EmailVerificationStatus.ACTIVE)
                 .build();
         given(emailVerificationRepository.findByEmail(eq(email))).willReturn(Optional.of(emailVerificationEntity));
+        given(emailVerificationRepository.findById(any())).willReturn(Optional.of(emailVerificationEntity));
         given(emailVerificationEntity.toDomain()).willReturn(emailVerification);
 
         // then
-        assertThatCode(() -> localAuthService.verifyEmailCode(new EmailCode(new Email(email), "123456")))
+        assertThatCode(() -> localAuthService.verifyEmailCode(new EmailCode(new Email(email), code)))
                 .isInstanceOf(AppException.class)
                 .extracting("errorType")
                 .isEqualTo(ErrorType.TOO_MUCH_FAILED);
@@ -190,6 +192,7 @@ class LocalAuthServiceTest {
                 .status(EmailVerificationStatus.EXPIRED)
                 .build();
         given(emailVerificationRepository.findByEmail(eq(email))).willReturn(Optional.of(emailVerificationEntity));
+        given(emailVerificationRepository.findById(any())).willReturn(Optional.of(emailVerificationEntity));
         given(emailVerificationEntity.toDomain()).willReturn(emailVerification);
 
         // then
@@ -213,6 +216,7 @@ class LocalAuthServiceTest {
                 .status(EmailVerificationStatus.ACTIVE)
                 .build();
         given(emailVerificationRepository.findByEmail(eq(email))).willReturn(Optional.of(emailVerificationEntity));
+        given(emailVerificationRepository.findById(any())).willReturn(Optional.of(emailVerificationEntity));
         given(emailVerificationEntity.toDomain()).willReturn(emailVerification);
 
         // then

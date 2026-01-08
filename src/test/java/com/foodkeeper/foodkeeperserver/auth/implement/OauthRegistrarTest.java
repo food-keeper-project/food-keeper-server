@@ -6,6 +6,7 @@ import com.foodkeeper.foodkeeperserver.auth.domain.MemberRoles;
 import com.foodkeeper.foodkeeperserver.auth.domain.enums.MemberRole;
 import com.foodkeeper.foodkeeperserver.auth.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.member.domain.*;
+import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +26,7 @@ import static org.mockito.BDDMockito.given;
 class OauthRegistrarTest {
 
     @Mock OauthRepository oauthRepository;
+    @Mock MemberRegistrar memberRegistrar;
     @InjectMocks OauthRegistrar oauthRegistrar;
 
     @Test
@@ -74,7 +76,7 @@ class OauthRegistrarTest {
                 .provider(OAuthProvider.KAKAO)
                 .build();
         given(oauthRepository.findByEmail(any(), any())).willReturn(Optional.empty());
-        given(oauthRegistrar.registerIfNewAndGetMemberKey(eq(newOAuthMember))).willReturn(memberKey);
+        given(memberRegistrar.register(eq(newMember))).willReturn(memberKey);
 
         // when
         String foundMemberKey = oauthRegistrar.registerIfNewAndGetMemberKey(newOAuthMember);
