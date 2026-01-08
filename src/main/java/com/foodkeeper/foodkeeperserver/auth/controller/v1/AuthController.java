@@ -44,7 +44,7 @@ public class AuthController {
     @PostMapping("/sign-in/kakao")
     public ResponseEntity<ApiResponse<AuthTokenResponse>> signInWithKakao(
             @Valid @RequestBody OauthSignInRequest request, HttpServletRequest httpRequest) {
-        Jwt jwt = oauthService.signInByOAuth(request.toContext(OAuthProvider.KAKAO, httpRequest.getRemoteAddr()));
+        Jwt jwt = oauthService.signInByOAuth(request.toContext(OAuthProvider.KAKAO, NetworkUtils.getClientIp(httpRequest)));
 
         return ResponseEntity.ok(ApiResponse.success(new AuthTokenResponse(jwt.accessToken(), jwt.refreshToken())));
     }
@@ -107,7 +107,7 @@ public class AuthController {
     @PostMapping("/sign-up")
     public ResponseEntity<ApiResponse<Void>> signUp(@Valid @RequestBody LocalSignUpRequest request,
                                                     HttpServletRequest httpRequest) {
-        localAuthService.signUp(request.toContext(httpRequest.getRemoteAddr()));
+        localAuthService.signUp(request.toContext(NetworkUtils.getClientIp(httpRequest)));
         return ResponseEntity.ok(ApiResponse.success());
     }
 

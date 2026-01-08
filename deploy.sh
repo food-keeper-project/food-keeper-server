@@ -34,7 +34,7 @@ for i in {1..30}; do
     echo "spring_$NEW_COLOR is healthy."
     break
   fi
-  echo "Waiting for health... ($i/10)"
+  echo "Waiting for health... ($i/30)"
   sleep 3
 done
 

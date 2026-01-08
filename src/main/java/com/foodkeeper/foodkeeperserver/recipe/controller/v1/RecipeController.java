@@ -14,14 +14,17 @@ import com.foodkeeper.foodkeeperserver.support.response.PageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
 
+@Validated
 @Tag(name = "Recipe", description = "레시피 관련 API")
 @RequiredArgsConstructor
 @RestController
@@ -33,7 +36,7 @@ public class RecipeController {
     @NullMarked
     @Operation(summary = "AI 레시피 추천", description = "AI 레시피 추천 API")
     @GetMapping("/recommend")
-    public ResponseEntity<ApiResponse<RecipeResponse>> recommendRecipe(@RequestParam List<String> ingredients,
+    public ResponseEntity<ApiResponse<RecipeResponse>> recommendRecipe(@Size(min = 1) @RequestParam List<String> ingredients,
                                                                        @RequestParam List<String> excludedMenus) {
         return ResponseEntity.ok(ApiResponse.success(RecipeResponse.from(
                 recipeService.recommendRecipe(ingredients, excludedMenus))));
@@ -42,7 +45,7 @@ public class RecipeController {
     @NullMarked
     @Operation(summary = "레시피 등록", description = "레시피 등록 API")
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> registerRecipe(@RequestBody @Valid RecipeRegisterRequest request,
+    public ResponseEntity<ApiResponse<Void>> registerRecipe(@Valid @RequestBody RecipeRegisterRequest request,
                                                             @AuthMember Member authMember) {
         Long recipeId = recipeService.registerRecipe(request.toNewRecipe(), authMember.memberKey());
         return ResponseEntity.created(URI.create("/api/v1/recipes/" + recipeId)).body(ApiResponse.success());

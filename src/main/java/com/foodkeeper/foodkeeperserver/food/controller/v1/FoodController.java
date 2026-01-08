@@ -40,7 +40,7 @@ public class FoodController {
     @NullMarked
     @Operation(summary = "식재료 추가", description = "식재료 추가 API")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResponse<Void>> createFood(@RequestPart @Valid FoodRegisterRequest request,
+    public ResponseEntity<ApiResponse<Void>> createFood(@Valid @RequestPart FoodRegisterRequest request,
                                                         @RequestPart(required = false) MultipartFile image,
                                                         @AuthMember Member authMember) {
         FoodRegister register = FoodRegisterRequest.toRegister(request);
@@ -111,7 +111,7 @@ public class FoodController {
     @Operation(summary = "식재료 수정", description = "식재료 수정 API")
     @PatchMapping("/{foodId}")
     public ResponseEntity<ApiResponse<Void>> updateFood(@PathVariable Long foodId,
-                                                        @RequestPart @Valid FoodUpdateRequest request,
+                                                        @Valid @RequestPart FoodUpdateRequest request,
                                                         @RequestPart(required = false) MultipartFile image,
                                                         @AuthMember Member authMember) {
         FoodRegister foodRegister = FoodUpdateRequest.toRegister(request);
