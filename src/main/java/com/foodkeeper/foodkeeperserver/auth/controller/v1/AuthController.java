@@ -142,7 +142,7 @@ public class AuthController {
     @NullMarked
     @PostMapping("/password-code/verify")
     public ResponseEntity<ApiResponse<Void>> findPassword(
-            @Valid @RequestBody EmailCodeVerifyRequest request) {
+            @Valid @RequestBody PasswordCodeVerifyRequest request) {
         localAuthService.findPassword(EmailCode.of(request.email(), request.code()), new LocalAccount(request.account()));
         return ResponseEntity.ok(ApiResponse.success());
     }
