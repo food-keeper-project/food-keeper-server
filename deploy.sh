@@ -29,7 +29,7 @@ docker compose -f $COMPOSE_FILE up -d spring_$NEW_COLOR
 
 # 3) 헬스체크 (Spring Actuator 기준 예시)
 echo "Health check for spring_$NEW_COLOR..."
-for i in {1..10}; do
+for i in {1..30}; do
   if docker exec spring_$NEW_COLOR curl -f http://localhost:8080/actuator/health >/dev/null 2>&1; then
     echo "spring_$NEW_COLOR is healthy."
     break
