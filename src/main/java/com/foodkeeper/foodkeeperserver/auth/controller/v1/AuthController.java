@@ -82,7 +82,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AccountDuplicationCheckResponse>> checkAccountDuplication(
             @RequestBody AccountDuplicationCheckRequest request) {
         return ResponseEntity.ok(ApiResponse.success(new AccountDuplicationCheckResponse(
-                localAuthService.isDuplicatedAccount(request.account()))));
+                localAuthService.isDuplicatedAccount(new LocalAccount(request.account())))));
     }
 
     @NullMarked

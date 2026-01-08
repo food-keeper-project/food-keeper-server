@@ -1,6 +1,6 @@
 package com.foodkeeper.foodkeeperserver.auth.controller.v1.request;
 
-import jakarta.validation.constraints.Size;
+import com.foodkeeper.foodkeeperserver.auth.controller.v1.validation.ValidAccount;
 
-public record AccountDuplicationCheckRequest(@Size(max = 20) String account) {
+public record AccountDuplicationCheckRequest(@ValidAccount String account) {
 }

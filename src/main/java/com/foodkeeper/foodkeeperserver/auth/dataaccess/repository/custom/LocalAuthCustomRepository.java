@@ -12,7 +12,7 @@ public interface LocalAuthCustomRepository {
 
     boolean existsByEmailAndAccount(String email, String account);
 
-    Optional<LocalAuthEntity> findByAccountAndPassword(String account, String encodedPassword);
+    Optional<LocalAuthEntity> findByAccount(String account);
 
     Optional<LocalAuthEntity> findByEmail(String email);
 

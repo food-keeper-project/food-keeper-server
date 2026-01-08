@@ -47,7 +47,7 @@ public class LocalAuthService {
         return jwt;
     }
 
-    public boolean isDuplicatedAccount(String account) {
+    public boolean isDuplicatedAccount(LocalAccount account) {
         return localAuthAuthenticator.isDuplicatedAccount(account);
     }
 

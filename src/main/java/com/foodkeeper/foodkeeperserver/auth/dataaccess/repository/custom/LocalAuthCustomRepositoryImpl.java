@@ -56,10 +56,10 @@ public class LocalAuthCustomRepositoryImpl extends QuerydslRepositorySupport imp
     }
 
     @Override
-    public Optional<LocalAuthEntity> findByAccountAndPassword(String account, String encodedPassword) {
+    public Optional<LocalAuthEntity> findByAccount(String account) {
         return Optional.ofNullable(
                 selectFrom(localAuthEntity)
-                        .where(localAuthEntity.account.eq(account), localAuthEntity.password.eq(encodedPassword))
+                        .where(localAuthEntity.account.eq(account))
                         .where(localAuthEntity.status.ne(EntityStatus.DELETED))
                         .fetchOne()
         );
