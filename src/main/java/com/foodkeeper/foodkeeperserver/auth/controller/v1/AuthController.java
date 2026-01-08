@@ -51,8 +51,8 @@ public class AuthController {
     @NullMarked
     @SignInLog
     @PostMapping("/sign-in/local")
-    public ResponseEntity<ApiResponse<AuthTokenResponse>> signIn(
-            @Valid @RequestBody LocalSignInRequest request, HttpServletRequest httpRequest) {
+    public ResponseEntity<ApiResponse<AuthTokenResponse>> signIn(@Valid @RequestBody LocalSignInRequest request,
+                                                                 HttpServletRequest httpRequest) {
         Jwt jwt = localAuthService.signIn(request.toContext(NetworkUtils.getClientIp(httpRequest)));
 
         return ResponseEntity.ok(ApiResponse.success(new AuthTokenResponse(jwt.accessToken(), jwt.refreshToken())));
@@ -85,21 +85,21 @@ public class AuthController {
 
     @NullMarked
     @PostMapping("/verify/email")
-    public ResponseEntity<ApiResponse<Void>> verifyEmail(@RequestBody EmailVerifyRequest request) {
+    public ResponseEntity<ApiResponse<Void>> verifyEmail(@Valid @RequestBody EmailVerifyRequest request) {
         localAuthService.verifyEmail(new Email(request.email()));
         return ResponseEntity.ok(ApiResponse.success());
     }
 
     @NullMarked
     @PostMapping("/verify/email-code")
-    public ResponseEntity<ApiResponse<Void>> verifyEmailCode(@RequestBody EmailCodeVerifyRequest request) {
+    public ResponseEntity<ApiResponse<Void>> verifyEmailCode(@Valid @RequestBody EmailCodeVerifyRequest request) {
         localAuthService.verifyEmailCode(EmailCode.of(request.email(), request.code()));
         return ResponseEntity.ok(ApiResponse.success());
     }
 
     @NullMarked
     @PostMapping("/sign-up")
-    public ResponseEntity<ApiResponse<Void>> signUp(@RequestBody LocalSignUpRequest request,
+    public ResponseEntity<ApiResponse<Void>> signUp(@Valid @RequestBody LocalSignUpRequest request,
                                                     HttpServletRequest httpRequest) {
         localAuthService.signUp(request.toContext(httpRequest.getRemoteAddr()));
         return ResponseEntity.ok(ApiResponse.success());
