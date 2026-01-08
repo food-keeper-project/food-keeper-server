@@ -2,7 +2,7 @@ package com.foodkeeper.foodkeeperserver.auth.business;
 
 import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
 import com.foodkeeper.foodkeeperserver.auth.domain.OAuthUser;
-import com.foodkeeper.foodkeeperserver.auth.domain.SignInContext;
+import com.foodkeeper.foodkeeperserver.auth.domain.OauthSignInContext;
 import com.foodkeeper.foodkeeperserver.auth.domain.SignInEvent;
 import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
 import com.foodkeeper.foodkeeperserver.auth.implement.OAuthAuthenticator;
@@ -21,7 +21,7 @@ public class OauthService {
     private final ApplicationEventPublisher eventPublisher;
     private final OauthLockManager lockManager;
 
-    public Jwt signInByOAuth(SignInContext context) {
+    public Jwt signInByOAuth(OauthSignInContext context) {
         OAuthUser oAuthUser = oauthAuthenticator.authenticate(context.accessToken());
 
         String memberKey = registerIfNewAndGetMemberKey(context, oAuthUser);
@@ -34,7 +34,7 @@ public class OauthService {
         return jwt;
     }
 
-    private String registerIfNewAndGetMemberKey(SignInContext context, OAuthUser oAuthUser) {
+    private String registerIfNewAndGetMemberKey(OauthSignInContext context, OAuthUser oAuthUser) {
         String lockKey = context.oAuthProvider().name() + ":" + oAuthUser.email();
         try {
             lockManager.acquire(lockKey, 3);

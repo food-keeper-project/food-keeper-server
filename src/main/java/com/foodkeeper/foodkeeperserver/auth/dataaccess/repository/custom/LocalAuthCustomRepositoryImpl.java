@@ -4,6 +4,8 @@ import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.LocalAuthEntity;
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.enums.EntityStatus;
 import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
 
+import java.util.Optional;
+
 import static com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.QLocalAuthEntity.localAuthEntity;
 import static com.foodkeeper.foodkeeperserver.member.dataaccess.entity.QMemberEntity.memberEntity;
 
@@ -35,5 +37,15 @@ public class LocalAuthCustomRepositoryImpl extends QuerydslRepositorySupport imp
                 .fetchOne();
 
         return fetchOne != null;
+    }
+
+    @Override
+    public Optional<LocalAuthEntity> findByAccountAndPassword(String account, String encodedPassword) {
+        return Optional.ofNullable(
+                selectFrom(localAuthEntity)
+                        .where(localAuthEntity.account.eq(account), localAuthEntity.password.eq(encodedPassword))
+                        .where(localAuthEntity.status.ne(EntityStatus.DELETED))
+                        .fetchOne()
+        );
     }
 }

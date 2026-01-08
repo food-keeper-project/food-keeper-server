@@ -1,14 +1,12 @@
 package com.foodkeeper.foodkeeperserver.auth.business;
 
-import com.foodkeeper.foodkeeperserver.auth.domain.EmailCode;
-import com.foodkeeper.foodkeeperserver.auth.domain.EmailVerification;
-import com.foodkeeper.foodkeeperserver.auth.domain.SignUpContext;
+import com.foodkeeper.foodkeeperserver.auth.domain.*;
 import com.foodkeeper.foodkeeperserver.auth.implement.*;
 import com.foodkeeper.foodkeeperserver.member.domain.Email;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,19 +17,32 @@ public class LocalAuthService {
     private final LocalAuthAuthenticator localAuthAuthenticator;
     private final LocalAuthFinder localAuthFinder;
     private final LocalAuthRegistrar localAuthRegistrar;
-    private final PasswordEncoder passwordEncoder;
     private final EmailVerificator emailVerificator;
     private final RefreshTokenManager refreshTokenManager;
+    private final JwtGenerator jwtGenerator;
     private final LocalAuthLockManager lockManager;
+    private final ApplicationEventPublisher eventPublisher;
 
     public void signUp(SignUpContext context) {
         try {
             int lockTimeOut = 3;
             lockManager.acquire(context.getEmail(), lockTimeOut);
-            localAuthRegistrar.register(context.toNewLocalMember(passwordEncoder.encode(context.getPassword())));
+            String encodedPassword = localAuthAuthenticator.encodePassword(context.password());
+            localAuthRegistrar.register(context.toNewLocalMember(encodedPassword));
         } finally {
             lockManager.release(context.getEmail());
         }
+    }
+
+    public Jwt signIn(LocalSignInContext context) {
+        String memberKey = localAuthAuthenticator.authenticate(context.account(), context.password());
+
+        Jwt jwt = jwtGenerator.generateJwt(memberKey);
+
+        eventPublisher.publishEvent(
+                new SignInEvent(context.getIpAddress(), jwt.refreshToken(), context.fcmToken(), memberKey));
+
+        return jwt;
     }
 
     public boolean isDuplicatedAccount(String account) {

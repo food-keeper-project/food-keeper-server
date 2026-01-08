@@ -7,12 +7,12 @@ import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.Builder;
 
 @Builder
-public record SignInContext(String accessToken,
-                            OAuthProvider oAuthProvider,
-                            String fcmToken,
-                            IpAddress ipAddress) {
+public record OauthSignInContext(String accessToken,
+                                 OAuthProvider oAuthProvider,
+                                 String fcmToken,
+                                 IpAddress ipAddress) {
 
-    public SignInContext {
+    public OauthSignInContext {
         if (accessToken == null) {
             throw new AppException(ErrorType.OAUTH_ACCESS_TOKEN_IS_NULL);
         }
