@@ -25,7 +25,7 @@ public class LocalAuthCustomRepositoryImpl extends QuerydslRepositorySupport imp
     }
 
     @Override
-    public boolean existsEmail(String email) {
+    public boolean existsByEmail(String email) {
         Integer fetchOne = selectOne()
                 .from(localAuthEntity)
                 .innerJoin(memberEntity)
@@ -40,11 +40,56 @@ public class LocalAuthCustomRepositoryImpl extends QuerydslRepositorySupport imp
     }
 
     @Override
+    public boolean existsByEmailAndAccount(String email, String account) {
+        Integer fetchOne = selectOne()
+                .from(localAuthEntity)
+                .innerJoin(memberEntity)
+                .on(localAuthEntity.memberKey.eq(memberEntity.memberKey))
+                .where(memberEntity.email.eq(email),
+                        localAuthEntity.account.eq(account),
+                        localAuthEntity.status.ne(EntityStatus.DELETED),
+                        memberEntity.status.ne(EntityStatus.DELETED)
+                )
+                .fetchOne();
+
+        return fetchOne != null;
+    }
+
+    @Override
     public Optional<LocalAuthEntity> findByAccountAndPassword(String account, String encodedPassword) {
         return Optional.ofNullable(
                 selectFrom(localAuthEntity)
                         .where(localAuthEntity.account.eq(account), localAuthEntity.password.eq(encodedPassword))
                         .where(localAuthEntity.status.ne(EntityStatus.DELETED))
+                        .fetchOne()
+        );
+    }
+
+    @Override
+    public Optional<LocalAuthEntity> findByEmail(String email) {
+        return Optional.ofNullable(
+                selectFrom(localAuthEntity)
+                        .innerJoin(memberEntity)
+                        .on(localAuthEntity.memberKey.eq(memberEntity.memberKey))
+                        .where(memberEntity.email.eq(email),
+                                localAuthEntity.status.ne(EntityStatus.DELETED),
+                                memberEntity.status.ne(EntityStatus.DELETED)
+                        )
+                        .fetchOne()
+        );
+    }
+
+    @Override
+    public Optional<LocalAuthEntity> findByEmailAndAccount(String email, String account) {
+        return Optional.ofNullable(
+                selectFrom(localAuthEntity)
+                        .innerJoin(memberEntity)
+                        .on(localAuthEntity.memberKey.eq(memberEntity.memberKey))
+                        .where(memberEntity.email.eq(email),
+                                localAuthEntity.account.eq(account),
+                                localAuthEntity.status.ne(EntityStatus.DELETED),
+                                memberEntity.status.ne(EntityStatus.DELETED)
+                        )
                         .fetchOne()
         );
     }

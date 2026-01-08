@@ -28,7 +28,7 @@ public class LocalAuthAuthenticator {
     public String authenticate(LocalAccount account, Password password) {
         String encodedPassword = encodePassword(password);
         return localAuthRepository.findByAccountAndPassword(account.account(), encodedPassword)
-                .orElseThrow(() -> new AppException(ErrorType.FAILED_AUTH_WITH_ID_OR_PASSWORD))
+                .orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_ACCOUNT))
                 .getMemberKey();
     }
 }

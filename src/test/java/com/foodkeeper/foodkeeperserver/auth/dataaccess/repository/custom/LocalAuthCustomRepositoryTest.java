@@ -53,7 +53,7 @@ class LocalAuthRepositoryTest extends RepositoryTest {
         em.persist(new LocalAuthEntity("account", "password", member.getMemberKey()));
 
         // when
-        boolean exists = localAuthRepository.existsEmail(member.getEmail());
+        boolean exists = localAuthRepository.existsByEmail(member.getEmail());
 
         // then
         assertThat(exists).isTrue();
@@ -67,7 +67,7 @@ class LocalAuthRepositoryTest extends RepositoryTest {
         em.persist(new LocalAuthEntity("account", "password", member.getMemberKey()));
 
         // when
-        boolean exists = localAuthRepository.existsEmail("anotherEmail");
+        boolean exists = localAuthRepository.existsByEmail("anotherEmail");
 
         // then
         assertThat(exists).isFalse();

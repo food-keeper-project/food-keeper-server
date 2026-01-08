@@ -1,6 +1,7 @@
 package com.foodkeeper.foodkeeperserver.auth.business;
 
 import com.foodkeeper.foodkeeperserver.auth.domain.*;
+import com.foodkeeper.foodkeeperserver.auth.enums.VerificationMessageTitle;
 import com.foodkeeper.foodkeeperserver.auth.implement.*;
 import com.foodkeeper.foodkeeperserver.member.domain.Email;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
@@ -20,6 +21,7 @@ public class LocalAuthService {
     private final EmailVerificator emailVerificator;
     private final RefreshTokenManager refreshTokenManager;
     private final JwtGenerator jwtGenerator;
+    private final LocalAuthRecoverer localAuthRecoverer;
     private final LocalAuthLockManager lockManager;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -49,12 +51,31 @@ public class LocalAuthService {
         return localAuthAuthenticator.isDuplicatedAccount(account);
     }
 
-    public void verifyEmail(Email email) {
+    public void verifyEmailForRecoverAccount(Email email) {
+        if (!localAuthFinder.existsEmail(email)) {
+            throw new AppException(ErrorType.INVALID_EMAIL);
+        }
+
+        emailVerificator.sendVerificationCode(email, LocalDateTime.now().plusMinutes(5),
+                VerificationMessageTitle.RECOVER_ACCOUNT.getTitle());
+    }
+
+    public void verifyEmailForRecoverPassword(Email email, LocalAccount account) {
+        if (!localAuthFinder.existsEmailAndAccount(email, account)) {
+            throw new AppException(ErrorType.NOT_FOUND_ACCOUNT);
+        }
+
+        emailVerificator.sendVerificationCode(email, LocalDateTime.now().plusMinutes(5),
+                VerificationMessageTitle.RECOVER_PASSWORD.getTitle());
+    }
+
+    public void verifyEmailForSignUp(Email email) {
         if (localAuthFinder.existsEmail(email)) {
             throw new AppException(ErrorType.DUPLICATED_EMAIL);
         }
 
-        emailVerificator.sendVerificationCode(email, LocalDateTime.now().plusMinutes(5));
+        emailVerificator.sendVerificationCode(email, LocalDateTime.now().plusMinutes(5),
+                VerificationMessageTitle.SIGN_UP.getTitle());
     }
 
     public void verifyEmailCode(EmailCode emailCode) {
@@ -83,6 +104,29 @@ public class LocalAuthService {
 
         emailVerification.verify();
         emailVerificator.updateVerification(emailVerification);
+    }
+
+    public void recoverAccount(EmailCode emailCode) {
+        verifyEmailCode(emailCode);
+
+        localAuthRecoverer.recoverAccount(emailCode.email());
+    }
+
+    public void findPassword(EmailCode emailCode, LocalAccount account) {
+        verifyEmailCode(emailCode);
+
+        if (!localAuthFinder.existsEmailAndAccount(emailCode.email(), account)) {
+            throw new AppException(ErrorType.NOT_FOUND_ACCOUNT);
+        }
+    }
+
+    public void changePassword(Email email, LocalAccount account, Password password) {
+        EmailVerification emailVerification = emailVerificator.findEmailVerification(email);
+        if (!emailVerification.isVerified()) {
+            throw new AppException(ErrorType.NOT_VERIFIED_EMAIL);
+        }
+
+        localAuthRecoverer.changePassword(email, account, password);
     }
 
     public void signOut(String memberKey) {

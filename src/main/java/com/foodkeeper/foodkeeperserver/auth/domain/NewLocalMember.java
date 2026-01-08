@@ -1,7 +1,6 @@
-package com.foodkeeper.foodkeeperserver.member.domain;
+package com.foodkeeper.foodkeeperserver.auth.domain;
 
-import com.foodkeeper.foodkeeperserver.auth.domain.LocalAccount;
-import com.foodkeeper.foodkeeperserver.auth.domain.EncodedPassword;
+import com.foodkeeper.foodkeeperserver.member.domain.NewMember;
 import lombok.Builder;
 
 @Builder

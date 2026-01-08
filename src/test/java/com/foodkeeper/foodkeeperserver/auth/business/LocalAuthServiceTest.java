@@ -42,15 +42,24 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class LocalAuthServiceTest {
-    @Mock MemberRepository memberRepository;
-    @Mock MemberRoleRepository memberRoleRepository;
-    @Mock EmailVerificationRepository emailVerificationRepository;
-    @Mock LocalAuthRepository localAuthRepository;
-    @Mock CategoryManager foodCategoryManager;
-    @Mock TransactionHandler transactionHandler;
-    @Mock JavaMailSender javaMailSender;
-    @Mock PasswordEncoder passwordEncoder;
-    @Mock ApplicationEventPublisher eventPublisher;
+    @Mock
+    MemberRepository memberRepository;
+    @Mock
+    MemberRoleRepository memberRoleRepository;
+    @Mock
+    EmailVerificationRepository emailVerificationRepository;
+    @Mock
+    LocalAuthRepository localAuthRepository;
+    @Mock
+    CategoryManager foodCategoryManager;
+    @Mock
+    TransactionHandler transactionHandler;
+    @Mock
+    JavaMailSender javaMailSender;
+    @Mock
+    PasswordEncoder passwordEncoder;
+    @Mock
+    ApplicationEventPublisher eventPublisher;
     JwtGenerator jwtGenerator;
     SecretKey secretKey;
     LocalAuthService localAuthService;
@@ -67,8 +76,10 @@ class LocalAuthServiceTest {
         LocalAuthLockManager lockManager = new LocalAuthLockManager(localAuthRepository);
         LocalAuthRegistrar localAuthRegistrar = new LocalAuthRegistrar(localAuthRepository, memberRegistrar, emailVerificator);
         jwtGenerator = new JwtGenerator(secretKey);
+        LocalAuthRecoverer localAuthRecoverer = new LocalAuthRecoverer(localAuthRepository, localAuthFinder,
+                appMailSender, transactionHandler, passwordEncoder);
         localAuthService = new LocalAuthService(localAuthAuthenticator, localAuthFinder, localAuthRegistrar,
-                emailVerificator, refreshTokenManager, jwtGenerator, lockManager, eventPublisher);
+                emailVerificator, refreshTokenManager, jwtGenerator, localAuthRecoverer, lockManager, eventPublisher);
     }
 
     @Test
@@ -90,10 +101,10 @@ class LocalAuthServiceTest {
     void throwAppExceptionIfEmailExists() {
         // given
         String email = "test@mail.com";
-        given(localAuthRepository.existsEmail(eq(email))).willReturn(true);
+        given(localAuthRepository.existsByEmail(eq(email))).willReturn(true);
 
         // then
-        assertThatCode(() -> localAuthService.verifyEmail(new Email(email)))
+        assertThatCode(() -> localAuthService.verifyEmailForSignUp(new Email(email)))
                 .isInstanceOf(AppException.class)
                 .extracting("errorType")
                 .isEqualTo(ErrorType.DUPLICATED_EMAIL);
@@ -104,10 +115,10 @@ class LocalAuthServiceTest {
     void sendVerificationCodeIfEmailNotExists() {
         // given
         String email = "test@mail.com";
-        given(localAuthRepository.existsEmail(eq(email))).willReturn(false);
+        given(localAuthRepository.existsByEmail(eq(email))).willReturn(false);
 
         // when
-        localAuthService.verifyEmail(new Email(email));
+        localAuthService.verifyEmailForSignUp(new Email(email));
 
         // then
         verify(transactionHandler, times(1)).afterCommit(any());

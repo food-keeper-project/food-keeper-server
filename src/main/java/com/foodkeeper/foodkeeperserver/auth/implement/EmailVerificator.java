@@ -18,21 +18,21 @@ import java.time.LocalDateTime;
 @Component
 @RequiredArgsConstructor
 public class EmailVerificator {
-    private static final String VERIFICATION_MESSAGE_TITLE = "[키친로그] 회원가입 인증 번호입니다.";
     private static final String VERIFICATION_MESSAGE_BODY = "[인증 번호]\n%s";
+
     private final EmailVerificationRepository emailVerificationRepository;
     private final AppMailSender appMailSender;
     private final TransactionHandler transactionHandler;
 
     @Transactional
-    public void sendVerificationCode(Email email, LocalDateTime expiredAt) {
+    public void sendVerificationCode(Email email, LocalDateTime expiredAt, String messageTitle) {
         String code = generateVerificationCode();
 
         emailVerificationRepository.updateVerificationsStatusToExpired(email.email());
         emailVerificationRepository.save(new EmailVerificationEntity(email.email(), code, expiredAt));
 
         transactionHandler.afterCommit(() ->
-                appMailSender.send(email.email(), VERIFICATION_MESSAGE_TITLE, VERIFICATION_MESSAGE_BODY.formatted(code)));
+                appMailSender.send(email.email(), messageTitle, VERIFICATION_MESSAGE_BODY.formatted(code)));
     }
 
     private String generateVerificationCode() {
