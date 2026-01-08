@@ -1,15 +1,16 @@
 package com.foodkeeper.foodkeeperserver.auth.business;
 
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.OauthEntity;
-import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.LocalAuthRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.MemberRoleRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
 import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
 import com.foodkeeper.foodkeeperserver.auth.domain.OAuthUser;
 import com.foodkeeper.foodkeeperserver.auth.domain.SignInContext;
+import com.foodkeeper.foodkeeperserver.auth.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
 import com.foodkeeper.foodkeeperserver.auth.implement.KakaoAuthenticator;
-import com.foodkeeper.foodkeeperserver.auth.implement.OauthFinder;
+import com.foodkeeper.foodkeeperserver.auth.implement.OauthLockManager;
+import com.foodkeeper.foodkeeperserver.auth.implement.OauthRegistrar;
 import com.foodkeeper.foodkeeperserver.food.implement.CategoryManager;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
@@ -17,7 +18,6 @@ import com.foodkeeper.foodkeeperserver.member.domain.Email;
 import com.foodkeeper.foodkeeperserver.member.domain.IpAddress;
 import com.foodkeeper.foodkeeperserver.member.domain.Nickname;
 import com.foodkeeper.foodkeeperserver.member.domain.ProfileImageUrl;
-import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,8 +33,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -46,7 +45,6 @@ class OauthServiceTest {
     @Mock MemberRoleRepository memberRoleRepository;
     @Mock KakaoAuthenticator kakaoAuthenticator;
     @Mock CategoryManager foodCategoryManager;
-    @Mock LocalAuthRepository localAuthRepository;
     @Mock ApplicationEventPublisher eventPublisher;
     SecretKey secretKey;
     OauthService oauthService;
@@ -55,10 +53,11 @@ class OauthServiceTest {
     void setUp() {
         secretKey = Keys.hmacShaKeyFor("this_is_a_test_secret_key_abcdefghijtlmnopqr".getBytes(StandardCharsets.UTF_8));
         JwtGenerator jwtGenerator = new JwtGenerator(secretKey);
-        OauthFinder oauthFinder = new OauthFinder(oauthRepository);
-        MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, oauthRepository, localAuthRepository,
-                memberRoleRepository, foodCategoryManager);
-        oauthService = new OauthService(kakaoAuthenticator, oauthFinder, memberRegistrar, jwtGenerator, eventPublisher);
+        MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, memberRoleRepository, foodCategoryManager);
+        OauthRegistrar oauthRegistrar = new OauthRegistrar(oauthRepository, memberRegistrar);
+        OauthLockManager oauthLockManager = new OauthLockManager(oauthRepository);
+        oauthService = new OauthService(kakaoAuthenticator, oauthRegistrar, jwtGenerator, eventPublisher,
+                oauthLockManager);
     }
 
     @Test
@@ -68,21 +67,25 @@ class OauthServiceTest {
         String account = "account";
         String accessToken = "accessToken";
         String memberKey = "memberKey";
+        OAuthProvider provider = OAuthProvider.KAKAO;
+        String email = "email@test.com";
         SignInContext register = SignInContext.builder()
                 .accessToken(accessToken)
                 .ipAddress(new IpAddress("127.0.0.1"))
                 .fcmToken("fcmToken")
-                .oAuthProvider(OAuthProvider.KAKAO)
+                .oAuthProvider(provider)
                 .build();
         OAuthUser oauthUser = OAuthUser.builder()
                 .account(account)
-                .email(new Email("email@test.com"))
+                .provider(OAuthProvider.KAKAO)
+                .email(new Email(email))
                 .nickname(new Nickname("nickname"))
                 .profileImageUrl(new ProfileImageUrl("https://test.com/image.jpg"))
                 .build();
-        OauthEntity oauthEntity = new OauthEntity(OAuthProvider.KAKAO, account, memberKey);
+        OauthEntity oauthEntity = new OauthEntity(provider, account, memberKey);
         given(kakaoAuthenticator.authenticate(eq(accessToken))).willReturn(oauthUser);
-        given(oauthRepository.findByAccount(eq(account))).willReturn(Optional.of(oauthEntity));
+        given(oauthRepository.findByEmail(eq(email), eq(provider))).willReturn(Optional.of(oauthEntity));
+        given(oauthRepository.getLock(anyString(), anyInt())).willReturn(1);
 
         // when
         Jwt jwt = oauthService.signInByOAuth(register);
@@ -119,6 +122,7 @@ class OauthServiceTest {
         given(kakaoAuthenticator.authenticate(eq(accessToken))).willReturn(oauthUser);
         given(memberRepository.save(any(MemberEntity.class))).willReturn(memberEntity);
         given(oauthRepository.save(any(OauthEntity.class))).willReturn(oauthEntity);
+        given(oauthRepository.getLock(anyString(), anyInt())).willReturn(1);
 
         // when
         Jwt jwt = oauthService.signInByOAuth(register);

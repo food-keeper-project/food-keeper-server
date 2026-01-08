@@ -1,7 +1,7 @@
 package com.foodkeeper.foodkeeperserver.auth.dataaccess.entity;
 
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.BaseEntity;
-import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
+import com.foodkeeper.foodkeeperserver.auth.domain.enums.OAuthProvider;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

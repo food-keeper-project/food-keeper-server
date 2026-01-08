@@ -1,7 +1,9 @@
 package com.foodkeeper.foodkeeperserver.auth.dataaccess.repository;
 
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.OauthEntity;
-import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
+import com.foodkeeper.foodkeeperserver.auth.domain.enums.OAuthProvider;
+import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
+import com.foodkeeper.foodkeeperserver.member.fixture.MemberEntityFixture;
 import com.foodkeeper.foodkeeperserver.support.repository.RepositoryTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,18 +19,21 @@ class OauthRepositoryTest extends RepositoryTest {
     @Autowired OauthRepository oauthRepository;
 
     @Test
-    @DisplayName("account로 OAuth를 조회한다.")
+    @DisplayName("email과 provider로 OAuth를 조회한다.")
     void findOAuthByAccount() {
         // given
-        String account = "account";
-        em.persist(new OauthEntity(OAuthProvider.KAKAO, account, "memberKey"));
+        OAuthProvider provider = OAuthProvider.KAKAO;
+        MemberEntity member = em.persist(MemberEntityFixture.DEFAULT.get());
+        em.persist(new OauthEntity(provider, "account", member.getMemberKey()));
 
         // when
-        Optional<OauthEntity> oauth = oauthRepository.findByAccount(account);
+        Optional<OauthEntity> oauth1 = oauthRepository.findByEmail(member.getEmail(), provider);
+        Optional<OauthEntity> oauth2 = oauthRepository.findByEmail("another@mail.com", provider);
 
         // then
-        assertThat(oauth).isNotEmpty();
-        assertThat(oauth.get().getAccount()).isEqualTo(account);
+        assertThat(oauth1).isNotEmpty();
+        assertThat(oauth2).isEmpty();
+        assertThat(oauth1.get().getAccount()).isEqualTo("account");
     }
 
     @Test

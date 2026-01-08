@@ -3,9 +3,8 @@ package com.foodkeeper.foodkeeperserver.auth.implement;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.EmailVerificationEntity;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.EmailVerificationRepository;
 import com.foodkeeper.foodkeeperserver.auth.domain.EmailVerification;
-import com.foodkeeper.foodkeeperserver.auth.domain.EmailCode;
 import com.foodkeeper.foodkeeperserver.common.handler.TransactionHandler;
-import com.foodkeeper.foodkeeperserver.mail.service.AppMailSender;
+import com.foodkeeper.foodkeeperserver.mail.implement.AppMailSender;
 import com.foodkeeper.foodkeeperserver.member.domain.Email;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
@@ -50,17 +49,24 @@ public class EmailVerificator {
         emailVerificationRepository.incrementFailedCount(email.email());
     }
 
+    /**
+     * @apiNote VerificationStatus가 Blocked이거나 Expired일 경우 삭제 처리
+     */
     @Transactional
-    public void expireCode(EmailCode emailCode) {
-        emailVerificationRepository.updateStatusToExpired(emailCode.getEmail(), emailCode.code());
+    public void updateVerification(EmailVerification emailVerification) {
+        EmailVerificationEntity entity = emailVerificationRepository.findById(emailVerification.getId())
+                .orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_EMAIL_VERIFICATION));
+
+        entity.update(emailVerification.getStatus());
+        if (emailVerification.isExpired() || emailVerification.isBlocked()) {
+            entity.delete();
+        }
     }
 
     @Transactional
-    public void makeAsVerified(EmailCode emailCode) {
-        emailVerificationRepository.updateStatusToVerified(emailCode.getEmail(), emailCode.code());
-    }
-
-    public boolean isVerified(Email email) {
-        return findEmailVerification(email).isVerified();
+    public void deleteVerification(Long id) {
+        emailVerificationRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_EMAIL_VERIFICATION))
+                .delete();
     }
 }

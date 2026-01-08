@@ -1,4 +1,4 @@
-package com.foodkeeper.foodkeeperserver.mail.service;
+package com.foodkeeper.foodkeeperserver.mail.implement;
 
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;

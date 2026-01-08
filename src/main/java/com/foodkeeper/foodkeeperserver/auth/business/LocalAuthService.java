@@ -3,12 +3,8 @@ package com.foodkeeper.foodkeeperserver.auth.business;
 import com.foodkeeper.foodkeeperserver.auth.domain.EmailCode;
 import com.foodkeeper.foodkeeperserver.auth.domain.EmailVerification;
 import com.foodkeeper.foodkeeperserver.auth.domain.SignUpContext;
-import com.foodkeeper.foodkeeperserver.auth.implement.EmailVerificator;
-import com.foodkeeper.foodkeeperserver.auth.implement.LocalAuthAuthenticator;
-import com.foodkeeper.foodkeeperserver.auth.implement.RefreshTokenManager;
+import com.foodkeeper.foodkeeperserver.auth.implement.*;
 import com.foodkeeper.foodkeeperserver.member.domain.Email;
-import com.foodkeeper.foodkeeperserver.member.implement.MemberFinder;
-import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -21,17 +17,21 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class LocalAuthService {
     private final LocalAuthAuthenticator localAuthAuthenticator;
-    private final MemberFinder memberFinder;
-    private final MemberRegistrar memberRegistrar;
+    private final LocalAuthFinder localAuthFinder;
+    private final LocalAuthRegistrar localAuthRegistrar;
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificator emailVerificator;
     private final RefreshTokenManager refreshTokenManager;
+    private final LocalAuthLockManager lockManager;
 
     public void signUp(SignUpContext context) {
-        if (!emailVerificator.isVerified(context.email())) {
-            throw new AppException(ErrorType.NOT_VERIFIED_EMAIL);
+        try {
+            int lockTimeOut = 3;
+            lockManager.acquire(context.getEmail(), lockTimeOut);
+            localAuthRegistrar.register(context.toNewLocalMember(passwordEncoder.encode(context.getPassword())));
+        } finally {
+            lockManager.release(context.getEmail());
         }
-        memberRegistrar.register(context.toNewLocalMember(passwordEncoder.encode(context.getPassword())));
     }
 
     public boolean isDuplicatedAccount(String account) {
@@ -39,7 +39,7 @@ public class LocalAuthService {
     }
 
     public void verifyEmail(Email email) {
-        if (memberFinder.existsEmail(email)) {
+        if (localAuthFinder.existsEmail(email)) {
             throw new AppException(ErrorType.DUPLICATED_EMAIL);
         }
 
@@ -49,8 +49,8 @@ public class LocalAuthService {
     public void verifyEmailCode(EmailCode emailCode) {
         EmailVerification emailVerification = emailVerificator.findEmailVerification(emailCode.email());
 
-        if (emailVerification.isFailedExceeded(5)) {
-            throw new AppException(ErrorType.TOO_MUCH_FAILED);
+        if (emailVerification.isVerified()) {
+            throw new AppException(ErrorType.INVALID_EMAIL_CODE);
         }
 
         if (emailVerification.isNotEqualsCode(emailCode.code())) {
@@ -58,16 +58,20 @@ public class LocalAuthService {
             throw new AppException(ErrorType.INVALID_EMAIL_CODE);
         }
 
-        if (emailVerification.isVerified()) {
-            throw new AppException(ErrorType.INVALID_EMAIL_CODE);
+        if (emailVerification.isFailedExceeded(5)) {
+            emailVerification.block();
+            emailVerificator.updateVerification(emailVerification);
+            throw new AppException(ErrorType.TOO_MUCH_FAILED);
         }
 
         if (emailVerification.isExpired()) {
-            emailVerificator.expireCode(emailCode);
+            emailVerification.expire();
+            emailVerificator.updateVerification(emailVerification);
             throw new AppException(ErrorType.EXPIRED_EMAIL_CODE);
         }
 
-        emailVerificator.makeAsVerified(emailCode);
+        emailVerification.verify();
+        emailVerificator.updateVerification(emailVerification);
     }
 
     public void signOut(String memberKey) {

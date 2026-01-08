@@ -5,6 +5,7 @@ import com.foodkeeper.foodkeeperserver.auth.domain.enums.EmailVerificationStatus
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.enums.EntityStatus;
 import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -18,11 +19,12 @@ public class EmailVerificationCustomRepositoryImpl extends QuerydslRepositorySup
     }
 
     @Override
+    @Transactional
     public void updateVerificationsStatusToExpired(String email) {
         update(emailVerificationEntity)
                 .set(emailVerificationEntity.verificationStatus, EmailVerificationStatus.EXPIRED)
-                .where(isActive())
                 .where(emailVerificationEntity.email.eq(email))
+                .where(isNotDeleted())
                 .execute();
 
         getEntityManager().clear();
@@ -33,46 +35,24 @@ public class EmailVerificationCustomRepositoryImpl extends QuerydslRepositorySup
         return Optional.ofNullable(
                 selectFrom(emailVerificationEntity)
                         .where(emailVerificationEntity.email.eq(email))
-                        .where(isActive())
-                        .fetchOne()
+                        .where(isNotDeleted())
+                        .fetchFirst()
         );
     }
 
     @Override
-    public void updateStatusToExpired(String email, String code) {
-        update(emailVerificationEntity)
-                .set(emailVerificationEntity.verificationStatus, EmailVerificationStatus.EXPIRED)
-                .where(isActive())
-                .where(emailVerificationEntity.email.eq(email), emailVerificationEntity.code.eq(code))
-                .execute();
-
-        getEntityManager().clear();
-    }
-
-    @Override
+    @Transactional
     public void incrementFailedCount(String email) {
         update(emailVerificationEntity)
                 .set(emailVerificationEntity.failedCount, emailVerificationEntity.failedCount.add(1))
-                .where(isActive())
                 .where(emailVerificationEntity.email.eq(email))
+                .where(isNotDeleted(), emailVerificationEntity.verificationStatus.eq(EmailVerificationStatus.ACTIVE))
                 .execute();
 
         getEntityManager().clear();
     }
 
-    @Override
-    public void updateStatusToVerified(String email, String code) {
-        update(emailVerificationEntity)
-                .set(emailVerificationEntity.verificationStatus, EmailVerificationStatus.VERIFIED)
-                .where(isActive())
-                .where(emailVerificationEntity.email.eq(email), emailVerificationEntity.code.eq(code))
-                .execute();
-
-        getEntityManager().clear();
-    }
-
-    private static BooleanExpression isActive() {
-        return emailVerificationEntity.status.ne(EntityStatus.DELETED).and(
-                emailVerificationEntity.verificationStatus.eq(EmailVerificationStatus.ACTIVE));
+    private static BooleanExpression isNotDeleted() {
+        return emailVerificationEntity.status.ne(EntityStatus.DELETED);
     }
 }

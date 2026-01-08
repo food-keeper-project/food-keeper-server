@@ -1,4 +1,4 @@
-package com.foodkeeper.foodkeeperserver.auth.e2e;
+package com.foodkeeper.foodkeeperserver.auth.integration;
 
 import com.foodkeeper.foodkeeperserver.auth.controller.v1.response.AuthTokenResponse;
 import com.foodkeeper.foodkeeperserver.auth.domain.OAuthUser;
@@ -9,7 +9,7 @@ import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberReposi
 import com.foodkeeper.foodkeeperserver.member.domain.Email;
 import com.foodkeeper.foodkeeperserver.member.domain.Nickname;
 import com.foodkeeper.foodkeeperserver.member.domain.ProfileImageUrl;
-import com.foodkeeper.foodkeeperserver.member.domain.enums.OAuthProvider;
+import com.foodkeeper.foodkeeperserver.auth.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.member.fixture.MemberEntityFixture;
 import com.foodkeeper.foodkeeperserver.notification.dataaccess.entity.FcmTokenEntity;
 import com.foodkeeper.foodkeeperserver.notification.dataaccess.repository.FcmRepository;

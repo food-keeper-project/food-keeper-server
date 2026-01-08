@@ -1,13 +1,17 @@
 package com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.custom;
 
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.OauthEntity;
+import com.foodkeeper.foodkeeperserver.auth.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.enums.EntityStatus;
+import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.QMemberEntity;
 import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
+import com.querydsl.core.types.dsl.BooleanExpression;
 
 import java.util.List;
 import java.util.Optional;
 
 import static com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.QOauthEntity.oauthEntity;
+import static com.foodkeeper.foodkeeperserver.member.dataaccess.entity.QMemberEntity.memberEntity;
 
 public class OauthCustomRepositoryImpl extends QuerydslRepositorySupport implements OauthCustomRepository {
 
@@ -16,10 +20,16 @@ public class OauthCustomRepositoryImpl extends QuerydslRepositorySupport impleme
     }
 
     @Override
-    public Optional<OauthEntity> findByAccount(String account) {
+    public Optional<OauthEntity> findByEmail(String email, OAuthProvider provider) {
         return Optional.ofNullable(
                 selectFrom(oauthEntity)
-                        .where(oauthEntity.account.eq(account), oauthEntity.status.ne(EntityStatus.DELETED))
+                        .innerJoin(memberEntity)
+                        .on(oauthEntity.memberKey.eq(memberEntity.memberKey))
+                        .where(memberEntity.email.eq(email),
+                                oauthEntity.provider.eq(provider),
+                                isNotDeleted(),
+                                memberEntity.status.ne(EntityStatus.DELETED)
+                        )
                         .fetchOne()
         );
     }
@@ -27,7 +37,11 @@ public class OauthCustomRepositoryImpl extends QuerydslRepositorySupport impleme
     @Override
     public List<OauthEntity> findAllByMemberKey(String memberKey) {
         return selectFrom(oauthEntity)
-                .where(oauthEntity.memberKey.eq(memberKey), oauthEntity.status.ne(EntityStatus.DELETED))
+                .where(oauthEntity.memberKey.eq(memberKey), isNotDeleted())
                 .fetch();
+    }
+
+    private static BooleanExpression isNotDeleted() {
+        return oauthEntity.status.ne(EntityStatus.DELETED);
     }
 }

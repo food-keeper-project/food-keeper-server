@@ -48,10 +48,15 @@ public class EmailVerificationEntity extends BaseEntity {
 
     public EmailVerification toDomain() {
         return EmailVerification.builder()
+                .id(id)
                 .emailCode(EmailCode.of(email, code))
                 .failedCount(failedCount)
                 .expiredAt(expiredAt)
                 .status(verificationStatus)
                 .build();
+    }
+
+    public void update(EmailVerificationStatus verificationStatus) {
+        this.verificationStatus = verificationStatus;
     }
 }

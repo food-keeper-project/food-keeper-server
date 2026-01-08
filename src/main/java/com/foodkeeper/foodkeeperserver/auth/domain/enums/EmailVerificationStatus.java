@@ -4,4 +4,5 @@ public enum EmailVerificationStatus {
     VERIFIED,
     EXPIRED,
     ACTIVE,
+    BLOCKED
 }

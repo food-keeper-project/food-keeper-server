@@ -7,6 +7,7 @@ import com.foodkeeper.foodkeeperserver.notification.implement.FcmManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -16,6 +17,7 @@ public class SignInEventListener {
     private final FcmManager fcmManager;
 
     @EventListener
+    @Transactional
     public void handleSignInEvent(SignInEvent event) {
         signInLogAppender.append(event.ipAddress(), event.memberKey());
 
