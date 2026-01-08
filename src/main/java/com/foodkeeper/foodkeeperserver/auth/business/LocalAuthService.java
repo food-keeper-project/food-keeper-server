@@ -26,7 +26,8 @@ public class LocalAuthService {
 
     public void signUp(SignUpContext context) {
         try {
-            lockManager.acquire(context.getEmail(), 3);
+            int lockTimeOut = 3;
+            lockManager.acquire(context.getEmail(), lockTimeOut);
             localAuthRegistrar.register(context.toNewLocalMember(passwordEncoder.encode(context.getPassword())));
         } finally {
             lockManager.release(context.getEmail());

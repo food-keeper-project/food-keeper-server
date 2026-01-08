@@ -1,7 +1,6 @@
 package com.foodkeeper.foodkeeperserver.auth.business;
 
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.OauthEntity;
-import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.LocalAuthRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.MemberRoleRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
 import com.foodkeeper.foodkeeperserver.auth.domain.Jwt;
