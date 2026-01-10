@@ -53,13 +53,19 @@ public class SecurityConfig {
                 .oauth2Login(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(mvc.matcher("/api/v1/auth/sign-in/**")).permitAll()
-                        .requestMatchers(mvc.matcher("/api/v1/auth/sign-up")).permitAll()
                         .requestMatchers(mvc.matcher("/api/v1/test-sign-in/**")).permitAll()
-                        .requestMatchers(mvc.matcher("/api/v1/auth/check/**")).permitAll()
-                        .requestMatchers(mvc.matcher("/api/v1/auth/verify/**")).permitAll()
-                        .requestMatchers(mvc.matcher("/actuator")).permitAll()
-                        .requestMatchers(mvc.matcher("/actuator/**")).permitAll()
+                        .requestMatchers(
+                                mvc.matcher("/api/v1/auth/sign-in/**"),
+                                mvc.matcher("/api/v1/auth/check/account"),
+                                mvc.matcher("/api/v1/auth/**/verify"),
+                                mvc.matcher("/api/v1/auth/sign-up"),
+                                mvc.matcher("/api/v1/password/change")
+                        ).permitAll()
+                        .requestMatchers(
+                                mvc.matcher("/actuator"),
+                                mvc.matcher("/actuator/health"),
+                                mvc.matcher("/actuator/prometheus")
+                        ).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(configurer ->
                         configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
