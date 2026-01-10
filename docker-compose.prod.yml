@@ -59,7 +59,7 @@ services:
       - kitchen-log
     volumes:
       - ./:/app/local
-      - ./logs:/var/log/spring
+      - /var/log/kitchen-log:/var/log/kitchen-log
 
   promtail:
     image: grafana/promtail:latest
