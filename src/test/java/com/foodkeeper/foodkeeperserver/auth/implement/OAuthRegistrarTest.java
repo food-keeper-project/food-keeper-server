@@ -24,11 +24,12 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
-class OauthRegistrarTest {
+class OAuthRegistrarTest {
 
     @Mock OauthRepository oauthRepository;
     @Mock MemberRegistrar memberRegistrar;
-    @InjectMocks OauthRegistrar oauthRegistrar;
+    @InjectMocks
+    OAuthRegistrar oauthRegistrar;
 
     @Test
     @DisplayName("Email, Provider 데이터 조회 후 있으면 memberKey를 반환한다.")

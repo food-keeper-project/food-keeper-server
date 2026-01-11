@@ -1,7 +1,7 @@
 package com.foodkeeper.foodkeeperserver.auth.integration;
 
 import com.foodkeeper.foodkeeperserver.auth.business.LocalAuthService;
-import com.foodkeeper.foodkeeperserver.auth.business.OauthService;
+import com.foodkeeper.foodkeeperserver.auth.business.OAuthService;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.EmailVerificationEntity;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.LocalAuthEntity;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.OauthEntity;
@@ -41,7 +41,8 @@ import static org.mockito.BDDMockito.given;
 public class AuthConcurrencyTest extends SpringTest {
 
     @MockitoBean OAuthAuthenticator oAuthAuthenticator;
-    @Autowired OauthService oauthService;
+    @Autowired
+    OAuthService oauthService;
     @Autowired OauthRepository oauthRepository;
     @Autowired LocalAuthService localAuthService;
     @Autowired LocalAuthRepository localAuthRepository;

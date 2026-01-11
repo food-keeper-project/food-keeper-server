@@ -1,7 +1,7 @@
 package com.foodkeeper.foodkeeperserver.auth.controller.v1;
 
 import com.foodkeeper.foodkeeperserver.auth.business.LocalAuthService;
-import com.foodkeeper.foodkeeperserver.auth.business.OauthService;
+import com.foodkeeper.foodkeeperserver.auth.business.OAuthService;
 import com.foodkeeper.foodkeeperserver.auth.business.TokenRefreshService;
 import com.foodkeeper.foodkeeperserver.auth.controller.v1.request.*;
 import com.foodkeeper.foodkeeperserver.auth.controller.v1.response.AccountDuplicationCheckResponse;
@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final OauthService oauthService;
+    private final OAuthService oauthService;
     private final LocalAuthService localAuthService;
     private final TokenRefreshService tokenRefreshService;
 

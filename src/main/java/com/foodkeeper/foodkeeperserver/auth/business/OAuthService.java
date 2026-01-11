@@ -7,16 +7,16 @@ import com.foodkeeper.foodkeeperserver.auth.domain.SignInEvent;
 import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
 import com.foodkeeper.foodkeeperserver.auth.implement.OAuthAuthenticator;
 import com.foodkeeper.foodkeeperserver.auth.implement.OauthLockManager;
-import com.foodkeeper.foodkeeperserver.auth.implement.OauthRegistrar;
+import com.foodkeeper.foodkeeperserver.auth.implement.OAuthRegistrar;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class OauthService {
+public class OAuthService {
     private final OAuthAuthenticator oauthAuthenticator;
-    private final OauthRegistrar oauthRegistrar;
+    private final OAuthRegistrar oauthRegistrar;
     private final JwtGenerator jwtGenerator;
     private final ApplicationEventPublisher eventPublisher;
     private final OauthLockManager lockManager;

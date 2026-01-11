@@ -43,23 +43,15 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class LocalAuthServiceTest {
-    @Mock
-    MemberRepository memberRepository;
-    @Mock
-    MemberRoleRepository memberRoleRepository;
-    @Mock
-    EmailVerificationRepository emailVerificationRepository;
-    @Mock
-    LocalAuthRepository localAuthRepository;
-    @Mock
-    CategoryManager foodCategoryManager;
-    @Mock
-    TransactionHandler transactionHandler;
-    @Mock
-    JavaMailSender javaMailSender;
+    @Mock MemberRepository memberRepository;
+    @Mock MemberRoleRepository memberRoleRepository;
+    @Mock EmailVerificationRepository emailVerificationRepository;
+    @Mock LocalAuthRepository localAuthRepository;
+    @Mock CategoryManager foodCategoryManager;
+    @Mock TransactionHandler transactionHandler;
+    @Mock JavaMailSender javaMailSender;
+    @Mock ApplicationEventPublisher eventPublisher;
     PasswordEncoder passwordEncoder;
-    @Mock
-    ApplicationEventPublisher eventPublisher;
     JwtGenerator jwtGenerator;
     SecretKey secretKey;
     LocalAuthService localAuthService;
@@ -73,14 +65,13 @@ class LocalAuthServiceTest {
         LocalAuthAuthenticator localAuthAuthenticator = new LocalAuthAuthenticator(localAuthRepository, passwordEncoder);
         AppMailSender appMailSender = new AppMailSender(javaMailSender);
         EmailVerificator emailVerificator = new EmailVerificator(emailVerificationRepository, appMailSender, transactionHandler);
-        RefreshTokenManager refreshTokenManager = new RefreshTokenManager(memberRepository);
         LocalAuthLockManager lockManager = new LocalAuthLockManager(localAuthRepository);
-        LocalAuthRegistrar localAuthRegistrar = new LocalAuthRegistrar(localAuthRepository, memberRegistrar, emailVerificator);
+        LocalAuthRegistrar localAuthRegistrar = new LocalAuthRegistrar(localAuthRepository, memberRegistrar);
         jwtGenerator = new JwtGenerator(secretKey);
         LocalAuthRecoverer localAuthRecoverer = new LocalAuthRecoverer(localAuthRepository, localAuthFinder,
                 appMailSender, transactionHandler, passwordEncoder);
         localAuthService = new LocalAuthService(localAuthAuthenticator, localAuthFinder, localAuthRegistrar,
-                emailVerificator, refreshTokenManager, jwtGenerator, localAuthRecoverer, lockManager, eventPublisher);
+                emailVerificator, jwtGenerator, localAuthRecoverer, lockManager, eventPublisher);
     }
 
     @Test
