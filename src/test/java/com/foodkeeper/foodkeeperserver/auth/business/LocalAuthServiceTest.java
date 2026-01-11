@@ -43,23 +43,15 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class LocalAuthServiceTest {
-    @Mock
-    MemberRepository memberRepository;
-    @Mock
-    MemberRoleRepository memberRoleRepository;
-    @Mock
-    EmailVerificationRepository emailVerificationRepository;
-    @Mock
-    LocalAuthRepository localAuthRepository;
-    @Mock
-    CategoryManager foodCategoryManager;
-    @Mock
-    TransactionHandler transactionHandler;
-    @Mock
-    JavaMailSender javaMailSender;
+    @Mock MemberRepository memberRepository;
+    @Mock MemberRoleRepository memberRoleRepository;
+    @Mock EmailVerificationRepository emailVerificationRepository;
+    @Mock LocalAuthRepository localAuthRepository;
+    @Mock CategoryManager foodCategoryManager;
+    @Mock TransactionHandler transactionHandler;
+    @Mock JavaMailSender javaMailSender;
+    @Mock ApplicationEventPublisher eventPublisher;
     PasswordEncoder passwordEncoder;
-    @Mock
-    ApplicationEventPublisher eventPublisher;
     JwtGenerator jwtGenerator;
     SecretKey secretKey;
     LocalAuthService localAuthService;
@@ -74,7 +66,7 @@ class LocalAuthServiceTest {
         AppMailSender appMailSender = new AppMailSender(javaMailSender);
         EmailVerificator emailVerificator = new EmailVerificator(emailVerificationRepository, appMailSender, transactionHandler);
         LocalAuthLockManager lockManager = new LocalAuthLockManager(localAuthRepository);
-        LocalAuthRegistrar localAuthRegistrar = new LocalAuthRegistrar(localAuthRepository, memberRegistrar, emailVerificator);
+        LocalAuthRegistrar localAuthRegistrar = new LocalAuthRegistrar(localAuthRepository, memberRegistrar);
         jwtGenerator = new JwtGenerator(secretKey);
         LocalAuthRecoverer localAuthRecoverer = new LocalAuthRecoverer(localAuthRepository, localAuthFinder,
                 appMailSender, transactionHandler, passwordEncoder);
