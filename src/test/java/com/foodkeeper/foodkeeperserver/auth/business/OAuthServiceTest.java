@@ -10,7 +10,7 @@ import com.foodkeeper.foodkeeperserver.auth.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.auth.implement.JwtGenerator;
 import com.foodkeeper.foodkeeperserver.auth.implement.KakaoAuthenticator;
 import com.foodkeeper.foodkeeperserver.auth.implement.OauthLockManager;
-import com.foodkeeper.foodkeeperserver.auth.implement.OauthRegistrar;
+import com.foodkeeper.foodkeeperserver.auth.implement.OAuthRegistrar;
 import com.foodkeeper.foodkeeperserver.food.implement.CategoryManager;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
@@ -38,7 +38,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-class OauthServiceTest {
+class OAuthServiceTest {
 
     @Mock MemberRepository memberRepository;
     @Mock OauthRepository oauthRepository;
@@ -47,16 +47,16 @@ class OauthServiceTest {
     @Mock CategoryManager foodCategoryManager;
     @Mock ApplicationEventPublisher eventPublisher;
     SecretKey secretKey;
-    OauthService oauthService;
+    OAuthService oauthService;
 
     @BeforeEach
     void setUp() {
         secretKey = Keys.hmacShaKeyFor("this_is_a_test_secret_key_abcdefghijtlmnopqr".getBytes(StandardCharsets.UTF_8));
         JwtGenerator jwtGenerator = new JwtGenerator(secretKey);
         MemberRegistrar memberRegistrar = new MemberRegistrar(memberRepository, memberRoleRepository, foodCategoryManager);
-        OauthRegistrar oauthRegistrar = new OauthRegistrar(oauthRepository, memberRegistrar);
+        OAuthRegistrar oauthRegistrar = new OAuthRegistrar(oauthRepository, memberRegistrar);
         OauthLockManager oauthLockManager = new OauthLockManager(oauthRepository);
-        oauthService = new OauthService(kakaoAuthenticator, oauthRegistrar, jwtGenerator, eventPublisher,
+        oauthService = new OAuthService(kakaoAuthenticator, oauthRegistrar, jwtGenerator, eventPublisher,
                 oauthLockManager);
     }
 

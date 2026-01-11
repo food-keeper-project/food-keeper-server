@@ -14,7 +14,7 @@ public record SignUpContext(LocalAccount account,
                             Gender gender,
                             IpAddress ipAddress) {
 
-    public NewLocalMember toNewLocalMember(String encodedPassword) {
+    public NewLocalMember toNewLocalMember(EncodedPassword encodedPassword) {
         NewMember newMember = NewMember.builder()
                 .email(email)
                 .nickname(nickname)
@@ -26,7 +26,7 @@ public record SignUpContext(LocalAccount account,
         return NewLocalMember.builder()
                 .member(newMember)
                 .account(account)
-                .password(new EncodedPassword(encodedPassword))
+                .password(encodedPassword)
                 .build();
     }
 

@@ -109,7 +109,7 @@ public class FoodController {
 
     @NullMarked
     @Operation(summary = "식재료 수정", description = "식재료 수정 API")
-    @PatchMapping("/{foodId}")
+    @PatchMapping(path = "/{foodId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<Void>> updateFood(@PathVariable Long foodId,
                                                         @Valid @RequestPart FoodUpdateRequest request,
                                                         @RequestPart(required = false) MultipartFile image,

@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
-public class OauthRegistrar {
+public class OAuthRegistrar {
     private final OauthRepository oauthRepository;
     private final MemberRegistrar memberRegistrar;
 

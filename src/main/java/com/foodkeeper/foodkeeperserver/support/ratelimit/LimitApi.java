@@ -12,4 +12,9 @@ public record LimitApi(String method, String url) {
     public boolean noMethod() {
         return this.method == null;
     }
+
+    @Override
+    public String toString() {
+        return (method == null ? "NONE" : method) + ":" + url;
+    }
 }

@@ -2,6 +2,7 @@ package com.foodkeeper.foodkeeperserver.auth.implement;
 
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.LocalAuthEntity;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.LocalAuthRepository;
+import com.foodkeeper.foodkeeperserver.auth.domain.EncodedPassword;
 import com.foodkeeper.foodkeeperserver.auth.domain.LocalAccount;
 import com.foodkeeper.foodkeeperserver.auth.domain.Password;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
@@ -21,8 +22,8 @@ public class LocalAuthAuthenticator {
         return localAuthRepository.existsByAccount(account.account());
     }
 
-    public String encodePassword(Password password) {
-        return passwordEncoder.encode(password.password());
+    public EncodedPassword encodePassword(Password password) {
+        return new EncodedPassword(passwordEncoder.encode(password.password()));
     }
 
     /** @return memberKey */

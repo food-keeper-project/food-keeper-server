@@ -1,6 +1,7 @@
 package com.foodkeeper.foodkeeperserver.auth.business;
 
 import com.foodkeeper.foodkeeperserver.auth.domain.SignInEvent;
+import com.foodkeeper.foodkeeperserver.auth.domain.SignOutEvent;
 import com.foodkeeper.foodkeeperserver.auth.implement.RefreshTokenManager;
 import com.foodkeeper.foodkeeperserver.auth.implement.SignInLogAppender;
 import com.foodkeeper.foodkeeperserver.notification.implement.FcmManager;
@@ -11,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
-public class SignInEventListener {
+public class SignInOutEventListener {
     private final RefreshTokenManager refreshTokenManager;
     private final SignInLogAppender signInLogAppender;
     private final FcmManager fcmManager;
@@ -23,5 +24,12 @@ public class SignInEventListener {
 
         refreshTokenManager.updateRefreshToken(event.memberKey(), event.refreshToken());
         fcmManager.addTokenOrUpdate(event.fcmToken(), event.memberKey());
+    }
+
+    @EventListener
+    @Transactional
+    public void handleSignOutEvent(SignOutEvent event) {
+        refreshTokenManager.remove(event.memberKey());
+        fcmManager.removeFcmTokens(event.memberKey());
     }
 }

@@ -57,10 +57,11 @@ class LocalAuthServiceTest {
     TransactionHandler transactionHandler;
     @Mock
     JavaMailSender javaMailSender;
-    PasswordEncoder passwordEncoder;
     @Mock
     ApplicationEventPublisher eventPublisher;
+    PasswordEncoder passwordEncoder;
     JwtGenerator jwtGenerator;
+    JwtValidator jwtValidator;
     SecretKey secretKey;
     LocalAuthService localAuthService;
 
@@ -73,14 +74,14 @@ class LocalAuthServiceTest {
         LocalAuthAuthenticator localAuthAuthenticator = new LocalAuthAuthenticator(localAuthRepository, passwordEncoder);
         AppMailSender appMailSender = new AppMailSender(javaMailSender);
         EmailVerificator emailVerificator = new EmailVerificator(emailVerificationRepository, appMailSender, transactionHandler);
-        RefreshTokenManager refreshTokenManager = new RefreshTokenManager(memberRepository);
         LocalAuthLockManager lockManager = new LocalAuthLockManager(localAuthRepository);
-        LocalAuthRegistrar localAuthRegistrar = new LocalAuthRegistrar(localAuthRepository, memberRegistrar, emailVerificator);
+        LocalAuthRegistrar localAuthRegistrar = new LocalAuthRegistrar(localAuthRepository, memberRegistrar);
         jwtGenerator = new JwtGenerator(secretKey);
+        jwtValidator = new JwtValidator(secretKey);
         LocalAuthRecoverer localAuthRecoverer = new LocalAuthRecoverer(localAuthRepository, localAuthFinder,
                 appMailSender, transactionHandler, passwordEncoder);
         localAuthService = new LocalAuthService(localAuthAuthenticator, localAuthFinder, localAuthRegistrar,
-                emailVerificator, refreshTokenManager, jwtGenerator, localAuthRecoverer, lockManager, eventPublisher);
+                emailVerificator, jwtGenerator, localAuthRecoverer, lockManager, eventPublisher);
     }
 
     @Test
@@ -258,8 +259,9 @@ class LocalAuthServiceTest {
         Jwt jwt = localAuthService.signIn(context);
 
         // then
-        Jwt generatedJwt = jwtGenerator.generateJwt(memberKey);
-        assertThat(jwt.accessToken()).isEqualTo(generatedJwt.accessToken());
-        assertThat(jwt.refreshToken()).isEqualTo(generatedJwt.refreshToken());
+        String subject1 = jwtValidator.getSubjectIfValid(jwt.accessToken());
+        String subject2 = jwtValidator.getSubjectIfValid(jwt.refreshToken());
+        assertThat(subject1).isEqualTo(memberKey);
+        assertThat(subject2).isEqualTo(memberKey);
     }
 }
