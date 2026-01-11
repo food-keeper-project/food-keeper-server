@@ -43,7 +43,9 @@ public class FoodNotificationService {
         MemberFcmTokens memberFcmTokens = fcmManager.findTokens(foodsByMember.keySet());
 
         foodsByMember.forEach((memberKey, memberFoods) -> {
-            if (!memberFcmTokens.hasTokens(memberKey)) return;
+            if (!memberFcmTokens.hasTokens(memberKey)) {
+                return;
+            }
             List<String> tokens = memberFcmTokens.getTokensByMember(memberKey);
 
             FcmMessage message = createFcmMessage(memberFoods, tokens.getFirst(), today);
