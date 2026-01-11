@@ -31,7 +31,7 @@ public class LocalAuthRecoverer {
         LocalAuth localAuth = localAuthFinder.findByEmail(email);
 
         transactionHandler.afterCommit(() ->
-                mailSender.send(email.email(), FIND_ACCOUNT_TITLE, FIND_ACCOUNT_BODY.formatted(localAuth.account())));
+                mailSender.send(email.email(), FIND_ACCOUNT_TITLE, FIND_ACCOUNT_BODY.formatted(localAuth.getAccount())));
     }
 
     @Transactional
