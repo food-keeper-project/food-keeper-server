@@ -19,7 +19,6 @@ public class LocalAuthService {
     private final LocalAuthFinder localAuthFinder;
     private final LocalAuthRegistrar localAuthRegistrar;
     private final EmailVerificator emailVerificator;
-    private final RefreshTokenManager refreshTokenManager;
     private final JwtGenerator jwtGenerator;
     private final LocalAuthRecoverer localAuthRecoverer;
     private final LocalAuthLockManager lockManager;
@@ -29,7 +28,7 @@ public class LocalAuthService {
         try {
             int lockTimeOut = 3;
             lockManager.acquire(context.getEmail(), lockTimeOut);
-            String encodedPassword = localAuthAuthenticator.encodePassword(context.password());
+            EncodedPassword encodedPassword = localAuthAuthenticator.encodePassword(context.password());
             localAuthRegistrar.register(context.toNewLocalMember(encodedPassword));
         } finally {
             lockManager.release(context.getEmail());
@@ -130,6 +129,6 @@ public class LocalAuthService {
     }
 
     public void signOut(String memberKey) {
-        refreshTokenManager.remove(memberKey);
+        eventPublisher.publishEvent(new SignOutEvent(memberKey));
     }
 }
