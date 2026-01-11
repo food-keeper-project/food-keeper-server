@@ -28,6 +28,9 @@ public class LocalAuthService {
         try {
             int lockTimeOut = 3;
             lockManager.acquire(context.getEmail(), lockTimeOut);
+
+            emailVerificator.deleteVerification(emailVerificator.findVerified(context.email()).getId());
+
             EncodedPassword encodedPassword = localAuthAuthenticator.encodePassword(context.password());
             localAuthRegistrar.register(context.toNewLocalMember(encodedPassword));
         } finally {
@@ -78,11 +81,7 @@ public class LocalAuthService {
     }
 
     public void verifyEmailCode(EmailCode emailCode) {
-        EmailVerification emailVerification = emailVerificator.findEmailVerification(emailCode.email());
-
-        if (emailVerification.isVerified()) {
-            throw new AppException(ErrorType.INVALID_EMAIL_CODE);
-        }
+        EmailVerification emailVerification = emailVerificator.findUnverified(emailCode.email());
 
         if (emailVerification.isNotEqualsCode(emailCode.code())) {
             emailVerificator.incrementFailCount(emailCode.email());
@@ -120,10 +119,7 @@ public class LocalAuthService {
     }
 
     public void changePassword(Email email, LocalAccount account, Password password) {
-        EmailVerification emailVerification = emailVerificator.findEmailVerification(email);
-        if (!emailVerification.isVerified()) {
-            throw new AppException(ErrorType.NOT_VERIFIED_EMAIL);
-        }
+        emailVerificator.findVerified(email);
 
         localAuthRecoverer.changePassword(email, account, password);
     }

@@ -73,14 +73,13 @@ class LocalAuthServiceTest {
         LocalAuthAuthenticator localAuthAuthenticator = new LocalAuthAuthenticator(localAuthRepository, passwordEncoder);
         AppMailSender appMailSender = new AppMailSender(javaMailSender);
         EmailVerificator emailVerificator = new EmailVerificator(emailVerificationRepository, appMailSender, transactionHandler);
-        RefreshTokenManager refreshTokenManager = new RefreshTokenManager(memberRepository);
         LocalAuthLockManager lockManager = new LocalAuthLockManager(localAuthRepository);
         LocalAuthRegistrar localAuthRegistrar = new LocalAuthRegistrar(localAuthRepository, memberRegistrar, emailVerificator);
         jwtGenerator = new JwtGenerator(secretKey);
         LocalAuthRecoverer localAuthRecoverer = new LocalAuthRecoverer(localAuthRepository, localAuthFinder,
                 appMailSender, transactionHandler, passwordEncoder);
         localAuthService = new LocalAuthService(localAuthAuthenticator, localAuthFinder, localAuthRegistrar,
-                emailVerificator, refreshTokenManager, jwtGenerator, localAuthRecoverer, lockManager, eventPublisher);
+                emailVerificator, jwtGenerator, localAuthRecoverer, lockManager, eventPublisher);
     }
 
     @Test

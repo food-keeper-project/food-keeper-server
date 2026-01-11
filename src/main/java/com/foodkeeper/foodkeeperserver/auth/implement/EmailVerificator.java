@@ -39,9 +39,26 @@ public class EmailVerificator {
         return String.valueOf(new SecureRandom().nextInt(900000) + 100000);
     }
 
-    public EmailVerification findEmailVerification(Email email) {
-        return emailVerificationRepository.findByEmail(email.email())
+    public EmailVerification findVerified(Email email) {
+        EmailVerification emailVerification = emailVerificationRepository.findByEmail(email.email())
                 .orElseThrow(() -> new AppException(ErrorType.INVALID_EMAIL_CODE)).toDomain();
+
+        if (!emailVerification.isVerified()) {
+            throw new AppException(ErrorType.NOT_VERIFIED_EMAIL);
+        }
+
+        return emailVerification;
+    }
+
+    public EmailVerification findUnverified(Email email) {
+        EmailVerification emailVerification = emailVerificationRepository.findByEmail(email.email())
+                .orElseThrow(() -> new AppException(ErrorType.INVALID_EMAIL_CODE)).toDomain();
+
+        if (emailVerification.isVerified()) {
+            throw new AppException(ErrorType.INVALID_EMAIL_CODE);
+        }
+
+        return emailVerification;
     }
 
     @Transactional
