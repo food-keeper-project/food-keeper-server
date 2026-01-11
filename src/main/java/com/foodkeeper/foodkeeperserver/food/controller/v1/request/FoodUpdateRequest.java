@@ -6,13 +6,14 @@ import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import jakarta.validation.constraints.Max;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record FoodUpdateRequest(
         String name,
         List<Long> categoryIds,
         StorageMethod storageMethod,
-        @JsonFormat(pattern = "yyyy-MM-dd") LocalDate expiryDate,
+        LocalDateTime expiryDate,
         @Max(14) Integer expiryAlarm,
         String memo
 ) {
@@ -21,7 +22,7 @@ public record FoodUpdateRequest(
                 request.name(),
                 request.categoryIds,
                 request.storageMethod,
-                request.expiryDate,
+                request.expiryDate.toLocalDate(),
                 request.expiryAlarm,
                 request.memo
         );
