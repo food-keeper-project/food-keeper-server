@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.member.implement;
 
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.LocalAuthRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.MemberRoleRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.BaseEntity;
@@ -20,6 +21,7 @@ public class MemberWithdrawalProcessor {
     private final MemberRepository memberRepository;
     private final MemberRoleRepository memberRoleRepository;
     private final OauthRepository oauthRepository;
+    private final LocalAuthRepository localAuthRepository;
     private final FoodManager foodManager;
     private final CategoryManager foodCategoryManager;
     private final RecipeManager recipeManager;
@@ -30,6 +32,7 @@ public class MemberWithdrawalProcessor {
         memberRepository.findByMemberKey(memberKey)
                 .orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_DATA)).delete();
         memberRoleRepository.findByMemberKey(memberKey).forEach(BaseEntity::delete);
+        localAuthRepository.findAllByMemberKey(memberKey).forEach(BaseEntity::delete);
         oauthRepository.findAllByMemberKey(memberKey).forEach(BaseEntity::delete);
         memberRepository.flush();
 

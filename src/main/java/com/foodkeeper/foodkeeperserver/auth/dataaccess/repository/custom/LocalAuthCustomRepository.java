@@ -2,6 +2,7 @@ package com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.custom;
 
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.LocalAuthEntity;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface LocalAuthCustomRepository {
@@ -17,4 +18,6 @@ public interface LocalAuthCustomRepository {
     Optional<LocalAuthEntity> findByEmail(String email);
 
     Optional<LocalAuthEntity> findByEmailAndAccount(String email, String account);
+
+    List<LocalAuthEntity> findAllByMemberKey(String memberKey);
 }

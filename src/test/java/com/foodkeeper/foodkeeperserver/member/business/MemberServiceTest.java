@@ -1,5 +1,6 @@
 package com.foodkeeper.foodkeeperserver.member.business;
 
+import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.LocalAuthRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.MemberRoleRepository;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.OauthRepository;
 import com.foodkeeper.foodkeeperserver.food.implement.CategoryManager;
@@ -30,6 +31,7 @@ class MemberServiceTest {
     @Mock MemberRepository memberRepository;
     @Mock MemberRoleRepository memberRoleRepository;
     @Mock OauthRepository oauthRepository;
+    @Mock LocalAuthRepository localAuthRepository;
     @Mock FoodManager foodManager;
     @Mock CategoryManager categoryManager;
     @Mock RecipeManager recipeManager;
@@ -40,7 +42,7 @@ class MemberServiceTest {
     void setUp() {
         MemberFinder memberFinder = new MemberFinder(memberRepository);
         MemberWithdrawalProcessor memberWithdrawalProcessor = new MemberWithdrawalProcessor(memberRepository,
-                memberRoleRepository, oauthRepository, foodManager, categoryManager, recipeManager, fcmManager);
+                memberRoleRepository, oauthRepository, localAuthRepository, foodManager, categoryManager, recipeManager, fcmManager);
         memberService = new MemberService(memberFinder, memberWithdrawalProcessor);
     }
 
