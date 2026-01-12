@@ -5,16 +5,16 @@ import com.foodkeeper.foodkeeperserver.recipe.dataaccess.entity.RecipeEntity;
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.repository.RecipeIngredientRepository;
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.repository.RecipeRepository;
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.repository.RecipeStepRepository;
-import com.foodkeeper.foodkeeperserver.recipe.domain.AiType;
+import com.foodkeeper.foodkeeperserver.infra.ai.domain.AiType;
 import com.foodkeeper.foodkeeperserver.recipe.domain.NewRecipe;
 import com.foodkeeper.foodkeeperserver.recipe.domain.RecipeIngredient;
 import com.foodkeeper.foodkeeperserver.recipe.domain.RecipeStep;
-import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaMessage;
-import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaResponse;
-import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaResponseStatus;
-import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaResult;
+import com.foodkeeper.foodkeeperserver.infra.ai.domain.ClovaMessage;
+import com.foodkeeper.foodkeeperserver.infra.ai.domain.ClovaResponse;
+import com.foodkeeper.foodkeeperserver.infra.ai.domain.ClovaResponseStatus;
+import com.foodkeeper.foodkeeperserver.infra.ai.domain.ClovaResult;
 import com.foodkeeper.foodkeeperserver.recipe.fixture.RecipeEntityFixture;
-import com.foodkeeper.foodkeeperserver.recipe.implement.AiRecipeRecommender;
+import com.foodkeeper.foodkeeperserver.infra.ai.implement.AiRecipeRecommender;
 import com.foodkeeper.foodkeeperserver.recipe.implement.RecipeFinder;
 import com.foodkeeper.foodkeeperserver.recipe.implement.RecipeManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,7 +88,7 @@ class RecipeServiceTest {
         ClovaResponse clovaResponse = new ClovaResponse(
                 new ClovaResponseStatus("code", "message"),
                 new ClovaResult(clovaMessage));
-        given(clovaClient.getRecipe(anyString(), any())).willReturn(clovaResponse);
+        given(clovaClient.getAiResponse(anyString(), any())).willReturn(clovaResponse);
 
         NewRecipe recipe = recipeService.recommendRecipe(List.of("test"), List.of("test"));
 

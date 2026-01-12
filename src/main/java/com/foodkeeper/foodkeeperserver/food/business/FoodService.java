@@ -5,10 +5,12 @@ import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.common.handler.TransactionHandler;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
+import com.foodkeeper.foodkeeperserver.food.domain.FoodScan;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.SelectedFoodCategory;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.implement.*;
+import com.foodkeeper.foodkeeperserver.infra.ai.implement.AiFoodScanner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,7 @@ public class FoodService {
     private final SelectedFoodCategoryManager selectedFoodCategoryManager;
     private final FoodBookmarker foodBookmarker;
     private final TransactionHandler transactionHandler;
+    private final AiFoodScanner foodScanner;
 
     @Transactional
     public Long registerFood(FoodRegister register, MultipartFile file, String memberKey) {
@@ -88,5 +91,9 @@ public class FoodService {
         Food updatedFood = food.update(register, imageUrl);
         foodManager.updateFood(updatedFood, register.categoryIds(), memberKey);
         return food.id();
+    }
+
+    public FoodScan scanFoodByOcr(String ocrText) {
+        return foodScanner.parseOcrText(ocrText);
     }
 }

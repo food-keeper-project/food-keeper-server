@@ -14,6 +14,7 @@ import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodCategoryRe
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.SelectedFoodCategoryRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
+import com.foodkeeper.foodkeeperserver.food.domain.FoodScan;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
@@ -21,6 +22,9 @@ import com.foodkeeper.foodkeeperserver.food.fixture.CategoryFixture;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import com.foodkeeper.foodkeeperserver.food.fixture.SelectedFoodCategoryFixture;
 import com.foodkeeper.foodkeeperserver.food.implement.*;
+import com.foodkeeper.foodkeeperserver.infra.ai.domain.*;
+import com.foodkeeper.foodkeeperserver.infra.ai.implement.AiFoodScanner;
+import com.foodkeeper.foodkeeperserver.recipe.dataaccess.ClovaClient;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import org.assertj.core.api.Assertions;
@@ -34,6 +38,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -64,6 +69,9 @@ public class FoodServiceTest {
     BookmarkedFoodRepository bookmarkedFoodRepository;
     @Mock
     TransactionHandler transactionHandler;
+    @Mock
+    ClovaClient clovaClient;
+
 
     @BeforeEach
     void setUp() {
@@ -73,6 +81,7 @@ public class FoodServiceTest {
         FoodReader foodReader = new FoodReader(foodRepository, foodCategoryReader);
         SelectedFoodCategoryManager selectedFoodCategoryManager = new SelectedFoodCategoryManager(selectedFoodCategoryRepository);
         FoodBookmarker foodBookmarker = new FoodBookmarker(bookmarkedFoodRepository);
+        AiFoodScanner foodScanner = new AiFoodScanner(clovaClient, new ObjectMapper());
 
         foodService = new FoodService(
                 foodReader,
@@ -81,7 +90,8 @@ public class FoodServiceTest {
                 categoryManager,
                 selectedFoodCategoryManager,
                 foodBookmarker,
-                transactionHandler
+                transactionHandler,
+                foodScanner
         );
     }
 
@@ -292,4 +302,30 @@ public class FoodServiceTest {
         assertThat(foodEntity.getName()).isEqualTo(foodRegister.name());
         assertThat(foodEntity.getMemo()).isEqualTo(FoodFixture.MEMO);
     }
+
+    @Test
+    @DisplayName("텍스트를 받아서 AI를 이용해 필요한 데이터만 추출 성공")
+    void parseText_SUCCESS() {
+        //given
+        String clovaContent = """
+            {
+                "name" : "신라면",
+                "storageMethod" : "냉장",
+                "expiryDate" : "2025-05-05"
+            }    
+            """;
+        ClovaMessage clovaMessage = new ClovaMessage(AiType.SYSTEM, clovaContent);
+        ClovaResponse clovaResponse = new ClovaResponse(
+                new ClovaResponseStatus("code", "message"),
+                new ClovaResult(clovaMessage));
+        given(clovaClient.getAiResponse(anyString(), any())).willReturn(clovaResponse);
+
+        //when
+        FoodScan foodScan = foodService.scanFoodByOcr("test-ocr-text");
+        //then
+        assertThat(foodScan.name()).isEqualTo("신라면");
+        assertThat(foodScan.storageMethod()).isEqualTo(StorageMethod.REFRIGERATED);
+        assertThat(foodScan.expiryDate()).isEqualTo("2025-05-05");
+    }
+
 }

@@ -59,7 +59,8 @@ public class SecurityConfig {
                                 mvc.matcher("/api/v1/auth/check/account"),
                                 mvc.matcher("/api/v1/auth/*/verify"),
                                 mvc.matcher("/api/v1/auth/sign-up"),
-                                mvc.matcher("/api/v1/auth/password/change")
+                                mvc.matcher("/api/v1/auth/password/change"),
+                                mvc.matcher("/api/v1/foods/scan")
                         ).permitAll()
                         .requestMatchers(
                                 mvc.matcher("/actuator"),

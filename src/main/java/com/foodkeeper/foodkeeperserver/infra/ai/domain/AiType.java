@@ -1,4 +1,4 @@
-package com.foodkeeper.foodkeeperserver.recipe.domain;
+package com.foodkeeper.foodkeeperserver.infra.ai.domain;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.RequiredArgsConstructor;

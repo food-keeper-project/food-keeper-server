@@ -1,4 +1,4 @@
-package com.foodkeeper.foodkeeperserver.recipe.domain.clova;
+package com.foodkeeper.foodkeeperserver.infra.ai.domain;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 public record ClovaResponse(ClovaResponseStatus status, ClovaResult result) {
     private static final String EMPTY_JSON = "{}";
     private static final String JSON_REGEX = "(\\{.*\\}|\\[.*\\])";
-    public static final String JSON_EMPTY_MESSAGE = "레시피를 생성할 수 없습니다.";
+    public static final String JSON_EMPTY_MESSAGE = "응답을 생성할 수 없습니다.";
     public static final String NOT_JSON_ELEMENTS = "(?s)```(?:json)?\\s*(.*?)\\s*```";
     public static final String WORD_WITHOUT_BRACKET = "(?<![\"'])(\\w+)\\s*:";
 

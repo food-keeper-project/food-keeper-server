@@ -1,7 +1,9 @@
 package com.foodkeeper.foodkeeperserver.food.e2e;
 
+import com.foodkeeper.foodkeeperserver.food.controller.v1.request.OcrTextRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponse;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponses;
+import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodScanResponse;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.SelectedFoodCategoryEntity;
@@ -14,6 +16,7 @@ import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
 import com.foodkeeper.foodkeeperserver.member.fixture.MemberEntityFixture;
+import com.foodkeeper.foodkeeperserver.recipe.controller.v1.response.RecipeResponse;
 import com.foodkeeper.foodkeeperserver.support.integration.E2ETest;
 import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
 import com.foodkeeper.foodkeeperserver.support.response.PageResponse;
@@ -248,5 +251,41 @@ public class FoodE2ETest extends E2ETest {
         assertThat(response).isNotNull();
         assertThat(response.data()).isNotNull();
         assertThat(response.data().foods()).hasSize(9);
+    }
+
+    @Test
+    @DisplayName("ai로 FoodScan 형태로 텍스트 추출")
+    void aiParseText()  {
+        //given
+        MemberEntity member = memberRepository.save(MemberEntityFixture.DEFAULT.get());
+        ParameterizedTypeReference<ApiResponse<FoodScanResponse>> responseType =
+                new ParameterizedTypeReference<>() {};
+        //when
+        String ocrText = """
+                {
+                    "다이소 강남점
+                     품명: 다목적 세정제 500ml
+                     가격: 2,000원
+                     반품/교환은 구매 후 14일 이내
+                     영수증 지참 필수
+                     2026-01-12 14:30:00"
+                }
+                """;
+        OcrTextRequest ocrTextRequest = new OcrTextRequest(ocrText);
+
+        ApiResponse<FoodScanResponse> response = client.post()
+                .uri("/api/v1/foods/scan")
+                .header(AUTHORIZATION, getAccessToken(member.getMemberKey()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(ocrTextRequest)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(responseType)
+                .returnResult()
+                .getResponseBody();
+        //then
+        assertThat(response).isNotNull();
+        assertThat(response.data()).isNotNull();
+
     }
 }
