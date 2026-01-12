@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 public record ClovaResponse(ClovaResponseStatus status, ClovaResult result) {
     private static final String EMPTY_JSON = "{}";
     private static final String JSON_REGEX = "(\\{.*\\}|\\[.*\\])";
-    public static final String JSON_EMPTY_MESSAGE = "응답을 생성할 수 없습니다.";
+    public static final String JSON_EMPTY_MESSAGE = "AI 응답을 생성할 수 없습니다.";
     public static final String NOT_JSON_ELEMENTS = "(?s)```(?:json)?\\s*(.*?)\\s*```";
     public static final String WORD_WITHOUT_BRACKET = "(?<![\"'])(\\w+)\\s*:";
 
