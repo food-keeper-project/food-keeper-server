@@ -1,10 +1,10 @@
 package com.foodkeeper.foodkeeperserver.recipe.business;
 
-import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaMessage;
-import com.foodkeeper.foodkeeperserver.recipe.domain.AiType;
-import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaResponse;
-import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaResponseStatus;
-import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaResult;
+import com.foodkeeper.foodkeeperserver.ai.domain.ClovaMessage;
+import com.foodkeeper.foodkeeperserver.ai.domain.AiType;
+import com.foodkeeper.foodkeeperserver.ai.domain.ClovaResponse;
+import com.foodkeeper.foodkeeperserver.ai.domain.ClovaResponseStatus;
+import com.foodkeeper.foodkeeperserver.ai.domain.ClovaResult;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

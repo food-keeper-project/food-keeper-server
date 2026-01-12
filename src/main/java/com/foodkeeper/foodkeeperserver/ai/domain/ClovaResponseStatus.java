@@ -1,4 +1,4 @@
-package com.foodkeeper.foodkeeperserver.recipe.domain.clova;
+package com.foodkeeper.foodkeeperserver.ai.domain;
 
 public record ClovaResponseStatus(String code, String message) {
 }
