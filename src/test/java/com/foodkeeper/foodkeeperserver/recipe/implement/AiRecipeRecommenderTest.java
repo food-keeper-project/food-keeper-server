@@ -1,13 +1,14 @@
 package com.foodkeeper.foodkeeperserver.recipe.implement;
 
-import com.foodkeeper.foodkeeperserver.infra.ai.implement.AiRecipeRecommender;
+import com.foodkeeper.foodkeeperserver.ai.AiProcessor;
+import com.foodkeeper.foodkeeperserver.ai.implement.AiRecipeRecommender;
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.ClovaClient;
-import com.foodkeeper.foodkeeperserver.infra.ai.domain.AiType;
+import com.foodkeeper.foodkeeperserver.ai.domain.AiType;
 import com.foodkeeper.foodkeeperserver.recipe.domain.NewRecipe;
-import com.foodkeeper.foodkeeperserver.infra.ai.domain.ClovaMessage;
-import com.foodkeeper.foodkeeperserver.infra.ai.domain.ClovaResponse;
-import com.foodkeeper.foodkeeperserver.infra.ai.domain.ClovaResponseStatus;
-import com.foodkeeper.foodkeeperserver.infra.ai.domain.ClovaResult;
+import com.foodkeeper.foodkeeperserver.ai.domain.ClovaMessage;
+import com.foodkeeper.foodkeeperserver.ai.domain.ClovaResponse;
+import com.foodkeeper.foodkeeperserver.ai.domain.ClovaResponseStatus;
+import com.foodkeeper.foodkeeperserver.ai.domain.ClovaResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,8 @@ class AiRecipeRecommenderTest {
 
     @BeforeEach
     void setUp() {
-        aiRecipeRecommender = new AiRecipeRecommender(clovaClient, new ObjectMapper());
+        AiProcessor processor = new AiProcessor(clovaClient, new ObjectMapper());
+        aiRecipeRecommender = new AiRecipeRecommender(processor);
     }
 
     @Test

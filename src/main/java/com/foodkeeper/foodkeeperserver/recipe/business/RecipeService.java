@@ -4,7 +4,7 @@ import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.recipe.domain.NewRecipe;
 import com.foodkeeper.foodkeeperserver.recipe.domain.Recipe;
-import com.foodkeeper.foodkeeperserver.infra.ai.implement.AiRecipeRecommender;
+import com.foodkeeper.foodkeeperserver.ai.implement.AiRecipeRecommender;
 import com.foodkeeper.foodkeeperserver.recipe.implement.RecipeFinder;
 import com.foodkeeper.foodkeeperserver.recipe.implement.RecipeManager;
 import lombok.RequiredArgsConstructor;

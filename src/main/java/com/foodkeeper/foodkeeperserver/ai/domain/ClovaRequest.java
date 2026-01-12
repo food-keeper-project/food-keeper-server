@@ -1,4 +1,4 @@
-package com.foodkeeper.foodkeeperserver.infra.ai.domain;
+package com.foodkeeper.foodkeeperserver.ai.domain;
 
 import jakarta.validation.constraints.NotNull;
 

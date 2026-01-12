@@ -1,20 +1,17 @@
 package com.foodkeeper.foodkeeperserver.recipe.business;
 
+import com.foodkeeper.foodkeeperserver.ai.AiProcessor;
+import com.foodkeeper.foodkeeperserver.ai.domain.*;
+import com.foodkeeper.foodkeeperserver.ai.implement.AiRecipeRecommender;
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.ClovaClient;
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.entity.RecipeEntity;
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.repository.RecipeIngredientRepository;
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.repository.RecipeRepository;
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.repository.RecipeStepRepository;
-import com.foodkeeper.foodkeeperserver.infra.ai.domain.AiType;
 import com.foodkeeper.foodkeeperserver.recipe.domain.NewRecipe;
 import com.foodkeeper.foodkeeperserver.recipe.domain.RecipeIngredient;
 import com.foodkeeper.foodkeeperserver.recipe.domain.RecipeStep;
-import com.foodkeeper.foodkeeperserver.infra.ai.domain.ClovaMessage;
-import com.foodkeeper.foodkeeperserver.infra.ai.domain.ClovaResponse;
-import com.foodkeeper.foodkeeperserver.infra.ai.domain.ClovaResponseStatus;
-import com.foodkeeper.foodkeeperserver.infra.ai.domain.ClovaResult;
 import com.foodkeeper.foodkeeperserver.recipe.fixture.RecipeEntityFixture;
-import com.foodkeeper.foodkeeperserver.infra.ai.implement.AiRecipeRecommender;
 import com.foodkeeper.foodkeeperserver.recipe.implement.RecipeFinder;
 import com.foodkeeper.foodkeeperserver.recipe.implement.RecipeManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +45,8 @@ class RecipeServiceTest {
 
     @BeforeEach
     void setUp() {
-        AiRecipeRecommender aiRecipeRecommender = new AiRecipeRecommender(clovaClient, new ObjectMapper());
+        AiProcessor processor = new AiProcessor(clovaClient, new ObjectMapper());
+        AiRecipeRecommender aiRecipeRecommender = new AiRecipeRecommender(processor);
         RecipeManager recipeManager = new RecipeManager(recipeRepository, recipeIngredientRepository,
                 recipeStepRepository);
         RecipeFinder recipeFinder = new RecipeFinder(recipeRepository, recipeStepRepository, recipeIngredientRepository);

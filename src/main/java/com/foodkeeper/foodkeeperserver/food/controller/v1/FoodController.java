@@ -12,7 +12,7 @@ import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodCountResp
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponse;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponses;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodScanResponse;
-import com.foodkeeper.foodkeeperserver.food.domain.FoodScan;
+import com.foodkeeper.foodkeeperserver.food.domain.ScannedFood;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
@@ -126,8 +126,8 @@ public class FoodController {
     @Operation(summary = "식재료 OCR 텍스트 추출", description = "식재료 OCR 텍스트 추출 API")
     @PostMapping("/scan")
     public ResponseEntity<ApiResponse<FoodScanResponse>> scanFood(@RequestBody OcrTextRequest request) {
-        FoodScan foodScan = foodService.scanFoodByOcr(request.ocrText());
-        return ResponseEntity.ok(ApiResponse.success(FoodScanResponse.from(foodScan)));
+        ScannedFood scannedFood = foodService.scanFoodByOcr(request.ocrText());
+        return ResponseEntity.ok(ApiResponse.success(FoodScanResponse.from(scannedFood)));
     }
 }
 

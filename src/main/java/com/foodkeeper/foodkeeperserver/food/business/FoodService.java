@@ -5,12 +5,12 @@ import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.common.handler.TransactionHandler;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
-import com.foodkeeper.foodkeeperserver.food.domain.FoodScan;
+import com.foodkeeper.foodkeeperserver.food.domain.ScannedFood;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.SelectedFoodCategory;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.implement.*;
-import com.foodkeeper.foodkeeperserver.infra.ai.implement.AiFoodScanner;
+import com.foodkeeper.foodkeeperserver.ai.implement.AiFoodScanner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,7 +93,7 @@ public class FoodService {
         return food.id();
     }
 
-    public FoodScan scanFoodByOcr(String ocrText) {
+    public ScannedFood scanFoodByOcr(String ocrText) {
         return foodScanner.parseOcrText(ocrText);
     }
 }

@@ -1,5 +1,7 @@
 package com.foodkeeper.foodkeeperserver.food.business;
 
+import com.foodkeeper.foodkeeperserver.ai.AiProcessor;
+import com.foodkeeper.foodkeeperserver.ai.domain.*;
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.dataaccess.entity.BookmarkedFoodEntity;
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.dataaccess.repository.BookmarkedFoodRepository;
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.implement.FoodBookmarker;
@@ -14,7 +16,7 @@ import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodCategoryRe
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.SelectedFoodCategoryRepository;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
-import com.foodkeeper.foodkeeperserver.food.domain.FoodScan;
+import com.foodkeeper.foodkeeperserver.food.domain.ScannedFood;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
@@ -22,8 +24,7 @@ import com.foodkeeper.foodkeeperserver.food.fixture.CategoryFixture;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import com.foodkeeper.foodkeeperserver.food.fixture.SelectedFoodCategoryFixture;
 import com.foodkeeper.foodkeeperserver.food.implement.*;
-import com.foodkeeper.foodkeeperserver.infra.ai.domain.*;
-import com.foodkeeper.foodkeeperserver.infra.ai.implement.AiFoodScanner;
+import com.foodkeeper.foodkeeperserver.ai.implement.AiFoodScanner;
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.ClovaClient;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
@@ -81,7 +82,8 @@ public class FoodServiceTest {
         FoodReader foodReader = new FoodReader(foodRepository, foodCategoryReader);
         SelectedFoodCategoryManager selectedFoodCategoryManager = new SelectedFoodCategoryManager(selectedFoodCategoryRepository);
         FoodBookmarker foodBookmarker = new FoodBookmarker(bookmarkedFoodRepository);
-        AiFoodScanner foodScanner = new AiFoodScanner(clovaClient, new ObjectMapper());
+        AiProcessor processor = new AiProcessor(clovaClient, new ObjectMapper());
+        AiFoodScanner foodScanner = new AiFoodScanner(processor);
 
         foodService = new FoodService(
                 foodReader,
@@ -321,11 +323,11 @@ public class FoodServiceTest {
         given(clovaClient.getAiResponse(anyString(), any())).willReturn(clovaResponse);
 
         //when
-        FoodScan foodScan = foodService.scanFoodByOcr("test-ocr-text");
+        ScannedFood scannedFood = foodService.scanFoodByOcr("test-ocr-text");
         //then
-        assertThat(foodScan.name()).isEqualTo("신라면");
-        assertThat(foodScan.storageMethod()).isEqualTo(StorageMethod.REFRIGERATED);
-        assertThat(foodScan.expiryDate()).isEqualTo("2025-05-05");
+        assertThat(scannedFood.name()).isEqualTo("신라면");
+        assertThat(scannedFood.storageMethod()).isEqualTo(StorageMethod.REFRIGERATED);
+        assertThat(scannedFood.expiryDate()).isEqualTo("2025-05-05");
     }
 
 }
