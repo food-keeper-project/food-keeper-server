@@ -40,11 +40,11 @@ public record Food(
         return Food.builder()
                 .id(this.id)
                 .name(request.name() != null ? request.name() : this.name)
+                .imageUrl(imageUrl != null ? imageUrl : this.imageUrl)
                 .storageMethod(request.storageMethod() != null ? request.storageMethod() : this.storageMethod)
                 .expiryDate(request.expiryDate() != null ? request.expiryDate() : this.expiryDate)
                 .expiryAlarmDays(request.expiryAlarmDays() != null ? request.expiryAlarmDays() : this.expiryAlarmDays)
                 .memo(request.memo() != null ? request.memo() : this.memo)
-                .imageUrl(imageUrl != null ? imageUrl : this.imageUrl)
                 .build();
     }
 

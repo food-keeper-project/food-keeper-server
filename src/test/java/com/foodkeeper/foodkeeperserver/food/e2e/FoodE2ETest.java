@@ -13,6 +13,7 @@ import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.SelectedFoodCa
 import com.foodkeeper.foodkeeperserver.food.domain.SelectedFoodCategory;
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
+import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
 import com.foodkeeper.foodkeeperserver.member.fixture.MemberEntityFixture;
@@ -251,6 +252,51 @@ public class FoodE2ETest extends E2ETest {
         assertThat(response).isNotNull();
         assertThat(response.data()).isNotNull();
         assertThat(response.data().foods()).hasSize(9);
+    }
+
+    @Test
+    @DisplayName("수정한 식재료만 반영하고 기존 값을 유지")
+    void updateFood() {
+        //given
+        MemberEntity member = memberRepository.save(MemberEntityFixture.DEFAULT.get());
+        FoodCategoryEntity category = foodCategoryRepository.save(
+                FoodCategoryEntity.builder().name("test").memberKey(member.getMemberKey()).build());
+        FoodEntity food = foodRepository.save(FoodEntity.builder()
+                .name("test")
+                .imageUrl("test")
+                .storageMethod(StorageMethod.REFRIGERATED)
+                .expiryDate(LocalDate.now().plusDays(7))
+                .expiryAlarmDays(2)
+                .memo("memo")
+                .selectedCategoryCount(2)
+                .memberKey(member.getMemberKey())
+                .build()
+        );
+
+        MultipartBodyBuilder builder = new MultipartBodyBuilder();
+        String foodUpdateRequest = """
+                {
+                    "name": "test",
+                    "categoryIds": [%d],
+                    "storageMethod": "냉동",
+                    "expiryDate": "2026-01-16T00:00:00.000Z",
+                    "expiryAlarmDays": 2,
+                    "memo": "memo"
+                }
+                """.formatted(category.getId());
+        builder.part("request", foodUpdateRequest, MediaType.APPLICATION_JSON);
+        // when
+        client.put()
+                .uri("/api/v1/foods/{foodId}", food.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .header(AUTHORIZATION, getAccessToken(member.getMemberKey()))
+                .body(builder.build())
+                .exchange()
+                .expectStatus().isCreated();
+
+        FoodEntity result = foodRepository.findById(food.getId()).orElseThrow();
+        assertThat(result.getStorageMethod()).isEqualTo(StorageMethod.FROZEN);
     }
 
     @Test
