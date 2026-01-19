@@ -280,7 +280,7 @@ public class FoodE2ETest extends E2ETest {
                     "categoryIds": [%d],
                     "storageMethod": "냉동",
                     "expiryDate": "2026-01-16T00:00:00.000Z",
-                    "expiryAlarmDays": 2,
+                    "expiryAlarm": 2,
                     "memo": "memo"
                 }
                 """.formatted(category.getId());
