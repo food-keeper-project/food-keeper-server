@@ -13,7 +13,7 @@ public record FoodUpdateRequest(
         @NotNull List<Long> categoryIds,
         @NotNull StorageMethod storageMethod,
         @NotNull LocalDateTime expiryDate,
-        @NotNull @Max(14) Integer expiryAlarmDays,
+        @NotNull @Max(14) Integer expiryAlarm,
         @NotNull String memo
 ) {
     public static FoodRegister toRegister(FoodUpdateRequest request) {
@@ -22,7 +22,7 @@ public record FoodUpdateRequest(
                 request.categoryIds,
                 request.storageMethod,
                 request.expiryDate.toLocalDate(),
-                request.expiryAlarmDays,
+                request.expiryAlarm,
                 request.memo
         );
     }
