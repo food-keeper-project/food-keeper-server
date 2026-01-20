@@ -18,7 +18,7 @@ public record FoodUpdateRequest(
 ) {
     public static FoodRegister toRegister(FoodUpdateRequest request) {
         return new FoodRegister(
-                request.name(),
+                request.name,
                 request.categoryIds,
                 request.storageMethod,
                 request.expiryDate.toLocalDate(),

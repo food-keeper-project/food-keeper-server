@@ -303,6 +303,7 @@ public class FoodServiceTest {
         //then
         assertThat(foodEntity.getName()).isEqualTo(foodRegister.name());
         assertThat(foodEntity.getMemo()).isEqualTo(FoodFixture.MEMO);
+        assertThat(foodEntity.getStorageMethod()).isEqualTo(StorageMethod.FROZEN);
     }
 
     @Test
