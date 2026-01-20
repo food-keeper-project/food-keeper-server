@@ -31,7 +31,6 @@ import java.util.List;
 public class ApiThrottlingFilter implements Filter {
     private static final List<LimitApi> LIMIT_APIS =
             List.of(
-                    LimitApi.pattern("/api/v1/auth/sign-in/**"),
                     LimitApi.pattern("POST", "/api/v1/auth/check/account"),
                     LimitApi.pattern("POST", "/api/v1/auth/verify/email")
             );
