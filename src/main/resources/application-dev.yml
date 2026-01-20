@@ -4,6 +4,10 @@ spring:
       on-profile: dev
     import: aws-secretsmanager:dev/kitchenlog
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
 
   datasource:
     first:
