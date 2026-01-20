@@ -7,9 +7,12 @@ import com.foodkeeper.foodkeeperserver.food.business.FoodService;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodRegisterRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodUpdateRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.request.FoodsRequest;
+import com.foodkeeper.foodkeeperserver.food.controller.v1.request.OcrTextRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodCountResponse;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponse;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponses;
+import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodScanResponse;
+import com.foodkeeper.foodkeeperserver.food.domain.ScannedFood;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
@@ -109,7 +112,7 @@ public class FoodController {
 
     @NullMarked
     @Operation(summary = "식재료 수정", description = "식재료 수정 API")
-    @PatchMapping(path = "/{foodId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/{foodId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<Void>> updateFood(@PathVariable Long foodId,
                                                         @Valid @RequestPart FoodUpdateRequest request,
                                                         @RequestPart(required = false) MultipartFile image,
@@ -119,5 +122,12 @@ public class FoodController {
         return ResponseEntity.created(URI.create("/api/v1/foods" + resultId)).build();
     }
 
+    @NullMarked
+    @Operation(summary = "식재료 OCR 텍스트 추출", description = "식재료 OCR 텍스트 추출 API")
+    @PostMapping("/scan")
+    public ResponseEntity<ApiResponse<FoodScanResponse>> scanFood(@RequestBody OcrTextRequest request) {
+        ScannedFood scannedFood = foodService.scanFoodByOcr(request.ocrText());
+        return ResponseEntity.ok(ApiResponse.success(FoodScanResponse.from(scannedFood)));
+    }
 }
 

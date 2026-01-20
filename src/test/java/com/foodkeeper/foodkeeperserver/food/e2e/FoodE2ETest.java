@@ -1,7 +1,9 @@
 package com.foodkeeper.foodkeeperserver.food.e2e;
 
+import com.foodkeeper.foodkeeperserver.food.controller.v1.request.OcrTextRequest;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponse;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponses;
+import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodScanResponse;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.SelectedFoodCategoryEntity;
@@ -11,9 +13,11 @@ import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.SelectedFoodCa
 import com.foodkeeper.foodkeeperserver.food.domain.SelectedFoodCategory;
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
+import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.MemberEntity;
 import com.foodkeeper.foodkeeperserver.member.dataaccess.repository.MemberRepository;
 import com.foodkeeper.foodkeeperserver.member.fixture.MemberEntityFixture;
+import com.foodkeeper.foodkeeperserver.recipe.controller.v1.response.RecipeResponse;
 import com.foodkeeper.foodkeeperserver.support.integration.E2ETest;
 import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
 import com.foodkeeper.foodkeeperserver.support.response.PageResponse;
@@ -248,5 +252,86 @@ public class FoodE2ETest extends E2ETest {
         assertThat(response).isNotNull();
         assertThat(response.data()).isNotNull();
         assertThat(response.data().foods()).hasSize(9);
+    }
+
+    @Test
+    @DisplayName("수정한 식재료만 반영하고 기존 값을 유지")
+    void updateFood() {
+        //given
+        MemberEntity member = memberRepository.save(MemberEntityFixture.DEFAULT.get());
+        FoodCategoryEntity category = foodCategoryRepository.save(
+                FoodCategoryEntity.builder().name("test").memberKey(member.getMemberKey()).build());
+        FoodEntity food = foodRepository.save(FoodEntity.builder()
+                .name("test")
+                .imageUrl("test")
+                .storageMethod(StorageMethod.REFRIGERATED)
+                .expiryDate(LocalDate.now().plusDays(7))
+                .expiryAlarmDays(2)
+                .memo("memo")
+                .selectedCategoryCount(2)
+                .memberKey(member.getMemberKey())
+                .build()
+        );
+
+        MultipartBodyBuilder builder = new MultipartBodyBuilder();
+        String foodUpdateRequest = """
+                {
+                    "name": "test",
+                    "categoryIds": [%d],
+                    "storageMethod": "냉동",
+                    "expiryDate": "2026-01-16T00:00:00.000Z",
+                    "expiryAlarm": 2,
+                    "memo": "memo"
+                }
+                """.formatted(category.getId());
+        builder.part("request", foodUpdateRequest, MediaType.APPLICATION_JSON);
+        // when
+        client.put()
+                .uri("/api/v1/foods/{foodId}", food.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .header(AUTHORIZATION, getAccessToken(member.getMemberKey()))
+                .body(builder.build())
+                .exchange()
+                .expectStatus().isCreated();
+
+        FoodEntity result = foodRepository.findById(food.getId()).orElseThrow();
+        assertThat(result.getStorageMethod()).isEqualTo(StorageMethod.FROZEN);
+    }
+
+    @Test
+    @DisplayName("ai로 FoodScan 형태로 텍스트 추출")
+    void aiParseText()  {
+        //given
+        MemberEntity member = memberRepository.save(MemberEntityFixture.DEFAULT.get());
+        ParameterizedTypeReference<ApiResponse<FoodScanResponse>> responseType =
+                new ParameterizedTypeReference<>() {};
+        //when
+        String ocrText = """
+                {
+                    "다이소 강남점
+                     품명: 다목적 세정제 500ml
+                     가격: 2,000원
+                     반품/교환은 구매 후 14일 이내
+                     영수증 지참 필수
+                     2026-01-12 14:30:00"
+                }
+                """;
+        OcrTextRequest ocrTextRequest = new OcrTextRequest(ocrText);
+
+        ApiResponse<FoodScanResponse> response = client.post()
+                .uri("/api/v1/foods/scan")
+                .header(AUTHORIZATION, getAccessToken(member.getMemberKey()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(ocrTextRequest)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(responseType)
+                .returnResult()
+                .getResponseBody();
+        //then
+        assertThat(response).isNotNull();
+        assertThat(response.data()).isNotNull();
+
     }
 }

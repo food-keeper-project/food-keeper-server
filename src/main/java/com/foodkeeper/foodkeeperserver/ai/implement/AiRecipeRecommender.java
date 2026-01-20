@@ -1,9 +1,7 @@
-package com.foodkeeper.foodkeeperserver.recipe.implement;
+package com.foodkeeper.foodkeeperserver.ai.implement;
 
-import com.foodkeeper.foodkeeperserver.recipe.dataaccess.ClovaClient;
+import com.foodkeeper.foodkeeperserver.ai.AiProcessor;
 import com.foodkeeper.foodkeeperserver.recipe.domain.NewRecipe;
-import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaRequest;
-import com.foodkeeper.foodkeeperserver.recipe.domain.clova.ClovaResponse;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import jakarta.annotation.PostConstruct;
@@ -13,50 +11,40 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
-import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AiRecipeRecommender {
-
-    private static final String BEARER = "Bearer ";
-
-    @Value("${clova.api-key}")
-    private String apiKey;
+    private final AiProcessor processor;
 
     @Value("classpath:prompts/recipe-system-prompt.txt")
-    private Resource systemPromptResource;
+    private Resource systemPrompt;
 
-    private String systemPrompt;
+    private String loadedSystemPrompt;
 
-    private final ClovaClient clovaClient;
-    private final ObjectMapper objectMapper;
-
-    // 텍스트 파일 빈 생성 시 메모리에 저장
     @PostConstruct
     public void init() {
         try {
-            this.systemPrompt = StreamUtils.copyToString(systemPromptResource.getInputStream(), StandardCharsets.UTF_8);
+            this.loadedSystemPrompt = StreamUtils.copyToString(
+                    systemPrompt.getInputStream(),
+                    StandardCharsets.UTF_8
+            );
         } catch (IOException e) {
-            log.error("시스템 프롬프트 로딩 실패", e);
+            log.error("시스템 프롬프트 로딩 실패: {}", loadedSystemPrompt, e);
             throw new AppException(ErrorType.NAVER_CLOVA_PROMPT_ERROR);
         }
     }
 
+
     public NewRecipe getRecipeRecommendation(List<String> ingredients, List<String> excludedMenus) {
         String userPrompt = removeDuplicateFood(ingredients, excludedMenus);
-
-        ClovaRequest clovaRequest = ClovaRequest.createPrompt(systemPrompt, userPrompt);
-        ClovaResponse clovaResponse = clovaClient.getRecipe(BEARER + apiKey, clovaRequest);
-        log.info("[CLOVA RESULT] {}", clovaResponse.result().message().content());
-
-        String content = clovaResponse.getContent();
-        return objectMapper.readValue(content, NewRecipe.class);
+        return processor.executeClova(loadedSystemPrompt, userPrompt, NewRecipe.class);
     }
 
     private String removeDuplicateFood(List<String> ingredients, List<String> excludedMenus) {

@@ -1,6 +1,5 @@
-package com.foodkeeper.foodkeeperserver.recipe.domain.clova;
+package com.foodkeeper.foodkeeperserver.ai.domain;
 
-import com.foodkeeper.foodkeeperserver.recipe.domain.AiType;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
