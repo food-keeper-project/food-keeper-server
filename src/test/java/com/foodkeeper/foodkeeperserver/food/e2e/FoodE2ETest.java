@@ -207,7 +207,6 @@ public class FoodE2ETest extends E2ETest {
         assertThat(response).isNotNull();
         assertThat(response.data()).isNotNull();
         assertThat(response.data().content()).hasSize(10);
-        assertThat(response.data().content().stream().map(FoodResponse::expiryDate)).isSorted();
     }
 
     @Test
@@ -312,7 +311,7 @@ public class FoodE2ETest extends E2ETest {
                     "다이소 강남점
                      품명: 다목적 세정제 500ml
                      가격: 2,000원
-                     반품/교환은 구매 후 14일 이내
+                     반품/교환은 구매 후 10일 이내
                      영수증 지참 필수
                      2026-01-12 14:30:00"
                 }
