@@ -23,7 +23,7 @@ public class FoodCategoryReader {
                 .map(SelectedFoodCategoryEntity::toDomain).toList();
         List<FoodCategoryEntity> foodCategories = foodCategoryRepository.findAllByIdIn(categoryIds.stream()
                 .map(SelectedFoodCategory::foodCategoryId).toList());
-        return new FoodCategories(categoryIds, foodCategories.stream().map(FoodCategoryEntity::toDomain).toList());
+        return FoodCategories.from(categoryIds, foodCategories.stream().map(FoodCategoryEntity::toDomain).toList());
     }
 
     public FoodCategories findNamesFoodById(Long foodId) {
@@ -31,7 +31,7 @@ public class FoodCategoryReader {
                 .map(SelectedFoodCategoryEntity::toDomain).toList();
         List<FoodCategoryEntity> foodCategories = foodCategoryRepository.findAllByIdIn(categoryIds.stream()
                 .map(SelectedFoodCategory::foodCategoryId).toList());
-        return new FoodCategories(categoryIds, foodCategories.stream().map(FoodCategoryEntity::toDomain).toList());
+        return FoodCategories.from(categoryIds, foodCategories.stream().map(FoodCategoryEntity::toDomain).toList());
     }
 
 

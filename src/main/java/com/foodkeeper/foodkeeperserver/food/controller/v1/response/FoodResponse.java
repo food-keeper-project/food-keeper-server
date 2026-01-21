@@ -4,6 +4,7 @@ import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 public record FoodResponse(
@@ -36,6 +37,7 @@ public record FoodResponse(
     public static List<FoodResponse> toFoodListResponse(List<RegisteredFood> foods) {
         return foods.stream()
                 .map(FoodResponse::from)
+                .sorted(Comparator.comparing(FoodResponse::expiryDate))
                 .toList();
     }
 
