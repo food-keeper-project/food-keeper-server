@@ -6,7 +6,6 @@ import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,11 +26,10 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
                                              Long categoryId,
                                              String memberKey) {
 
-        JPAQuery<FoodEntity> query = selectFrom(foodEntity);
-
-        applyCategoryFilter(query, categoryId);
-
-        List<FoodEntity> content = query
+        List<FoodEntity> content = selectFrom(foodEntity)
+                .innerJoin(selectedFoodCategoryEntity)
+                .on(foodEntity.id.eq(selectedFoodCategoryEntity.foodId))
+                .where(selectedFoodCategoryEntity.foodCategoryId.eq(categoryId))
                 .where(eqMember(memberKey), isNotDeleted())
                 .where(ltCursor(cursorable.cursor()))
                 .orderBy(foodEntity.id.desc())
@@ -43,14 +41,6 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
 
     private BooleanExpression ltCursor(Long cursor) {
         return cursor == null ? null : foodEntity.id.lt(cursor);
-    }
-
-    private void applyCategoryFilter(JPAQuery<FoodEntity> query, Long categoryId) {
-        if (categoryId != null) {
-            query.join(selectedFoodCategoryEntity)
-                    .on(foodEntity.id.eq(selectedFoodCategoryEntity.foodId))
-                    .where(selectedFoodCategoryEntity.foodCategoryId.eq(categoryId));
-        }
     }
 
     @Override
