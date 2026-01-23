@@ -2,6 +2,7 @@ package com.foodkeeper.foodkeeperserver.food.business;
 
 import com.foodkeeper.foodkeeperserver.ai.AiProcessor;
 import com.foodkeeper.foodkeeperserver.ai.domain.*;
+import com.foodkeeper.foodkeeperserver.ai.implement.AiFoodScanner;
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.dataaccess.entity.BookmarkedFoodEntity;
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.dataaccess.repository.BookmarkedFoodRepository;
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.implement.FoodBookmarker;
@@ -11,20 +12,18 @@ import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.common.handler.TransactionHandler;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
-import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.SelectedFoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodCategoryRepository;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.FoodRepository;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.SelectedFoodCategoryRepository;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.custom.FoodCategoryResult;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
-import com.foodkeeper.foodkeeperserver.food.domain.ScannedFood;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
+import com.foodkeeper.foodkeeperserver.food.domain.ScannedFood;
 import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.fixture.CategoryFixture;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
-import com.foodkeeper.foodkeeperserver.food.fixture.SelectedFoodCategoryFixture;
 import com.foodkeeper.foodkeeperserver.food.implement.*;
-import com.foodkeeper.foodkeeperserver.ai.implement.AiFoodScanner;
 import com.foodkeeper.foodkeeperserver.recipe.dataaccess.ClovaClient;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
@@ -42,6 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,7 +78,7 @@ public class FoodServiceTest {
     void setUp() {
         FoodManager foodManager = new FoodManager(foodRepository, new SelectedFoodCategoryManager(selectedFoodCategoryRepository));
         CategoryManager categoryManager = new CategoryManager(foodCategoryRepository);
-        FoodCategoryReader foodCategoryReader = new FoodCategoryReader(foodCategoryRepository, selectedFoodCategoryRepository);
+        FoodCategoryReader foodCategoryReader = new FoodCategoryReader(foodCategoryRepository);
         FoodReader foodReader = new FoodReader(foodRepository, foodCategoryReader);
         SelectedFoodCategoryManager selectedFoodCategoryManager = new SelectedFoodCategoryManager(selectedFoodCategoryRepository);
         FoodBookmarker foodBookmarker = new FoodBookmarker(bookmarkedFoodRepository);
@@ -138,17 +138,12 @@ public class FoodServiceTest {
         List<FoodEntity> foodEntities = List.of(FoodFixture.createFoodEntity(1L),
                 FoodFixture.createFoodEntity(2L));
         SliceObject<FoodEntity> foodSlice = new SliceObject<>(foodEntities, cursorable, true);
-
-        List<FoodCategoryEntity> foodCategories = CategoryFixture.createCategoryEntity(List.of(1L, 2L));
-
-        List<SelectedFoodCategoryEntity> selectedFoodCategories = List.of(
-                SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 1L),
-                SelectedFoodCategoryFixture.createSelectedCategoryEntity(2L, 2L)
-        );
+        List<FoodCategoryResult> categoryResults = List.of(
+                new FoodCategoryResult(1L, 1L, "유제품", memberKey, LocalDateTime.now()),
+                new FoodCategoryResult(1L, 2L, "기타", memberKey, LocalDateTime.now()));
 
         given(foodRepository.findFoods(cursorable, categoryId, memberKey)).willReturn(foodSlice);
-        given(selectedFoodCategoryRepository.findByFoodIdIn(anyList())).willReturn(selectedFoodCategories);
-        given(foodCategoryRepository.findAllByIdIn(List.of(1L, 2L))).willReturn(foodCategories);
+        given(foodCategoryRepository.findAllByIdIn(List.of(1L, 2L))).willReturn(categoryResults);
 
         //when
         SliceObject<RegisteredFood> result = foodService.findFoodList(cursorable, categoryId, memberKey);
@@ -162,22 +157,21 @@ public class FoodServiceTest {
     @Test
     @DisplayName("식재료 단일 조회 시 카테고리와 매핑된 상태로 결과 반환")
     void getFood_SUCCESS() {
-        //given
+        // given
+        String memberKey = "memberKey";
         FoodEntity food = FoodFixture.createFoodEntity(1L);
-        List<SelectedFoodCategoryEntity> selectedFoodCategories = List.of(
-                SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 1L),
-                SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 2L)
+        List<FoodCategoryResult> categoryResults = List.of(
+                new FoodCategoryResult(1L, 1L, "유제품", memberKey, LocalDateTime.now()),
+                new FoodCategoryResult(1L, 2L, "기타", memberKey, LocalDateTime.now())
         );
-        List<FoodCategoryEntity> foodCategories = CategoryFixture.createCategoryEntity(List.of(1L, 2L));
 
         given(foodRepository.findByIdAndMemberKey(1L, FoodFixture.MEMBER_KEY)).willReturn(Optional.of(food));
-        given(selectedFoodCategoryRepository.findByFoodId(1L)).willReturn(selectedFoodCategories);
-        given(foodCategoryRepository.findAllByIdIn(List.of(1L, 2L))).willReturn(foodCategories);
+        given(foodCategoryRepository.findAllById(1L)).willReturn(categoryResults);
 
-        //when
+        // when
         RegisteredFood result = foodService.findFood(1L, FoodFixture.MEMBER_KEY);
 
-        //then
+        // then
         assertThat(result.categories()).hasSize(2);
     }
 
@@ -191,6 +185,7 @@ public class FoodServiceTest {
                 food.expiryAlarmDays(), food.memo());
         FoodEntity foodEntity = FoodEntity.from(foodRegister, food.imageUrl(), food.memberKey());
         BookmarkedFoodEntity bookmarkedFoodEntity = mock(BookmarkedFoodEntity.class);
+
         given(bookmarkedFoodEntity.getId()).willReturn(bookmarkedFoodId);
         given(foodRepository.findById(eq(1L))).willReturn(Optional.of(foodEntity));
         given(bookmarkedFoodRepository.save(any(BookmarkedFoodEntity.class))).willReturn(bookmarkedFoodEntity);
@@ -218,16 +213,18 @@ public class FoodServiceTest {
     @Test
     @DisplayName("foodId 리스트와 memberKey 으로 foodName을 List<String>로 결과 반환")
     void getFoodNames_SUCCESS() {
-        //given
+        // given
         List<Long> ids = List.of(1L, 2L);
         String memberKey = FoodFixture.MEMBER_KEY;
         String foodName = FoodFixture.NAME;
         FoodEntity food1 = FoodFixture.createFoodEntity(ids.get(0));
         FoodEntity food2 = FoodFixture.createFoodEntity(ids.get(1));
         given(foodRepository.findAllByMemberKey(memberKey)).willReturn(List.of(food1, food2));
-        //when
+
+        // when
         List<RegisteredFood> foods = foodService.findAllFoods(memberKey);
-        //then
+
+        // then
         assertThat(foods).hasSize(2);
         assertThat(foods.getFirst().name()).isEqualTo(foodName);
     }
@@ -235,26 +232,22 @@ public class FoodServiceTest {
     @Test
     @DisplayName("임박한 재료 리스트를 조회했을 때 foodName, remainDays 반환")
     void getImminentFood_SUCCESS() {
-        //given
+        // given
         String memberKey = "memberKey";
-        List<Long> foodIds = List.of(1L, 2L);
-
         List<FoodEntity> foodEntities = List.of(FoodFixture.createFoodEntity(1L), FoodFixture.createFoodEntity(2L));
+        List<FoodCategoryResult> categoryResults = List.of(
+                new FoodCategoryResult(1L, 1L, "유제품", memberKey, LocalDateTime.now()),
+                new FoodCategoryResult(2L, 1L, "유제품", memberKey, LocalDateTime.now())
+        );
 
         given(foodRepository.findImminentFoods(any(LocalDate.class), eq(memberKey)))
                 .willReturn(foodEntities);
+        given(foodCategoryRepository.findAllByIdIn(List.of(1L, 2L))).willReturn(categoryResults);
 
-        SelectedFoodCategoryEntity selectedEntity = SelectedFoodCategoryFixture.createSelectedCategoryEntity(1L, 1L);
-        given(selectedFoodCategoryRepository.findByFoodIdIn(foodIds))
-                .willReturn(List.of(selectedEntity));
-
-        FoodCategoryEntity categoryEntity = CategoryFixture.createCategoryEntity(1L);
-        given(foodCategoryRepository.findAllByIdIn(List.of(1L)))
-                .willReturn(List.of(categoryEntity));
-
-        //when
+        // when
         List<RegisteredFood> results = foodService.findImminentFoods(memberKey);
-        //then
+
+        // then
         assertThat(results.getFirst().name()).isEqualTo("우유");
         assertThat(results.getFirst().categories()).hasSize(1);
         assertThat(results.getFirst().remainDays()).isEqualTo(1L);
@@ -309,13 +302,13 @@ public class FoodServiceTest {
     @Test
     @DisplayName("텍스트를 받아서 AI를 이용해 필요한 데이터만 추출 성공")
     void parseText_SUCCESS() {
-        //given
+        // given
         String clovaContent = """
             {
                 "name" : "신라면",
                 "storageMethod" : "냉장",
                 "expiryDate" : "2025-05-05"
-            }    
+            }
             """;
         ClovaMessage clovaMessage = new ClovaMessage(AiType.SYSTEM, clovaContent);
         ClovaResponse clovaResponse = new ClovaResponse(
@@ -323,9 +316,10 @@ public class FoodServiceTest {
                 new ClovaResult(clovaMessage));
         given(clovaClient.getAiResponse(anyString(), any())).willReturn(clovaResponse);
 
-        //when
+        // when
         ScannedFood scannedFood = foodService.scanFoodByOcr("test-ocr-text");
-        //then
+
+        // then
         assertThat(scannedFood.name()).isEqualTo("신라면");
         assertThat(scannedFood.storageMethod()).isEqualTo(StorageMethod.REFRIGERATED);
         assertThat(scannedFood.expiryDate()).isEqualTo("2025-05-05");

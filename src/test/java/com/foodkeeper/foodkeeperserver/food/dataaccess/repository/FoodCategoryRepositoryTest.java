@@ -2,11 +2,16 @@ package com.foodkeeper.foodkeeperserver.food.dataaccess.repository;
 
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.enums.EntityStatus;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.SelectedFoodCategoryEntity;
+import com.foodkeeper.foodkeeperserver.food.dataaccess.repository.custom.FoodCategoryResult;
+import com.foodkeeper.foodkeeperserver.food.domain.StorageMethod;
 import com.foodkeeper.foodkeeperserver.support.repository.RepositoryTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,14 +88,41 @@ class FoodCategoryRepositoryTest extends RepositoryTest {
     @DisplayName("CategoryId들에 해당하는 모든 FoodCategory를 조회한다.")
     void findCategoriesByCategoryIds() {
         String memberKey = "memberKey";
+        FoodEntity food1 = em.persist(FoodEntity.builder()
+                .name("name")
+                .imageUrl("https://test.com/image.jpg")
+                .storageMethod(StorageMethod.FROZEN)
+                .expiryDate(LocalDate.now().plusDays(2))
+                .expiryAlarmDays(2)
+                .memo("")
+                .selectedCategoryCount(1)
+                .memberKey(memberKey)
+                .build());
+        FoodEntity food2 = em.persist(FoodEntity.builder()
+                .name("name")
+                .imageUrl("https://test.com/image.jpg")
+                .storageMethod(StorageMethod.FROZEN)
+                .expiryDate(LocalDate.now().plusDays(2))
+                .expiryAlarmDays(2)
+                .memo("")
+                .selectedCategoryCount(1)
+                .memberKey(memberKey)
+                .build());
         FoodCategoryEntity category1 = em.persist(new FoodCategoryEntity("category1", memberKey));
+        FoodCategoryEntity category2 = em.persist(new FoodCategoryEntity("category2", memberKey));
         FoodCategoryEntity category3 = em.persist(new FoodCategoryEntity("category3", memberKey));
-        em.persist(new FoodCategoryEntity("category2", memberKey));
+        em.persist(new SelectedFoodCategoryEntity(food1.getId(), category1.getId()));
+        em.persist(new SelectedFoodCategoryEntity(food1.getId(), category3.getId()));
+        em.persist(new SelectedFoodCategoryEntity(food2.getId(), category2.getId()));
 
-        List<FoodCategoryEntity> categories = foodCategoryRepository.findAllByIdIn(
-                List.of(category1.getId(), category3.getId()));
+        List<FoodCategoryResult> categories1 = foodCategoryRepository.findAllByIdIn(List.of(food1.getId()));
+        List<FoodCategoryResult> categories2 = foodCategoryRepository.findAllByIdIn(List.of(food1.getId(), food2.getId()));
 
-        assertThat(categories).hasSize(2);
-        assertThat(categories).containsExactly(category1, category3);
+        assertThat(categories1).hasSize(2);
+        assertThat(categories1.stream().map(FoodCategoryResult::foodCategoryId).toList())
+                .contains(category1.getId(), category3.getId());
+        assertThat(categories2).hasSize(3);
+        assertThat(categories2.stream().map(FoodCategoryResult::foodCategoryId).toList())
+                .contains(category1.getId(), category2.getId(), category3.getId());
     }
 }

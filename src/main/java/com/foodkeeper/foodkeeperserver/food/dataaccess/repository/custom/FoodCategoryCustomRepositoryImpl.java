@@ -3,6 +3,7 @@ package com.foodkeeper.foodkeeperserver.food.dataaccess.repository.custom;
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.enums.EntityStatus;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodCategoryEntity;
 import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QFoodCategoryEntity.foodCategoryEntity;
+import static com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QSelectedFoodCategoryEntity.selectedFoodCategoryEntity;
 
 public class FoodCategoryCustomRepositoryImpl extends QuerydslRepositorySupport implements FoodCategoryCustomRepository {
 
@@ -45,9 +47,32 @@ public class FoodCategoryCustomRepositoryImpl extends QuerydslRepositorySupport 
     }
 
     @Override
-    public List<FoodCategoryEntity> findAllByIdIn(List<Long> ids) {
-        return selectFrom(foodCategoryEntity)
-                .where(isNotDeleted(), foodCategoryEntity.id.in(ids))
+    public List<FoodCategoryResult> findAllByIdIn(List<Long> foodIds) {
+        return select(Projections.constructor(FoodCategoryResult.class,
+                selectedFoodCategoryEntity.foodId,
+                selectedFoodCategoryEntity.foodCategoryId,
+                foodCategoryEntity.name,
+                foodCategoryEntity.memberKey,
+                foodCategoryEntity.createdAt))
+                .from(foodCategoryEntity)
+                .rightJoin(selectedFoodCategoryEntity)
+                .on(selectedFoodCategoryEntity.foodCategoryId.eq(foodCategoryEntity.id))
+                .where(selectedFoodCategoryEntity.foodId.in(foodIds), isNotDeleted())
+                .fetch();
+    }
+
+    @Override
+    public List<FoodCategoryResult> findAllById(Long id) {
+        return select(Projections.constructor(FoodCategoryResult.class,
+                selectedFoodCategoryEntity.foodId,
+                selectedFoodCategoryEntity.foodCategoryId,
+                foodCategoryEntity.name,
+                foodCategoryEntity.memberKey,
+                foodCategoryEntity.createdAt))
+                .from(foodCategoryEntity)
+                .rightJoin(selectedFoodCategoryEntity)
+                .on(selectedFoodCategoryEntity.foodCategoryId.eq(foodCategoryEntity.id))
+                .where(selectedFoodCategoryEntity.foodId.eq(id), isNotDeleted())
                 .fetch();
     }
 

@@ -13,5 +13,7 @@ public interface FoodCategoryCustomRepository {
 
     Optional<FoodCategoryEntity> findByIdAndMemberKey(Long id, String memberKey);
 
-    List<FoodCategoryEntity> findAllByIdIn(List<Long> ids);
+    List<FoodCategoryResult> findAllByIdIn(List<Long> ids);
+
+    List<FoodCategoryResult> findAllById(Long id);
 }
