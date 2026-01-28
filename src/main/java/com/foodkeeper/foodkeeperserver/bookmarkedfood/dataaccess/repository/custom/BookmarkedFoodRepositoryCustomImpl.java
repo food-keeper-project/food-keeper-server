@@ -22,7 +22,7 @@ public class BookmarkedFoodRepositoryCustomImpl extends QuerydslRepositorySuppor
     public SliceObject<BookmarkedFoodEntity> findBookmarkedFoods(Cursorable<Long> cursorable, String memberKey) {
         List<BookmarkedFoodEntity> content = selectFrom(bookmarkedFoodEntity)
                 .where(ltCursor(cursorable.cursor()), bookmarkedFoodEntity.memberKey.eq(memberKey))
-                .where(bookmarkedFoodEntity.status.ne(EntityStatus.DELETED))
+                .where(bookmarkedFoodEntity.status.eq(EntityStatus.ACTIVE))
                 .orderBy(bookmarkedFoodEntity.id.desc())
                 .limit(cursorable.limit() + 1)
                 .fetch();

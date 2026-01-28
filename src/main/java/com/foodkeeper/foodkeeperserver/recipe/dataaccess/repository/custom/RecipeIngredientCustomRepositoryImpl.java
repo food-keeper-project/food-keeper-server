@@ -21,7 +21,7 @@ public class RecipeIngredientCustomRepositoryImpl extends QuerydslRepositorySupp
         update(recipeIngredientEntity)
                 .set(recipeIngredientEntity.status, EntityStatus.DELETED)
                 .set(recipeIngredientEntity.deletedAt, LocalDateTime.now())
-                .where(recipeIngredientEntity.recipeId.in(recipeIds), isNotDeleted())
+                .where(recipeIngredientEntity.recipeId.in(recipeIds), isActive())
                 .execute();
 
         getEntityManager().clear();
@@ -30,11 +30,11 @@ public class RecipeIngredientCustomRepositoryImpl extends QuerydslRepositorySupp
     @Override
     public List<RecipeIngredientEntity> findByRecipeId(Long recipeId) {
         return selectFrom(recipeIngredientEntity)
-                .where(recipeIngredientEntity.recipeId.eq(recipeId), isNotDeleted())
+                .where(recipeIngredientEntity.recipeId.eq(recipeId), isActive())
                 .fetch();
     }
 
-    private static BooleanExpression isNotDeleted() {
-        return recipeIngredientEntity.status.ne(EntityStatus.DELETED);
+    private static BooleanExpression isActive() {
+        return recipeIngredientEntity.status.eq(EntityStatus.ACTIVE);
     }
 }
