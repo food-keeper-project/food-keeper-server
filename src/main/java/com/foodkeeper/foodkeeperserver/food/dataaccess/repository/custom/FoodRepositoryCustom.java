@@ -15,6 +15,8 @@ public interface FoodRepositoryCustom {
 
     List<FoodEntity> findImminentFoods(LocalDate imminentStand, String memberKey);
 
+    List<FoodEntity> findFoodsToNotify(LocalDate targetDate);
+
     List<Long> removeFoods(String memberKey);
 
     Optional<FoodEntity> findByIdAndMemberKey(Long id, String memberKey);

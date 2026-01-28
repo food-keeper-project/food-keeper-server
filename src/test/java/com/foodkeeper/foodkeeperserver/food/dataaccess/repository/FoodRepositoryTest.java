@@ -104,7 +104,7 @@ class FoodRepositoryTest extends RepositoryTest {
     }
 
     @Test
-    @DisplayName("유통기한(expiryDate)로 부터 imminentStand일 이내로 남은 Food들을 조회한다.")
+    @DisplayName("유통기한(expiryDate)으로 부터 imminentStand일 이내로 남은 Food들을 조회한다.")
     void findFoodsWithin7DaysOfItsExpiryDate() {
         // given
         String memberKey = "memberKey";
@@ -128,6 +128,36 @@ class FoodRepositoryTest extends RepositoryTest {
 
         // when
         List<FoodEntity> imminentFoods = foodRepository.findImminentFoods(imminentStand, memberKey);
+
+        // then
+        assertThat(imminentFoods).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("목표 날짜가 유통기한 이전 알람 날짜와 같은 식재료들을 조회한다.")
+    void findFoodsThatTargetDateEqualsToAlarmDate() {
+        // given
+        String memberKey = "memberKey";
+        LocalDate targetDate = LocalDate.now();
+        List<Pair<String, LocalDate>> foodInfos = List.of(
+                new Pair<>("food1", LocalDate.now().plusDays(2)),
+                new Pair<>("food2", LocalDate.now().plusDays(3)),
+                new Pair<>("food3", LocalDate.now().plusDays(2))
+        );
+        foodInfos.forEach(foodInfo ->
+                em.persist(FoodEntity.builder()
+                        .name(foodInfo.first)
+                        .imageUrl("https://test.com/image.jpg")
+                        .storageMethod(StorageMethod.FROZEN)
+                        .expiryDate(foodInfo.second)
+                        .expiryAlarmDays(2)
+                        .memo("")
+                        .selectedCategoryCount(1)
+                        .memberKey(memberKey)
+                        .build()));
+
+        // when
+        List<FoodEntity> imminentFoods = foodRepository.findFoodsToNotify(targetDate);
 
         // then
         assertThat(imminentFoods).hasSize(2);
