@@ -17,7 +17,7 @@ public class MemberRoleCustomRepositoryImpl extends QuerydslRepositorySupport im
     @Override
     public List<MemberRoleEntity> findByMemberKey(String memberKey) {
         return selectFrom(memberRoleEntity)
-                .where(memberRoleEntity.memberKey.eq(memberKey), memberRoleEntity.status.ne(EntityStatus.DELETED))
+                .where(memberRoleEntity.memberKey.eq(memberKey), memberRoleEntity.status.eq(EntityStatus.ACTIVE))
                 .fetch();
     }
 }

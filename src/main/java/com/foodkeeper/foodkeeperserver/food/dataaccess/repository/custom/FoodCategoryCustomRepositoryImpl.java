@@ -24,7 +24,7 @@ public class FoodCategoryCustomRepositoryImpl extends QuerydslRepositorySupport 
         update(foodCategoryEntity)
                 .set(foodCategoryEntity.status, EntityStatus.DELETED)
                 .set(foodCategoryEntity.deletedAt, LocalDateTime.now())
-                .where(foodCategoryEntity.memberKey.eq(memberKey), isNotDeleted())
+                .where(foodCategoryEntity.memberKey.eq(memberKey), isActive())
                 .execute();
 
         getEntityManager().clear();
@@ -33,7 +33,7 @@ public class FoodCategoryCustomRepositoryImpl extends QuerydslRepositorySupport 
     @Override
     public List<FoodCategoryEntity> findAllByMemberKey(String memberKey) {
         return selectFrom(foodCategoryEntity)
-                .where(foodCategoryEntity.memberKey.eq(memberKey), isNotDeleted())
+                .where(foodCategoryEntity.memberKey.eq(memberKey), isActive())
                 .fetch();
     }
 
@@ -41,7 +41,7 @@ public class FoodCategoryCustomRepositoryImpl extends QuerydslRepositorySupport 
     public Optional<FoodCategoryEntity> findByIdAndMemberKey(Long id, String memberKey) {
         return Optional.ofNullable(
                 selectFrom(foodCategoryEntity)
-                        .where(foodCategoryEntity.id.eq(id), foodCategoryEntity.memberKey.eq(memberKey), isNotDeleted())
+                        .where(foodCategoryEntity.id.eq(id), foodCategoryEntity.memberKey.eq(memberKey), isActive())
                         .fetchOne()
         );
     }
@@ -57,7 +57,7 @@ public class FoodCategoryCustomRepositoryImpl extends QuerydslRepositorySupport 
                 .from(foodCategoryEntity)
                 .rightJoin(selectedFoodCategoryEntity)
                 .on(selectedFoodCategoryEntity.foodCategoryId.eq(foodCategoryEntity.id))
-                .where(selectedFoodCategoryEntity.foodId.in(foodIds), isNotDeleted())
+                .where(selectedFoodCategoryEntity.foodId.in(foodIds), isActive())
                 .fetch();
     }
 
@@ -72,11 +72,11 @@ public class FoodCategoryCustomRepositoryImpl extends QuerydslRepositorySupport 
                 .from(foodCategoryEntity)
                 .rightJoin(selectedFoodCategoryEntity)
                 .on(selectedFoodCategoryEntity.foodCategoryId.eq(foodCategoryEntity.id))
-                .where(selectedFoodCategoryEntity.foodId.eq(id), isNotDeleted())
+                .where(selectedFoodCategoryEntity.foodId.eq(id), isActive())
                 .fetch();
     }
 
-    private static BooleanExpression isNotDeleted() {
-        return foodCategoryEntity.status.ne(EntityStatus.DELETED);
+    private static BooleanExpression isActive() {
+        return foodCategoryEntity.status.eq(EntityStatus.ACTIVE);
     }
 }

@@ -19,7 +19,7 @@ public class MemberCustomRepositoryImpl extends QuerydslRepositorySupport implem
     public Optional<MemberEntity> findByMemberKey(String memberKey) {
         return Optional.ofNullable(
                 selectFrom(memberEntity)
-                        .where(eqMember(memberKey), isNotDeleted())
+                        .where(eqMember(memberKey), isActive())
                         .fetchOne()
         );
     }
@@ -29,7 +29,7 @@ public class MemberCustomRepositoryImpl extends QuerydslRepositorySupport implem
         return Optional.ofNullable(
                 select(memberEntity.refreshToken)
                         .from(memberEntity)
-                        .where(eqMember(memberKey), isNotDeleted())
+                        .where(eqMember(memberKey), isActive())
                         .fetchOne()
         );
     }
@@ -38,7 +38,7 @@ public class MemberCustomRepositoryImpl extends QuerydslRepositorySupport implem
     public void updateRefreshToken(String memberKey, String refreshToken) {
         update(memberEntity)
                 .set(memberEntity.refreshToken, refreshToken)
-                .where(eqMember(memberKey), isNotDeleted())
+                .where(eqMember(memberKey), isActive())
                 .execute();
 
         getEntityManager().clear();
@@ -48,7 +48,7 @@ public class MemberCustomRepositoryImpl extends QuerydslRepositorySupport implem
     public void deleteRefreshTokenByMemberKey(String memberKey) {
         update(memberEntity)
                 .setNull(memberEntity.refreshToken)
-                .where(eqMember(memberKey), isNotDeleted())
+                .where(eqMember(memberKey), isActive())
                 .execute();
 
         getEntityManager().clear();
@@ -58,7 +58,7 @@ public class MemberCustomRepositoryImpl extends QuerydslRepositorySupport implem
     public boolean existsByEmail(String email) {
         Integer fetchOne = selectOne()
                 .from(memberEntity)
-                .where(memberEntity.email.eq(email), isNotDeleted())
+                .where(memberEntity.email.eq(email), isActive())
                 .fetchFirst();
 
         return fetchOne != null;
@@ -68,7 +68,7 @@ public class MemberCustomRepositoryImpl extends QuerydslRepositorySupport implem
         return memberEntity.memberKey.eq(memberKey);
     }
 
-    private static BooleanExpression isNotDeleted() {
-        return memberEntity.status.ne(EntityStatus.DELETED);
+    private static BooleanExpression isActive() {
+        return memberEntity.status.eq(EntityStatus.ACTIVE);
     }
 }

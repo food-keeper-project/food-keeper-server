@@ -21,7 +21,7 @@ public class RecipeStepCustomRepositoryImpl extends QuerydslRepositorySupport im
         update(recipeStepEntity)
                 .set(recipeStepEntity.status, EntityStatus.DELETED)
                 .set(recipeStepEntity.deletedAt, LocalDateTime.now())
-                .where(recipeStepEntity.recipeId.in(recipeIds), isNotDeleted())
+                .where(recipeStepEntity.recipeId.in(recipeIds), isActive())
                 .execute();
 
         getEntityManager().clear();
@@ -30,11 +30,11 @@ public class RecipeStepCustomRepositoryImpl extends QuerydslRepositorySupport im
     @Override
     public List<RecipeStepEntity> findByRecipeId(Long recipeId) {
         return selectFrom(recipeStepEntity)
-                .where(recipeStepEntity.recipeId.eq(recipeId), isNotDeleted())
+                .where(recipeStepEntity.recipeId.eq(recipeId), isActive())
                 .fetch();
     }
 
-    private static BooleanExpression isNotDeleted() {
-        return recipeStepEntity.status.ne(EntityStatus.DELETED);
+    private static BooleanExpression isActive() {
+        return recipeStepEntity.status.eq(EntityStatus.ACTIVE);
     }
 }

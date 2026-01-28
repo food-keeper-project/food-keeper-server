@@ -20,7 +20,7 @@ public class LocalAuthCustomRepositoryImpl extends QuerydslRepositorySupport imp
     public boolean existsByAccount(String account) {
         Integer fetchOne = selectOne()
                 .from(localAuthEntity)
-                .where(localAuthEntity.account.eq(account), isNotDeleted())
+                .where(localAuthEntity.account.eq(account), isActive())
                 .fetchFirst();
 
         return fetchOne != null;
@@ -33,8 +33,8 @@ public class LocalAuthCustomRepositoryImpl extends QuerydslRepositorySupport imp
                 .innerJoin(memberEntity)
                 .on(localAuthEntity.memberKey.eq(memberEntity.memberKey))
                 .where(memberEntity.email.eq(email),
-                        isNotDeleted(),
-                        memberEntity.status.ne(EntityStatus.DELETED)
+                        isActive(),
+                        memberEntity.status.eq(EntityStatus.ACTIVE)
                 )
                 .fetchOne();
 
@@ -49,8 +49,8 @@ public class LocalAuthCustomRepositoryImpl extends QuerydslRepositorySupport imp
                 .on(localAuthEntity.memberKey.eq(memberEntity.memberKey))
                 .where(memberEntity.email.eq(email),
                         localAuthEntity.account.eq(account),
-                        isNotDeleted(),
-                        memberEntity.status.ne(EntityStatus.DELETED)
+                        isActive(),
+                        memberEntity.status.eq(EntityStatus.ACTIVE)
                 )
                 .fetchOne();
 
@@ -62,7 +62,7 @@ public class LocalAuthCustomRepositoryImpl extends QuerydslRepositorySupport imp
         return Optional.ofNullable(
                 selectFrom(localAuthEntity)
                         .where(localAuthEntity.account.eq(account))
-                        .where(isNotDeleted())
+                        .where(isActive())
                         .fetchOne()
         );
     }
@@ -74,8 +74,8 @@ public class LocalAuthCustomRepositoryImpl extends QuerydslRepositorySupport imp
                         .innerJoin(memberEntity)
                         .on(localAuthEntity.memberKey.eq(memberEntity.memberKey))
                         .where(memberEntity.email.eq(email),
-                                isNotDeleted(),
-                                memberEntity.status.ne(EntityStatus.DELETED)
+                                isActive(),
+                                memberEntity.status.eq(EntityStatus.ACTIVE)
                         )
                         .fetchOne()
         );
@@ -89,8 +89,8 @@ public class LocalAuthCustomRepositoryImpl extends QuerydslRepositorySupport imp
                         .on(localAuthEntity.memberKey.eq(memberEntity.memberKey))
                         .where(memberEntity.email.eq(email),
                                 localAuthEntity.account.eq(account),
-                                isNotDeleted(),
-                                memberEntity.status.ne(EntityStatus.DELETED)
+                                isActive(),
+                                memberEntity.status.eq(EntityStatus.ACTIVE)
                         )
                         .fetchOne()
         );
@@ -99,11 +99,11 @@ public class LocalAuthCustomRepositoryImpl extends QuerydslRepositorySupport imp
     @Override
     public List<LocalAuthEntity> findAllByMemberKey(String memberKey) {
         return selectFrom(localAuthEntity)
-                .where(localAuthEntity.memberKey.eq(memberKey), isNotDeleted())
+                .where(localAuthEntity.memberKey.eq(memberKey), isActive())
                 .fetch();
     }
 
-    private static BooleanExpression isNotDeleted() {
-        return localAuthEntity.status.ne(EntityStatus.DELETED);
+    private static BooleanExpression isActive() {
+        return localAuthEntity.status.eq(EntityStatus.ACTIVE);
     }
 }

@@ -27,7 +27,7 @@ public class EmailVerificationCustomRepositoryImpl extends QuerydslRepositorySup
                 .set(emailVerificationEntity.status, EntityStatus.DELETED)
                 .set(emailVerificationEntity.deletedAt, LocalDateTime.now())
                 .where(emailVerificationEntity.email.eq(email))
-                .where(isNotDeleted())
+                .where(isActive())
                 .execute();
 
         getEntityManager().clear();
@@ -38,7 +38,7 @@ public class EmailVerificationCustomRepositoryImpl extends QuerydslRepositorySup
         return Optional.ofNullable(
                 selectFrom(emailVerificationEntity)
                         .where(emailVerificationEntity.email.eq(email))
-                        .where(isNotDeleted())
+                        .where(isActive())
                         .fetchFirst()
         );
     }
@@ -49,13 +49,13 @@ public class EmailVerificationCustomRepositoryImpl extends QuerydslRepositorySup
         update(emailVerificationEntity)
                 .set(emailVerificationEntity.failedCount, emailVerificationEntity.failedCount.add(1))
                 .where(emailVerificationEntity.email.eq(email))
-                .where(isNotDeleted(), emailVerificationEntity.verificationStatus.eq(EmailVerificationStatus.ACTIVE))
+                .where(isActive(), emailVerificationEntity.verificationStatus.eq(EmailVerificationStatus.ACTIVE))
                 .execute();
 
         getEntityManager().clear();
     }
 
-    private static BooleanExpression isNotDeleted() {
-        return emailVerificationEntity.status.ne(EntityStatus.DELETED);
+    private static BooleanExpression isActive() {
+        return emailVerificationEntity.status.eq(EntityStatus.ACTIVE);
     }
 }
