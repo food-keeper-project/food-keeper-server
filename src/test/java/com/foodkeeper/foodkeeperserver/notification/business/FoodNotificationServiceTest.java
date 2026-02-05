@@ -3,7 +3,6 @@ package com.foodkeeper.foodkeeperserver.notification.business;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodReader;
-import com.foodkeeper.foodkeeperserver.notification.domain.FcmMessage;
 import com.foodkeeper.foodkeeperserver.notification.domain.MemberFcmTokens;
 import com.foodkeeper.foodkeeperserver.notification.implement.FcmManager;
 import com.foodkeeper.foodkeeperserver.notification.implement.FcmSender;
@@ -21,6 +20,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -48,14 +48,15 @@ public class FoodNotificationServiceTest {
 
         MemberFcmTokens memberFcmTokens = new MemberFcmTokens(Map.of(memberKey, List.of(token)));
         given(fcmManager.findTokens(anySet())).willReturn(memberFcmTokens);
-        //when
-        foodNotificationService.sendExpiryAlarm();
-        //then
-        ArgumentCaptor<FcmMessage> captor = ArgumentCaptor.forClass(FcmMessage.class);
-        verify(fcmSender).sendNotification(captor.capture());
 
-        assertThat(captor.getValue().title()).isEqualTo("우유 D-1");
-        assertThat(captor.getValue().fcmToken()).isEqualTo(token);
+        // when
+        foodNotificationService.sendExpiryAlarm();
+
+        // then
+        ArgumentCaptor<Map<String, String>> captor = ArgumentCaptor.forClass(Map.class);
+        verify(fcmSender).sendNotification(eq(token), captor.capture());
+
+        assertThat(captor.getValue().get("title")).isEqualTo("우유 D-1");
     }
 
     @Test
@@ -77,8 +78,9 @@ public class FoodNotificationServiceTest {
         // when
         foodNotificationService.sendExpiryAlarm();
 
-        ArgumentCaptor<FcmMessage> captor = ArgumentCaptor.forClass(FcmMessage.class);
-        verify(fcmSender).sendNotification(captor.capture());
-        assertThat(captor.getValue().title()).isEqualTo("우유 외 1건");
+        // then
+        ArgumentCaptor<Map<String, String>> captor = ArgumentCaptor.forClass(Map.class);
+        verify(fcmSender).sendNotification(eq(token), captor.capture());
+        assertThat(captor.getValue().get("title")).isEqualTo("우유 외 1건");
     }
 }

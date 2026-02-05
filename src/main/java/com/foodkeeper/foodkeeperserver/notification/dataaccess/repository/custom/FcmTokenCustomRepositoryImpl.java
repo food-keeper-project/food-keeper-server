@@ -21,7 +21,7 @@ public class FcmTokenCustomRepositoryImpl extends QuerydslRepositorySupport impl
     public void deleteFcmTokens(String memberKey) {
         update(fcmTokenEntity)
                 .set(fcmTokenEntity.status, EntityStatus.DELETED)
-                .where(fcmTokenEntity.memberKey.eq(memberKey), isNotDeleted())
+                .where(fcmTokenEntity.memberKey.eq(memberKey), isActive())
                 .execute();
 
         getEntityManager().clear();
@@ -30,7 +30,7 @@ public class FcmTokenCustomRepositoryImpl extends QuerydslRepositorySupport impl
     @Override
     public List<FcmTokenEntity> findAllByMemberKeyIn(Set<String> memberKeys) {
         return selectFrom(fcmTokenEntity)
-                .where(fcmTokenEntity.memberKey.in(memberKeys), isNotDeleted())
+                .where(fcmTokenEntity.memberKey.in(memberKeys), isActive())
                 .fetch();
     }
 
@@ -38,7 +38,7 @@ public class FcmTokenCustomRepositoryImpl extends QuerydslRepositorySupport impl
     public Optional<FcmTokenEntity> findByToken(String token) {
         return Optional.ofNullable(
                 selectFrom(fcmTokenEntity)
-                        .where(fcmTokenEntity.token.eq(token), isNotDeleted())
+                        .where(fcmTokenEntity.token.eq(token), isActive())
                         .fetchOne()
         );
     }
@@ -47,13 +47,13 @@ public class FcmTokenCustomRepositoryImpl extends QuerydslRepositorySupport impl
     public void deleteByToken(String token) {
         update(fcmTokenEntity)
                 .set(fcmTokenEntity.status, EntityStatus.DELETED)
-                .where(fcmTokenEntity.token.eq(token), isNotDeleted())
+                .where(fcmTokenEntity.token.eq(token), isActive())
                 .execute();
 
         getEntityManager().clear();
     }
 
-    private static BooleanExpression isNotDeleted() {
-        return fcmTokenEntity.status.ne(EntityStatus.DELETED);
+    private static BooleanExpression isActive() {
+        return fcmTokenEntity.status.eq(EntityStatus.ACTIVE);
     }
 }

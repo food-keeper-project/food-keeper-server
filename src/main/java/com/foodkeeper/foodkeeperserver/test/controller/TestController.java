@@ -11,6 +11,7 @@ import com.foodkeeper.foodkeeperserver.member.domain.NewMember;
 import com.foodkeeper.foodkeeperserver.member.domain.Nickname;
 import com.foodkeeper.foodkeeperserver.member.domain.enums.SignUpType;
 import com.foodkeeper.foodkeeperserver.member.implement.MemberRegistrar;
+import com.foodkeeper.foodkeeperserver.notification.business.FoodNotificationService;
 import com.foodkeeper.foodkeeperserver.support.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,14 +29,22 @@ import java.util.List;
 @Profile("!prod")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/test-sign-in")
-public class TestSignInController {
+@RequestMapping("/api/v1/test")
+public class TestController {
 
     private final MemberRegistrar memberRegistrar;
     private final JwtGenerator jwtGenerator;
+    private final FoodNotificationService foodNotificationService;
 
     @NullMarked
-    @PostMapping
+    @PostMapping("/trigger/expiry-alarm")
+    public ResponseEntity<ApiResponse<Void>> triggerExpiryAlarm() {
+        foodNotificationService.sendExpiryAlarm();
+        return ResponseEntity.ok(ApiResponse.success());
+    }
+
+    @NullMarked
+    @PostMapping("/sign-in")
     public ResponseEntity<ApiResponse<AuthTokenResponse>> testSignIn(@RequestBody TestSingInRequest request) {
         NewMember newMember = NewMember.builder()
                 .email(new Email(request.email()))

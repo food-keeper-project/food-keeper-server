@@ -55,8 +55,7 @@ public class FoodReader {
     }
 
     public List<Food> findFoodsToNotify(LocalDate today) {
-        return foodRepository.findAll().stream()
-                .filter(food -> food.isNotificationDay(today))
+        return foodRepository.findFoodsToNotify(today).stream()
                 .map(FoodEntity::toDomain)
                 .toList();
     }

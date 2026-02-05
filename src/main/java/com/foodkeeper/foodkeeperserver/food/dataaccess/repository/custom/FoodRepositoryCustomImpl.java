@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import static com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QFoodEntity.foodEntity;
 import static com.foodkeeper.foodkeeperserver.food.dataaccess.entity.QSelectedFoodCategoryEntity.selectedFoodCategoryEntity;
+import static com.querydsl.core.types.dsl.Expressions.dateTemplate;
 
 public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implements FoodRepositoryCustom {
 
@@ -30,7 +31,7 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
                 .innerJoin(selectedFoodCategoryEntity)
                 .on(foodEntity.id.eq(selectedFoodCategoryEntity.foodId))
                 .where(selectedFoodCategoryEntity.foodCategoryId.eq(categoryId))
-                .where(eqMember(memberKey), isNotDeleted())
+                .where(eqMember(memberKey), isActive())
                 .where(ltCursor(cursorable.cursor()))
                 .orderBy(foodEntity.id.desc())
                 .limit(cursorable.limit() + 1)
@@ -47,7 +48,7 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
     public List<FoodEntity> findAllByMemberKey(String memberKey) {
 
         return selectFrom(foodEntity)
-                .where(eqMember(memberKey), isNotDeleted())
+                .where(eqMember(memberKey), isActive())
                 .orderBy(
                         foodEntity.name.asc(),
                         foodEntity.createdAt.desc()
@@ -59,9 +60,23 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
     @Override
     public List<FoodEntity> findImminentFoods(LocalDate imminentStand, String memberKey) {
         return selectFrom(foodEntity)
-                .where(eqMember(memberKey), isNotDeleted())
+                .where(eqMember(memberKey), isActive())
                 .where(foodEntity.expiryDate.loe(imminentStand), foodEntity.expiryDate.goe(LocalDate.now()))
                 .orderBy(foodEntity.expiryDate.asc())
+                .fetch();
+    }
+
+    @Override
+    public List<FoodEntity> findFoodsToNotify(LocalDate targetDate) {
+        return selectFrom(foodEntity)
+                .where(isActive(),
+                        dateTemplate(
+                                Integer.class,
+                                "DATEDIFF({0}, {1})",
+                                foodEntity.expiryDate,
+                                targetDate
+                        ).eq(foodEntity.expiryAlarmDays)
+                )
                 .fetch();
     }
 
@@ -69,13 +84,13 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
     public List<Long> removeFoods(String memberKey) {
         List<Long> foodIds = select(foodEntity.id)
                 .from(foodEntity)
-                .where(eqMember(memberKey), isNotDeleted())
+                .where(eqMember(memberKey), isActive())
                 .fetch();
 
         update(foodEntity)
                 .set(foodEntity.status, EntityStatus.DELETED)
                 .set(foodEntity.deletedAt, LocalDateTime.now())
-                .where(eqMember(memberKey), isNotDeleted())
+                .where(eqMember(memberKey), isActive())
                 .execute();
 
         getEntityManager().clear();
@@ -87,7 +102,7 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
     public Optional<FoodEntity> findByIdAndMemberKey(Long id, String memberKey) {
         return Optional.ofNullable(
                 selectFrom(foodEntity)
-                        .where(foodEntity.id.eq(id), eqMember(memberKey), isNotDeleted())
+                        .where(foodEntity.id.eq(id), eqMember(memberKey), isActive())
                         .fetchOne()
         );
     }
@@ -96,7 +111,7 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
     public long foodCount(String memberKey) {
         Long count = select(foodEntity.id.count())
                 .from(foodEntity)
-                .where(eqMember(memberKey), isNotDeleted())
+                .where(eqMember(memberKey), isActive())
                 .fetchOne();
         return count != null ? count : 0L;
     }
@@ -105,7 +120,7 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
         return foodEntity.memberKey.eq(memberKey);
     }
 
-    private static BooleanExpression isNotDeleted() {
-        return foodEntity.status.ne(EntityStatus.DELETED);
+    private static BooleanExpression isActive() {
+        return foodEntity.status.eq(EntityStatus.ACTIVE);
     }
 }

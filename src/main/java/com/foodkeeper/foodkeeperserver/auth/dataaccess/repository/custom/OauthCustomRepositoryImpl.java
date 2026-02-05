@@ -3,7 +3,6 @@ package com.foodkeeper.foodkeeperserver.auth.dataaccess.repository.custom;
 import com.foodkeeper.foodkeeperserver.auth.dataaccess.entity.OauthEntity;
 import com.foodkeeper.foodkeeperserver.auth.domain.enums.OAuthProvider;
 import com.foodkeeper.foodkeeperserver.common.dataaccess.entity.enums.EntityStatus;
-import com.foodkeeper.foodkeeperserver.member.dataaccess.entity.QMemberEntity;
 import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
 import com.querydsl.core.types.dsl.BooleanExpression;
 
@@ -27,8 +26,8 @@ public class OauthCustomRepositoryImpl extends QuerydslRepositorySupport impleme
                         .on(oauthEntity.memberKey.eq(memberEntity.memberKey))
                         .where(memberEntity.email.eq(email),
                                 oauthEntity.provider.eq(provider),
-                                isNotDeleted(),
-                                memberEntity.status.ne(EntityStatus.DELETED)
+                                isActive(),
+                                memberEntity.status.eq(EntityStatus.ACTIVE)
                         )
                         .fetchOne()
         );
@@ -37,11 +36,11 @@ public class OauthCustomRepositoryImpl extends QuerydslRepositorySupport impleme
     @Override
     public List<OauthEntity> findAllByMemberKey(String memberKey) {
         return selectFrom(oauthEntity)
-                .where(oauthEntity.memberKey.eq(memberKey), isNotDeleted())
+                .where(oauthEntity.memberKey.eq(memberKey), isActive())
                 .fetch();
     }
 
-    private static BooleanExpression isNotDeleted() {
-        return oauthEntity.status.ne(EntityStatus.DELETED);
+    private static BooleanExpression isActive() {
+        return oauthEntity.status.eq(EntityStatus.ACTIVE);
     }
 }

@@ -2,7 +2,6 @@ package com.foodkeeper.foodkeeperserver.notification.business;
 
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodReader;
-import com.foodkeeper.foodkeeperserver.notification.domain.FcmMessage;
 import com.foodkeeper.foodkeeperserver.notification.domain.MemberFcmTokens;
 import com.foodkeeper.foodkeeperserver.notification.implement.FcmManager;
 import com.foodkeeper.foodkeeperserver.notification.implement.FcmSender;
@@ -12,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -46,20 +46,17 @@ public class FoodNotificationService {
             if (!memberFcmTokens.hasTokens(memberKey)) {
                 return;
             }
-            List<String> tokens = memberFcmTokens.getTokensByMember(memberKey);
 
-            FcmMessage message = createFcmMessage(memberFoods, tokens.getFirst(), today);
-
-            tokens.forEach(token -> {
-                FcmMessage tokenMessage = new FcmMessage(token, message.title(), message.foodName(), message.remainingDays(), message.type());
-                fcmSender.sendNotification(tokenMessage);
-            });
+            Map<String, String> fcmMessage = createFcmMessage(memberFoods, today);
+            memberFcmTokens.getTokensByMember(memberKey)
+                    .forEach(token -> fcmSender.sendNotification(token, fcmMessage));
         });
 
         log.info("[Expiry Alarm] 전송 요청 완료. 대상 음식 수: {}", foods.size());
     }
 
-    private FcmMessage createFcmMessage(List<Food> foods, String token, LocalDate today) {
+    private Map<String, String> createFcmMessage(List<Food> foods, LocalDate today) {
+        Map<String, String> data = new HashMap<>();
         String title;
         Food firstFood = foods.getFirst();
         long remainDays = firstFood.calculateRemainDay(today);
@@ -69,6 +66,12 @@ public class FoodNotificationService {
         } else {
             title = "%s 외 %d건".formatted(firstFood.name(), foods.size() - 1);
         }
-        return new FcmMessage(token, title, firstFood.name(), remainDays, type);
+
+        data.put("foodName", firstFood.name());
+        data.put("remainingDays", String.valueOf(remainDays));
+        data.put("title", title);
+        data.put("type", type);
+
+        return data;
     }
 }
