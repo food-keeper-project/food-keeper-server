@@ -15,7 +15,7 @@ public interface FoodRepositoryCustom {
 
     List<FoodEntity> findImminentFoods(LocalDate imminentStand, String memberKey);
 
-    List<FoodEntity> findFoodsToNotify(LocalDate targetDate);
+    SliceObject<FoodEntity> findFoodsToNotify(Cursorable<Long> cursorable,LocalDate targetDate);
 
     List<Long> removeFoods(String memberKey);
 

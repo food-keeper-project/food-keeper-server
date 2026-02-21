@@ -157,10 +157,10 @@ class FoodRepositoryTest extends RepositoryTest {
                         .build()));
 
         // when
-        List<FoodEntity> imminentFoods = foodRepository.findFoodsToNotify(targetDate);
+        SliceObject<FoodEntity> imminentFoods = foodRepository.findFoodsToNotify(new Cursorable<>(null,3),targetDate);
 
         // then
-        assertThat(imminentFoods).hasSize(2);
+        assertThat(imminentFoods.content()).hasSize(2);
     }
 
     @Test

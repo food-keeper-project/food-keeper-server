@@ -1,7 +1,7 @@
 package com.foodkeeper.foodkeeperserver.common.domain;
 
 public record Cursorable<T>(T cursor, Integer limit) {
-    private static final int SYSTEM_MAX = 50;
+    private static final int SYSTEM_MAX = 500;
 
     public Cursorable(T cursor, Integer limit) {
         this.cursor = cursor;

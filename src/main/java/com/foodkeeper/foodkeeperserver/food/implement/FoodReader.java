@@ -54,10 +54,8 @@ public class FoodReader {
         return foodRepository.findById(foodId).orElseThrow(() -> new AppException(ErrorType.NOT_FOUND_DATA)).toDomain();
     }
 
-    public List<Food> findFoodsToNotify(LocalDate today) {
-        return foodRepository.findFoodsToNotify(today).stream()
-                .map(FoodEntity::toDomain)
-                .toList();
+    public SliceObject<Food> findFoodsToNotify(Cursorable<Long> cursorable, LocalDate today) {
+        return foodRepository.findFoodsToNotify(cursorable,today).map(FoodEntity::toDomain);
     }
 
     public long foodCount(String memberKey) {

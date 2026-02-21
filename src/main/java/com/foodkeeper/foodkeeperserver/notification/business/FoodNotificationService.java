@@ -1,5 +1,7 @@
 package com.foodkeeper.foodkeeperserver.notification.business;
 
+import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
+import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodReader;
 import com.foodkeeper.foodkeeperserver.notification.domain.MemberFcmTokens;
@@ -10,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -25,34 +28,50 @@ public class FoodNotificationService {
     private final FoodReader foodReader;
     private final FcmManager fcmManager;
     private static final String type = "EXPIRATION";
+    private static final int limit = 500;
 
     @Scheduled(cron = "0 0 12 * * *")
     public void sendExpiryAlarm() {
         LocalDate today = LocalDate.now();
         log.info("[Expiry Alarm] 유통기한 알림 전송 시작");
 
-        List<Food> foods = foodReader.findFoodsToNotify(today);
-        if (foods.isEmpty()) {
-            log.info("[Expiry Alarm] 보낼 알림이 없습니다.");
-            return;
-        }
+        Long currentCursor = 0L;
+        boolean hasNext = true;
 
-        Map<String, List<Food>> foodsByMember = foods.stream()
-                .collect(Collectors.groupingBy(Food::memberKey));
+        while(hasNext) {
+            SliceObject<Food> foods = foodReader.findFoodsToNotify(new Cursorable<>(currentCursor, limit),today);
+            List<Food> alarmFoods = foods.content();
 
-        MemberFcmTokens memberFcmTokens = fcmManager.findTokens(foodsByMember.keySet());
-
-        foodsByMember.forEach((memberKey, memberFoods) -> {
-            if (!memberFcmTokens.hasTokens(memberKey)) {
+            if (alarmFoods.isEmpty()) {
+                log.info("[Expiry Alarm] 보낼 알림이 없습니다.");
                 return;
             }
 
-            Map<String, String> fcmMessage = createFcmMessage(memberFoods, today);
-            memberFcmTokens.getTokensByMember(memberKey)
-                    .forEach(token -> fcmSender.sendNotification(token, fcmMessage));
-        });
+            Map<String, List<Food>> foodsByMember = alarmFoods.stream()
+                    .collect(Collectors.groupingBy(Food::memberKey));
 
-        log.info("[Expiry Alarm] 전송 요청 완료. 대상 음식 수: {}", foods.size());
+            MemberFcmTokens memberFcmTokens = fcmManager.findTokens(foodsByMember.keySet());
+            foodsByMember.forEach((memberKey, memberFoods) -> {
+                if (!memberFcmTokens.hasTokens(memberKey)) {
+                    return;
+                }
+
+                Map<String, String> fcmMessage = createFcmMessage(memberFoods, today);
+                memberFcmTokens.getTokensByMember(memberKey)
+                        .forEach(token -> fcmSender.sendNotification(token, fcmMessage));
+            });
+
+            hasNext = foods.hasNext();
+            if (hasNext) {
+                Food lastFood = alarmFoods.get(alarmFoods.size() - 1);
+                currentCursor = lastFood.id();
+            }
+
+            log.info("[Expiry Alarm] 전송 요청 완료. 대상 음식 수: {}", alarmFoods.size());
+        }
+
+
+
     }
 
     private Map<String, String> createFcmMessage(List<Food> foods, LocalDate today) {
