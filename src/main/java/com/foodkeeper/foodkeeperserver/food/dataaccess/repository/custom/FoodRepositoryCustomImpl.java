@@ -5,6 +5,7 @@ import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
 import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.dataaccess.entity.FoodEntity;
 import com.foodkeeper.foodkeeperserver.support.repository.QuerydslRepositorySupport;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 
 import java.time.LocalDate;
@@ -69,13 +70,9 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
     @Override
     public List<FoodEntity> findFoodsToNotify(LocalDate targetDate) {
         return selectFrom(foodEntity)
-                .where(isActive(),
-                        dateTemplate(
-                                Integer.class,
-                                "DATEDIFF({0}, {1})",
-                                foodEntity.expiryDate,
-                                targetDate
-                        ).eq(foodEntity.expiryAlarmDays)
+                .where(
+                        isActive(),
+                        eqExpiryAlarmDays(targetDate)
                 )
                 .fetch();
     }
@@ -123,4 +120,18 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
     private static BooleanExpression isActive() {
         return foodEntity.status.eq(EntityStatus.ACTIVE);
     }
+
+    private static BooleanBuilder eqExpiryAlarmDays(LocalDate targetDate) {
+        List<Integer> alarmDays = List.of(0,1,2,3,7,14);
+        BooleanBuilder alarmBuilder = new BooleanBuilder();
+
+        for(Integer expiryAlarmDays : alarmDays) {
+            alarmBuilder.or(
+                    foodEntity.expiryAlarmDays.eq(expiryAlarmDays)
+                            .and(foodEntity.expiryDate.eq(targetDate.plusDays(expiryAlarmDays)))
+            );
+        }
+        return alarmBuilder;
+    }
+
 }
