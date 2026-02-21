@@ -41,10 +41,6 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
         return new SliceObject<>(content, cursorable, hasNext(cursorable, content));
     }
 
-    private BooleanExpression ltCursor(Long cursor) {
-        return cursor == null ? null : foodEntity.id.lt(cursor);
-    }
-
     @Override
     public List<FoodEntity> findAllByMemberKey(String memberKey) {
 
@@ -68,13 +64,17 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
     }
 
     @Override
-    public List<FoodEntity> findFoodsToNotify(LocalDate targetDate) {
-        return selectFrom(foodEntity)
+    public SliceObject<FoodEntity> findFoodsToNotify(Cursorable<Long> cursorable, LocalDate targetDate) {
+        List<FoodEntity> content = selectFrom(foodEntity)
                 .where(
                         isActive(),
-                        eqExpiryAlarmDays(targetDate)
+                        eqExpiryAlarmDays(targetDate),
+                        ltCursor(cursorable.cursor())
                 )
+                .limit(cursorable.limit() + 1)
+                .orderBy(foodEntity.id.desc())
                 .fetch();
+        return new SliceObject<>(content, cursorable, hasNext(cursorable, content));
     }
 
     @Override
@@ -113,6 +113,10 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
         return count != null ? count : 0L;
     }
 
+    private BooleanExpression ltCursor(Long cursor) {
+        return cursor == null ? null : foodEntity.id.lt(cursor);
+    }
+
     private static BooleanExpression eqMember(String memberKey) {
         return foodEntity.memberKey.eq(memberKey);
     }
@@ -122,10 +126,10 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
     }
 
     private static BooleanBuilder eqExpiryAlarmDays(LocalDate targetDate) {
-        List<Integer> alarmDays = List.of(0,1,2,3,7,14);
+        List<Integer> alarmDays = List.of(0, 1, 2, 3, 7, 14);
         BooleanBuilder alarmBuilder = new BooleanBuilder();
 
-        for(Integer expiryAlarmDays : alarmDays) {
+        for (Integer expiryAlarmDays : alarmDays) {
             alarmBuilder.or(
                     foodEntity.expiryAlarmDays.eq(expiryAlarmDays)
                             .and(foodEntity.expiryDate.eq(targetDate.plusDays(expiryAlarmDays)))

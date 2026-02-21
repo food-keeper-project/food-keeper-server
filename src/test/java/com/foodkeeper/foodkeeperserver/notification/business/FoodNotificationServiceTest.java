@@ -1,5 +1,7 @@
 package com.foodkeeper.foodkeeperserver.notification.business;
 
+import com.foodkeeper.foodkeeperserver.common.domain.Cursorable;
+import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodReader;
@@ -19,8 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -44,7 +45,8 @@ public class FoodNotificationServiceTest {
         String token = "token";
         LocalDate today = LocalDate.now();
         Food food = FoodFixture.createFood(1L);
-        given(foodReader.findFoodsToNotify(today)).willReturn(List.of(food));
+
+        given(foodReader.findFoodsToNotify(any(Cursorable.class),eq(today))).willReturn(new SliceObject<>(List.of(food),new Cursorable<>(0,1),false));
 
         MemberFcmTokens memberFcmTokens = new MemberFcmTokens(Map.of(memberKey, List.of(token)));
         given(fcmManager.findTokens(anySet())).willReturn(memberFcmTokens);
@@ -66,11 +68,12 @@ public class FoodNotificationServiceTest {
         String memberKey = "memberKey";
         String token = "token";
         LocalDate today = LocalDate.now();
+
         // 같은 사용자
         Food food1 = FoodFixture.createFood(1L);
         Food food2 = FoodFixture.createFood(2L);
 
-        given(foodReader.findFoodsToNotify(today)).willReturn(List.of(food1, food2));
+        given(foodReader.findFoodsToNotify(any(Cursorable.class),eq(today))).willReturn(new SliceObject<>(List.of(food1,food2),new Cursorable<>(0,50),false));
 
         MemberFcmTokens fcmTokens = new MemberFcmTokens(Map.of(memberKey, List.of(token)));
         given(fcmManager.findTokens(anySet())).willReturn(fcmTokens);
