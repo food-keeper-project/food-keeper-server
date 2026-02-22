@@ -24,6 +24,7 @@ public class FcmSender {
         List<Message> messages = alarmMessages.messages();
         List<String> tokens = alarmMessages.tokens();
 
+//        FirebaseMessaging.getInstance().sendEachAsync(messages, true);
         try {
             BatchResponse batchResponse = FirebaseMessaging.getInstance().sendEach(messages, true);
             List<String> invalidTokens = extractInvalidTokens(tokens,batchResponse);

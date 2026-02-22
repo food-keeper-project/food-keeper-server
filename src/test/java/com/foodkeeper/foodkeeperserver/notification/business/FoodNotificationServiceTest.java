@@ -5,6 +5,7 @@ import com.foodkeeper.foodkeeperserver.common.domain.SliceObject;
 import com.foodkeeper.foodkeeperserver.food.domain.Food;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import com.foodkeeper.foodkeeperserver.food.implement.FoodReader;
+import com.foodkeeper.foodkeeperserver.notification.domain.AlarmMessages;
 import com.foodkeeper.foodkeeperserver.notification.domain.MemberFcmTokens;
 import com.foodkeeper.foodkeeperserver.notification.implement.FcmManager;
 import com.foodkeeper.foodkeeperserver.notification.implement.FcmSender;
@@ -38,7 +39,7 @@ public class FoodNotificationServiceTest {
     FcmSender fcmSender;
 
     @Test
-    @DisplayName("식재료가 1개일 떄 단일 메시지 알림 전송")
+    @DisplayName("식재료가 1개일 때 AlarmMessages가 정상적으로 생성되어 전송 호출됨")
     void send_expiryAlarm_SUCCESS() {
         //given
         String memberKey = "memberKey";
@@ -46,7 +47,8 @@ public class FoodNotificationServiceTest {
         LocalDate today = LocalDate.now();
         Food food = FoodFixture.createFood(1L);
 
-        given(foodReader.findFoodsToNotify(any(Cursorable.class),eq(today))).willReturn(new SliceObject<>(List.of(food),new Cursorable<>(0,1),false));
+        given(foodReader.findFoodsToNotify(any(Cursorable.class), eq(today)))
+                .willReturn(new SliceObject<>(List.of(food), new Cursorable<>(0, 1), false));
 
         MemberFcmTokens memberFcmTokens = new MemberFcmTokens(Map.of(memberKey, List.of(token)));
         given(fcmManager.findTokens(anySet())).willReturn(memberFcmTokens);
@@ -55,25 +57,28 @@ public class FoodNotificationServiceTest {
         foodNotificationService.sendExpiryAlarm();
 
         // then
-        ArgumentCaptor<Map<String, String>> captor = ArgumentCaptor.forClass(Map.class);
-        verify(fcmSender).sendNotification(eq(token), captor.capture());
+        ArgumentCaptor<AlarmMessages> captor = ArgumentCaptor.forClass(AlarmMessages.class);
+        verify(fcmSender).sendNotification(captor.capture());
 
-        assertThat(captor.getValue().get("title")).isEqualTo("우유 D-1");
+        AlarmMessages capturedAlarmMessages = captor.getValue();
+
+        assertThat(capturedAlarmMessages.tokens()).containsExactly(token);
+        assertThat(capturedAlarmMessages.messages()).hasSize(1);
     }
 
     @Test
-    @DisplayName("한 사용자의 식재료가 여러 건 메시지 알림 전송")
+    @DisplayName("한 사용자의 식재료가 여러 건일 때 AlarmMessages가 정상적으로 생성되어 전송 호출됨")
     void sendMultipleAlarm_SUCCESS() {
         // given
         String memberKey = "memberKey";
         String token = "token";
         LocalDate today = LocalDate.now();
 
-        // 같은 사용자
         Food food1 = FoodFixture.createFood(1L);
         Food food2 = FoodFixture.createFood(2L);
 
-        given(foodReader.findFoodsToNotify(any(Cursorable.class),eq(today))).willReturn(new SliceObject<>(List.of(food1,food2),new Cursorable<>(0,50),false));
+        given(foodReader.findFoodsToNotify(any(Cursorable.class), eq(today)))
+                .willReturn(new SliceObject<>(List.of(food1, food2), new Cursorable<>(0, 50), false));
 
         MemberFcmTokens fcmTokens = new MemberFcmTokens(Map.of(memberKey, List.of(token)));
         given(fcmManager.findTokens(anySet())).willReturn(fcmTokens);
@@ -82,8 +87,11 @@ public class FoodNotificationServiceTest {
         foodNotificationService.sendExpiryAlarm();
 
         // then
-        ArgumentCaptor<Map<String, String>> captor = ArgumentCaptor.forClass(Map.class);
-        verify(fcmSender).sendNotification(eq(token), captor.capture());
-        assertThat(captor.getValue().get("title")).isEqualTo("우유 외 1건");
+        ArgumentCaptor<AlarmMessages> captor = ArgumentCaptor.forClass(AlarmMessages.class);
+        verify(fcmSender).sendNotification(captor.capture());
+
+        AlarmMessages capturedAlarmMessages = captor.getValue();
+        assertThat(capturedAlarmMessages.tokens()).containsExactly(token);
+        assertThat(capturedAlarmMessages.messages()).hasSize(1);
     }
 }
