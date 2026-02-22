@@ -30,7 +30,7 @@ public class FoodNotificationService {
     private final FcmSender fcmSender;
     private final FoodReader foodReader;
     private final FcmManager fcmManager;
-    private static final int limit = 500;
+    private static final int limit = 450;
 
     @Scheduled(cron = "0 0 12 * * *")
     public void sendExpiryAlarm() {
