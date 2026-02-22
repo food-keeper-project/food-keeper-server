@@ -55,4 +55,9 @@ public class FcmManager {
     public void removeFcmTokens(String memberKey) {
         fcmRepository.deleteFcmTokens(memberKey);
     }
+
+    @Transactional
+    public void removeAll(List<String> invalidTokens) {
+        fcmRepository.deleteAll(invalidTokens);
+    }
 }

@@ -53,6 +53,17 @@ public class FcmTokenCustomRepositoryImpl extends QuerydslRepositorySupport impl
         getEntityManager().clear();
     }
 
+    @Override
+    public void deleteAll(List<String> fcmTokens) {
+        if(fcmTokens.isEmpty()) return;
+        update(fcmTokenEntity)
+                .set(fcmTokenEntity.status, EntityStatus.DELETED)
+                .where(fcmTokenEntity.token.in(fcmTokens))
+                .execute();
+
+        getEntityManager().clear();
+    }
+
     private static BooleanExpression isActive() {
         return fcmTokenEntity.status.eq(EntityStatus.ACTIVE);
     }

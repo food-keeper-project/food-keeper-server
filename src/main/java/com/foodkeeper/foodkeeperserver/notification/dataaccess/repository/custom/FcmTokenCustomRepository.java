@@ -15,4 +15,6 @@ public interface FcmTokenCustomRepository {
     Optional<FcmTokenEntity> findByToken(String token);
 
     void deleteByToken(String token);
+
+    void deleteAll(List<String> fcmTokens);
 }
