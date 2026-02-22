@@ -71,8 +71,8 @@ public class FoodRepositoryCustomImpl extends QuerydslRepositorySupport implemen
                         eqExpiryAlarmDays(targetDate),
                         ltCursor(cursorable.cursor())
                 )
-                .limit(cursorable.limit() + 1)
                 .orderBy(foodEntity.id.desc())
+                .limit(cursorable.limit() + 1)
                 .fetch();
         return new SliceObject<>(content, cursorable, hasNext(cursorable, content));
     }
