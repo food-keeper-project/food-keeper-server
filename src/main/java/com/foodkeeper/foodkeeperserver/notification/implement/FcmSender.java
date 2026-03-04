@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Component
@@ -18,19 +17,27 @@ import java.util.Map;
 public class FcmSender {
 
     private final FcmManager fcmManager;
+    private final FcmRetryExecutor fcmRetryExecutor;
 
     @Async("fcmExecutor")
     public void sendNotification(AlarmMessages alarmMessages) {
         List<Message> messages = alarmMessages.messages();
         List<String> tokens = alarmMessages.tokens();
 
-//        FirebaseMessaging.getInstance().sendEachAsync(messages, true);
         try {
-            BatchResponse batchResponse = FirebaseMessaging.getInstance().sendEach(messages, true);
-            List<String> invalidTokens = extractInvalidTokens(tokens,batchResponse);
+            BatchResponse batchResponse = fcmRetryExecutor.sendEach(messages);
+
+            List<String> invalidTokens = extractInvalidTokens(tokens, batchResponse);
             fcmManager.removeAll(invalidTokens);
+
+            List<Message> retryableMessages = extractRetryableMessages(messages, tokens, batchResponse);
+            if (!retryableMessages.isEmpty()) {
+                log.info("[FCM 재시도] 네트워크 오류로 실패한 {}건 재시도", retryableMessages.size());
+                fcmRetryExecutor.sendEach(retryableMessages);
+            }
+
         } catch (FirebaseMessagingException e) {
-            log.error("[FCM 전송 실패] error: {}", e.getMessage());
+            log.warn("[FCM 전송 최종 실패] error: {}", e.getMessage());
         }
     }
 
@@ -42,18 +49,37 @@ public class FcmSender {
             SendResponse response = responses.get(i);
 
             if (!response.isSuccessful()) {
-                FirebaseMessagingException exception = response.getException();
-                MessagingErrorCode errorCode = exception.getMessagingErrorCode();
-                String failedToken = tokens.get(i);
+                MessagingErrorCode errorCode = response.getException().getMessagingErrorCode();
 
                 if (errorCode == MessagingErrorCode.UNREGISTERED ||
                         errorCode == MessagingErrorCode.INVALID_ARGUMENT) {
-                    invalidTokens.add(failedToken);
-                } else {
-                    log.error("[FCM 개별 전송 실패] token: {}, error: {}", failedToken, exception.getMessage());
+                    invalidTokens.add(tokens.get(i));
                 }
             }
         }
         return invalidTokens;
+    }
+
+    private List<Message> extractRetryableMessages(List<Message> messages, List<String> tokens, BatchResponse batchResponse) {
+        List<SendResponse> responses = batchResponse.getResponses();
+        List<Message> retryableMessages = new ArrayList<>();
+
+        for (int i = 0; i < responses.size(); i++) {
+            SendResponse response = responses.get(i);
+
+            if (!response.isSuccessful()) {
+                MessagingErrorCode errorCode = response.getException().getMessagingErrorCode();
+
+                if (errorCode == MessagingErrorCode.UNAVAILABLE ||
+                        errorCode == MessagingErrorCode.INTERNAL ||
+                        errorCode == MessagingErrorCode.QUOTA_EXCEEDED) {
+                    retryableMessages.add(messages.get(i));
+                } else if (errorCode != MessagingErrorCode.UNREGISTERED &&
+                        errorCode != MessagingErrorCode.INVALID_ARGUMENT) {
+                    log.error("[FCM 개별 전송 실패] token: {}, error: {}", tokens.get(i), response.getException().getMessage());
+                }
+            }
+        }
+        return retryableMessages;
     }
 }
