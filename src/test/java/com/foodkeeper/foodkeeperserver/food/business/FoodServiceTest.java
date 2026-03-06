@@ -1,7 +1,5 @@
 package com.foodkeeper.foodkeeperserver.food.business;
 
-import com.foodkeeper.foodkeeperserver.ai.AiProcessor;
-import com.foodkeeper.foodkeeperserver.ai.domain.*;
 import com.foodkeeper.foodkeeperserver.ai.implement.AiFoodScanner;
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.dataaccess.entity.BookmarkedFoodEntity;
 import com.foodkeeper.foodkeeperserver.bookmarkedfood.dataaccess.repository.BookmarkedFoodRepository;
@@ -24,7 +22,6 @@ import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.food.fixture.CategoryFixture;
 import com.foodkeeper.foodkeeperserver.food.fixture.FoodFixture;
 import com.foodkeeper.foodkeeperserver.food.implement.*;
-import com.foodkeeper.foodkeeperserver.recipe.dataaccess.ClovaClient;
 import com.foodkeeper.foodkeeperserver.support.exception.AppException;
 import com.foodkeeper.foodkeeperserver.support.exception.ErrorType;
 import org.assertj.core.api.Assertions;
@@ -33,17 +30,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
-import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -56,23 +52,15 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 public class FoodServiceTest {
 
-    @InjectMocks
     FoodService foodService;
-    @Mock
-    ImageManager imageManager;
-    @Mock
-    FoodRepository foodRepository;
-    @Mock
-    FoodCategoryRepository foodCategoryRepository;
-    @Mock
-    SelectedFoodCategoryRepository selectedFoodCategoryRepository;
-    @Mock
-    BookmarkedFoodRepository bookmarkedFoodRepository;
-    @Mock
-    TransactionHandler transactionHandler;
-    @Mock
-    ClovaClient clovaClient;
 
+    @Mock ImageManager imageManager;
+    @Mock FoodRepository foodRepository;
+    @Mock FoodCategoryRepository foodCategoryRepository;
+    @Mock SelectedFoodCategoryRepository selectedFoodCategoryRepository;
+    @Mock BookmarkedFoodRepository bookmarkedFoodRepository;
+    @Mock TransactionHandler transactionHandler;
+    @Mock AiFoodScanner foodScanner;
 
     @BeforeEach
     void setUp() {
@@ -82,8 +70,6 @@ public class FoodServiceTest {
         FoodReader foodReader = new FoodReader(foodRepository, foodCategoryReader);
         SelectedFoodCategoryManager selectedFoodCategoryManager = new SelectedFoodCategoryManager(selectedFoodCategoryRepository);
         FoodBookmarker foodBookmarker = new FoodBookmarker(bookmarkedFoodRepository);
-        AiProcessor processor = new AiProcessor(clovaClient, new ObjectMapper());
-        AiFoodScanner foodScanner = new AiFoodScanner(processor);
 
         foodService = new FoodService(
                 foodReader,
@@ -124,7 +110,6 @@ public class FoodServiceTest {
 
         assertThat(savedFood.getName()).isEqualTo(dto.name());
         assertThat(savedFood.getImageUrl()).isEqualTo("파일 경로");
-
     }
 
     @Test
@@ -269,7 +254,6 @@ public class FoodServiceTest {
         foodService.removeFood(foodId, memberKey);
         //then
         assertThat(food.getStatus()).isEqualTo(EntityStatus.DELETED);
-        assertThat(food.getStatus()).isEqualTo(EntityStatus.DELETED);
     }
 
     @Test
@@ -303,26 +287,16 @@ public class FoodServiceTest {
     @DisplayName("텍스트를 받아서 AI를 이용해 필요한 데이터만 추출 성공")
     void parseText_SUCCESS() {
         // given
-        String clovaContent = """
-            {
-                "name" : "신라면",
-                "storageMethod" : "냉장",
-                "expiryDate" : "2025-05-05"
-            }
-            """;
-        ClovaMessage clovaMessage = new ClovaMessage(AiType.SYSTEM, clovaContent);
-        ClovaResponse clovaResponse = new ClovaResponse(
-                new ClovaResponseStatus("code", "message"),
-                new ClovaResult(clovaMessage));
-        given(clovaClient.getAiResponse(anyString(), any())).willReturn(clovaResponse);
+        ScannedFood expected = new ScannedFood("신라면", StorageMethod.REFRIGERATED, LocalDate.of(2025, 5, 5));
+        given(foodScanner.parseOcrText("test-ocr-text"))
+                .willReturn(CompletableFuture.completedFuture(expected));
 
         // when
-        ScannedFood scannedFood = foodService.scanFoodByOcr("test-ocr-text");
+        ScannedFood scannedFood = foodService.scanFoodByOcr("test-ocr-text").join();
 
         // then
         assertThat(scannedFood.name()).isEqualTo("신라면");
         assertThat(scannedFood.storageMethod()).isEqualTo(StorageMethod.REFRIGERATED);
-        assertThat(scannedFood.expiryDate()).isEqualTo("2025-05-05");
+        assertThat(scannedFood.expiryDate()).isEqualTo(LocalDate.of(2025, 5, 5));
     }
-
 }
