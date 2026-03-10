@@ -23,4 +23,9 @@ public class AsyncConfig {
     public Executor imageExecutor() {
         return new TaskExecutorAdapter(Executors.newVirtualThreadPerTaskExecutor());
     }
+
+    @Bean(name = "clovaExecutor")
+    public Executor clovaExecutor() {
+        return new TaskExecutorAdapter(Executors.newVirtualThreadPerTaskExecutor());
+    }
 }

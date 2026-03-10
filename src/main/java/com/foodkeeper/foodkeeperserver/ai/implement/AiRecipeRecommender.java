@@ -15,6 +15,7 @@ import org.springframework.util.StreamUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 
 @Slf4j
@@ -41,13 +42,19 @@ public class AiRecipeRecommender {
         }
     }
 
-
-    public NewRecipe getRecipeRecommendation(List<String> ingredients, List<String> excludedMenus) {
-        String userPrompt = removeDuplicateFood(ingredients, excludedMenus);
-        return processor.executeClova(loadedSystemPrompt, userPrompt, NewRecipe.class);
+    public CompletableFuture<NewRecipe> getRecipeRecommendation(List<String> ingredients, List<String> excludedMenus) {
+        String userPrompt = buildUserPrompt(ingredients, excludedMenus);
+        return processor.executeClova(loadedSystemPrompt, userPrompt, NewRecipe.class)
+                .handle((result, ex) -> {
+                    if (ex != null) {
+                        log.warn("[Clova 레시피 추천 실패]: {}", ex.getMessage());
+                        throw new AppException(ErrorType.NAVER_CLOVA_ERROR);
+                    }
+                    return result;
+                });
     }
 
-    private String removeDuplicateFood(List<String> ingredients, List<String> excludedMenus) {
+    private String buildUserPrompt(List<String> ingredients, List<String> excludedMenus) {
         String ingredientsStr = String.join(", ", ingredients);
 
         String prompt = """

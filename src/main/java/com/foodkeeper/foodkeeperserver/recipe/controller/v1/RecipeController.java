@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Validated
 @Tag(name = "Recipe", description = "레시피 관련 API")
@@ -36,10 +37,11 @@ public class RecipeController {
     @NullMarked
     @Operation(summary = "AI 레시피 추천", description = "AI 레시피 추천 API")
     @GetMapping("/recommend")
-    public ResponseEntity<ApiResponse<RecipeResponse>> recommendRecipe(@Size(min = 1) @RequestParam List<String> ingredients,
-                                                                       @RequestParam List<String> excludedMenus) {
-        return ResponseEntity.ok(ApiResponse.success(RecipeResponse.from(
-                recipeService.recommendRecipe(ingredients, excludedMenus))));
+    public CompletableFuture<ResponseEntity<ApiResponse<RecipeResponse>>> recommendRecipe(
+            @Size(min = 1) @RequestParam List<String> ingredients,
+            @RequestParam List<String> excludedMenus) {
+        return recipeService.recommendRecipe(ingredients, excludedMenus)
+                .thenApply(recipe -> ResponseEntity.ok(ApiResponse.success(RecipeResponse.from(recipe))));
     }
 
     @NullMarked

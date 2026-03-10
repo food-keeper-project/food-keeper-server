@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -93,7 +94,7 @@ public class FoodService {
         return food.id();
     }
 
-    public ScannedFood scanFoodByOcr(String ocrText) {
+    public CompletableFuture<ScannedFood> scanFoodByOcr(String ocrText) {
         return foodScanner.parseOcrText(ocrText);
     }
 }

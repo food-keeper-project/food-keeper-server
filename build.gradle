@@ -25,9 +25,14 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
 }
 
 dependencies {
+    // Spring AI 2.x — Spring Boot 4.x / Spring Framework 7 대응 버전
+    implementation platform('org.springframework.ai:spring-ai-bom:2.0.0-M2')
+    implementation 'org.springframework.ai:spring-ai-starter-model-openai'
+
     // Spring
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'

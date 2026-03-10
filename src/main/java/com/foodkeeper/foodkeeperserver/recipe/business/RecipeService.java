@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class RecipeService {
         return recipeFinder.recipeCount(memberKey);
     }
 
-    public NewRecipe recommendRecipe(List<String> ingredients, List<String> excludedMenus) {
+    public CompletableFuture<NewRecipe> recommendRecipe(List<String> ingredients, List<String> excludedMenus) {
         return aiRecipeRecommender.getRecipeRecommendation(ingredients, excludedMenus);
     }
 

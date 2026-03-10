@@ -12,7 +12,6 @@ import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodCountResp
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponse;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodResponses;
 import com.foodkeeper.foodkeeperserver.food.controller.v1.response.FoodScanResponse;
-import com.foodkeeper.foodkeeperserver.food.domain.ScannedFood;
 import com.foodkeeper.foodkeeperserver.food.domain.RegisteredFood;
 import com.foodkeeper.foodkeeperserver.food.domain.request.FoodRegister;
 import com.foodkeeper.foodkeeperserver.member.domain.Member;
@@ -31,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Tag(name = "Food", description = "식재료 관련 API")
 @RestController
@@ -125,9 +125,9 @@ public class FoodController {
     @NullMarked
     @Operation(summary = "식재료 OCR 텍스트 추출", description = "식재료 OCR 텍스트 추출 API")
     @PostMapping("/scan")
-    public ResponseEntity<ApiResponse<FoodScanResponse>> scanFood(@RequestBody OcrTextRequest request) {
-        ScannedFood scannedFood = foodService.scanFoodByOcr(request.ocrText());
-        return ResponseEntity.ok(ApiResponse.success(FoodScanResponse.from(scannedFood)));
+    public CompletableFuture<ResponseEntity<ApiResponse<FoodScanResponse>>> scanFood(@RequestBody OcrTextRequest request) {
+        return foodService.scanFoodByOcr(request.ocrText())
+                .thenApply(scannedFood -> ResponseEntity.ok(ApiResponse.success(FoodScanResponse.from(scannedFood))));
     }
 }
 

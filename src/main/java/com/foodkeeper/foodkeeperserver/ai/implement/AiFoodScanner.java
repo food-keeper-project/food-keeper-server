@@ -14,6 +14,7 @@ import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -38,8 +39,14 @@ public class AiFoodScanner {
         }
     }
 
-    public ScannedFood parseOcrText(String ocrText) {
-        return processor.executeClova(loadedSystemPrompt, ocrText, ScannedFood.class);
+    public CompletableFuture<ScannedFood> parseOcrText(String ocrText) {
+        return processor.executeClova(loadedSystemPrompt, ocrText, ScannedFood.class)
+                .handle((result, ex) -> {
+                    if (ex != null) {
+                        log.warn("[Clova OCR 파싱 실패]: {}", ex.getMessage());
+                        throw new AppException(ErrorType.NAVER_CLOVA_ERROR);
+                    }
+                    return result;
+                });
     }
-
 }
